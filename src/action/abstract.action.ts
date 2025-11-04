@@ -1,9 +1,9 @@
-import { IInput } from "../command";
+import { Input } from "../command";
 
 export abstract class AbstractAction {
   public abstract handle(
-    inputs?: IInput[],
-    options?: IInput[],
+    args?: Input,
+    options?: Input,
     extraFlags?: string[],
   ): Promise<void>;
 }
