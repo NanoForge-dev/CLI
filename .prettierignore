@@ -1,0 +1,4 @@
+/src/shared/persistence/typeorm/migration/*.ts
+/dist/
+/node_modules/
+/.cloud/**

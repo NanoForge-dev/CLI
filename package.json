@@ -1,0 +1,75 @@
+{
+  "name": "@nanoforge/cli",
+  "version": "1.0.0",
+  "description": "NanoForge CLI",
+  "homepage": "https://github.com/NanoForge-dev/CLI#readme",
+  "license": "MIT",
+  "contributors": [
+    "Bill",
+    "Exelo",
+    "Fexkoser",
+    "Tchips"
+  ],
+  "funding": {
+    "type": "individual",
+    "url": ""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NanoForge-dev/CLI.git"
+  },
+  "bin": {
+    "nf": "src/bin/nf.js"
+  },
+  "scripts": {
+    "build": "tsc -b .",
+    "clean": "pnpm clean:types && pnpm clean:scripts && rm -f tsconfig.build.tsbuildinfo",
+    "clean:types": "find src -name '*.d.ts' -delete",
+    "clean:scripts": "find src -name '*.js' -delete",
+    "start": "node src/bin/nf.js",
+    "lint": "eslint . && prettier --check .",
+    "fix": "eslint . --fix && prettier --write .",
+    "prepare": "husky",
+    "taze": "taze major -w"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^7.9.0",
+    "ansis": "^4.2.0",
+    "chokidar": "^4.0.3",
+    "cli-table3": "^0.6.5",
+    "commander": "^14.0.2",
+    "node-emoji": "^2.2.0",
+    "ora": "^9.0.0"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^20.1.0",
+    "@commitlint/config-conventional": "^20.0.0",
+    "@eslint/js": "^9.39.0",
+    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
+    "@types/inquirer": "^9.0.9",
+    "@types/node": "^24.10.0",
+    "@typescript-eslint/eslint-plugin": "^8.46.2",
+    "@typescript-eslint/parser": "^8.46.2",
+    "eslint": "^9.39.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "globals": "^16.5.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.6",
+    "prettier": "^3.6.2",
+    "taze": "^19.9.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.2"
+  },
+  "engines": {
+    "node": "23.6.0",
+    "pnpm": "10.20.0"
+  },
+  "packageManager": "pnpm@10.20.0",
+  "lint-staged": {
+    "**/*.ts": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  }
+}
