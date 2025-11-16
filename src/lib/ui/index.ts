@@ -1,1 +1,2 @@
-export * from "./prefixs";
+export * from "./messages";
+export * from "./prefixes";
