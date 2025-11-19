@@ -1,17 +1,67 @@
-export interface BuildPartConfig {
-  entryFile: string;
-  outDir: string;
+import { Expose, Type } from "class-transformer";
+import { IsBoolean, IsNotEmpty, IsPort, IsString } from "class-validator";
+
+export class BuildConfig {
+  @Expose()
+  @IsString()
+  @IsNotEmpty()
+  entryFile!: string;
+
+  @Expose()
+  @IsString()
+  @IsNotEmpty()
+  outDir!: string;
 }
 
-interface BuildClientConfig extends BuildPartConfig {}
-
-interface BuildServerConfig extends BuildPartConfig {}
-
-interface BuildConfig {
-  client: BuildClientConfig;
-  server: BuildServerConfig;
+export class RunConfig {
+  @Expose()
+  @IsString()
+  @IsNotEmpty()
+  dir!: string;
 }
 
-export interface Config {
-  build: BuildConfig;
+export class ClientConfig {
+  @Expose()
+  @IsPort()
+  port!: number;
+
+  @Expose()
+  @IsPort()
+  clientExposurePort!: number;
+
+  @Expose()
+  @Type(() => BuildConfig)
+  build!: BuildConfig;
+
+  @Expose()
+  @Type(() => RunConfig)
+  runtime!: RunConfig;
+}
+
+export class ServerConfig {
+  @Expose()
+  @IsBoolean()
+  enable!: boolean;
+
+  @Expose()
+  @IsPort()
+  port!: number;
+
+  @Expose()
+  @Type(() => BuildConfig)
+  build!: BuildConfig;
+
+  @Expose()
+  @Type(() => RunConfig)
+  runtime!: RunConfig;
+}
+
+export class Config {
+  @Expose()
+  @Type(() => ClientConfig)
+  client!: ClientConfig;
+
+  @Expose()
+  @Type(() => ServerConfig)
+  server!: ServerConfig;
 }

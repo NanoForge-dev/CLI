@@ -11,7 +11,7 @@ export default [
   ...tseslint.configs.recommended,
   ...tseslint.configs.strict,
   eslintConfigPrettier,
-  { ignores: ["**/*.js", "dist/", ".cloud/", ".idea/"] },
+  { ignores: ["**/*.js", "**/*.d.ts", "dist/", ".cloud/", ".idea/"] },
   {
     rules: {
       "@typescript-eslint/no-extraneous-class": "off",

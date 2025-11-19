@@ -2,7 +2,7 @@ import * as ansis from "ansis";
 
 import { Input } from "../../command";
 import { getConfig } from "../../lib/config/config-loader";
-import { BuildPartConfig } from "../../lib/config/config.type";
+import { BuildConfig } from "../../lib/config/config.type";
 import {
   PackageManager,
   PackageManagerFactory,
@@ -29,42 +29,34 @@ export class BuildAction extends AbstractAction {
     );
 
     const client = getPart(
-      config.build.client,
+      config.client.build,
       options.get("clientDirectory")?.value as string | undefined,
-      ".nanoforge/client",
     );
-    const server = getPart(
-      config.build.server,
-      options.get("serverDirectory")?.value as string | undefined,
-      ".nanoforge/server",
-    );
+    let res = await buildPart("Client", client, directory);
 
-    let res = true;
-
-    if (client)
-      res = (await buildPart("Client", client, directory)) ? res : false;
-    if (server)
+    if (config.server.enable) {
+      const server = getPart(
+        config.server.build,
+        options.get("serverDirectory")?.value as string | undefined,
+      );
       res = (await buildPart("Server", server, directory)) ? res : false;
-    if (!client && !server) console.info(Messages.BUILD_NOTHING);
-    else {
-      console.info();
-      if (!res) console.info(Messages.BUILD_FAILED);
-      else console.info(Messages.BUILD_SUCCESS);
     }
+
+    console.info();
+    if (!res) console.info(Messages.BUILD_FAILED);
+    else console.info(Messages.BUILD_SUCCESS);
 
     process.exit(0);
   }
 }
 
 const getPart = (
-  config: BuildPartConfig,
+  config: BuildConfig,
   directoryOption: string | undefined,
-  defaultOutput: string,
-): BuildPart | undefined => {
-  if (!config || !config.entryFile) return undefined;
+): BuildPart => {
   return {
     entry: config.entryFile,
-    output: directoryOption || config.outDir || defaultOutput,
+    output: directoryOption || config.outDir,
   };
 };
 
