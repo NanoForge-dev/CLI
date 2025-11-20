@@ -1,5 +1,11 @@
 import { Expose, Type } from "class-transformer";
-import { IsBoolean, IsNotEmpty, IsPort, IsString } from "class-validator";
+import {
+  IsBoolean,
+  IsNotEmpty,
+  IsPort,
+  IsString,
+  ValidateNested,
+} from "class-validator";
 
 export class BuildConfig {
   @Expose()
@@ -23,18 +29,20 @@ export class RunConfig {
 export class ClientConfig {
   @Expose()
   @IsPort()
-  port!: number;
+  port!: string;
 
   @Expose()
   @IsPort()
-  clientExposurePort!: number;
+  gameExposurePort!: string;
 
   @Expose()
   @Type(() => BuildConfig)
+  @ValidateNested()
   build!: BuildConfig;
 
   @Expose()
   @Type(() => RunConfig)
+  @ValidateNested()
   runtime!: RunConfig;
 }
 
@@ -45,23 +53,27 @@ export class ServerConfig {
 
   @Expose()
   @IsPort()
-  port!: number;
+  port!: string;
 
   @Expose()
   @Type(() => BuildConfig)
+  @ValidateNested()
   build!: BuildConfig;
 
   @Expose()
   @Type(() => RunConfig)
+  @ValidateNested()
   runtime!: RunConfig;
 }
 
 export class Config {
   @Expose()
   @Type(() => ClientConfig)
+  @ValidateNested()
   client!: ClientConfig;
 
   @Expose()
   @Type(() => ServerConfig)
+  @ValidateNested()
   server!: ServerConfig;
 }

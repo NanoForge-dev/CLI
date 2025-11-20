@@ -65,7 +65,13 @@ const buildPart = async (name: string, part: BuildPart, directory: string) => {
 
   try {
     const packageManager = PackageManagerFactory.create(packageManagerName);
-    return await packageManager.build(name, directory, part.entry, part.output);
+    return await packageManager.build(
+      name,
+      directory,
+      part.entry,
+      part.output,
+      ["--asset-naming", "[name].[ext]"],
+    );
   } catch (error) {
     if (error && error.message) {
       console.error(ansis.red(error.message));

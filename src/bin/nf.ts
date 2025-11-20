@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { program } from "commander";
+import "reflect-metadata";
 
 import { CommandLoader } from "../command";
 import {

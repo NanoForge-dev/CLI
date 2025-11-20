@@ -46,7 +46,7 @@ export const getConfig = async (
   const errors = await validate(data);
   if (errors.length > 0)
     throw new Error(
-      `Invalid config :\n${errors.map((e) => `- ${e.toString()}\n`).join("")}`,
+      `Invalid config :\n${errors.toString().replace(/,/g, "\n")}`,
     );
 
   config = data;
