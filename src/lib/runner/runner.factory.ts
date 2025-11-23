@@ -11,6 +11,7 @@ export class RunnerFactory {
 
       default:
         console.info(yellow`[WARN] Unsupported runner: ${runner}`);
+        throw Error(`Unsupported runner: ${runner}`);
     }
   }
 }

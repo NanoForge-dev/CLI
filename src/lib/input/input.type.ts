@@ -1,5 +1,5 @@
 export interface InputValue {
-  value?: boolean | string | string[];
+  value?: boolean | string | string[] | undefined;
   options?: any;
 }
 

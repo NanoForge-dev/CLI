@@ -1,5 +1,5 @@
-import { Runner, RunnerFactory } from "../../runner";
-import { BunRunner } from "../../runner/runners/bun.runner";
+import { BunRunner, Runner, RunnerFactory } from "@lib/runner";
+
 import { AbstractPackageManager } from "../abstract.package-manager";
 import { PackageManager } from "../package-manager";
 import { PackageManagerCommands } from "../package-manager-commands";

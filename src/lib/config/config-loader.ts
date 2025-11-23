@@ -3,7 +3,8 @@ import { validate } from "class-validator";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "path";
 
-import { deepMerge } from "../utils/object";
+import { deepMerge } from "@utils/object";
+
 import { CONFIG_DEFAULTS } from "./config-defaults";
 import { Config } from "./config.type";
 
@@ -17,13 +18,11 @@ const getConfigPath = (directory: string, name?: string) => {
       const path = join(directory, n);
       if (existsSync(path)) return path;
     }
+    throw new Error(`Unsupported config: ${name}`);
   }
 };
 
-export const getConfig = async (
-  directory: string,
-  name?: string,
-): Promise<Config> => {
+export const loadConfig = async (directory: string, name?: string): Promise<Config> => {
   if (config) return config;
 
   let rawData;
@@ -31,10 +30,7 @@ export const getConfig = async (
   const path = getConfigPath(directory, name);
   if (!path) throw new Error("No config file found");
   try {
-    rawData = deepMerge(
-      CONFIG_DEFAULTS,
-      JSON.parse(readFileSync(path, "utf-8")),
-    );
+    rawData = deepMerge(CONFIG_DEFAULTS, JSON.parse(readFileSync(path, "utf-8")));
   } catch {
     rawData = null;
   }
@@ -45,9 +41,7 @@ export const getConfig = async (
   });
   const errors = await validate(data);
   if (errors.length > 0)
-    throw new Error(
-      `Invalid config :\n${errors.toString().replace(/,/g, "\n")}`,
-    );
+    throw new Error(`Invalid config :\n${errors.toString().replace(/,/g, "\n")}`);
 
   config = data;
   return config;

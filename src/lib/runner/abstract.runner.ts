@@ -2,7 +2,7 @@ import { red } from "ansis";
 import { ChildProcess, SpawnOptions, spawn } from "child_process";
 import * as process from "node:process";
 
-import { Messages } from "../ui";
+import { Messages } from "@lib/ui";
 
 interface RunnerListeners {
   onStdout?: (chunk: any) => void;
@@ -29,33 +29,23 @@ export class AbstractRunner {
       env: { ...process.env, ...env },
     };
     return new Promise<null | string>((resolve, reject) => {
-      const child: ChildProcess = spawn(
-        `${this.binary}`,
-        [...this.args, ...args],
-        options,
-      );
+      const child: ChildProcess = spawn(`${this.binary}`, [...this.args, ...args], options);
 
       const res: string[] = [];
       child.stdout?.on(
         "data",
-        listeners?.onStdout ??
-          ((data) => res.push(data.toString().replace(/\r\n|\n/, ""))),
+        listeners?.onStdout ?? ((data) => res.push(data.toString().replace(/\r\n|\n/, ""))),
       );
       child.stderr?.on(
         "data",
-        listeners?.onStderr ??
-          ((data) => res.push(data.toString().replace(/\r\n|\n/, ""))),
+        listeners?.onStderr ?? ((data) => res.push(data.toString().replace(/\r\n|\n/, ""))),
       );
 
       child.on("close", (code) => {
         if (code === 0) {
           resolve(collect && res.length ? res.join("\n") : null);
         } else {
-          console.error(
-            red(
-              Messages.RUNNER_EXECUTION_ERROR([this.binary, ...args].join(" ")),
-            ),
-          );
+          console.error(red(Messages.RUNNER_EXECUTION_ERROR([this.binary, ...args].join(" "))));
           if (res.length) {
             console.error();
             console.error(res.join("\n"));

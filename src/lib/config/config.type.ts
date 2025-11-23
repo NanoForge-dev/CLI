@@ -1,11 +1,5 @@
 import { Expose, Type } from "class-transformer";
-import {
-  IsBoolean,
-  IsNotEmpty,
-  IsPort,
-  IsString,
-  ValidateNested,
-} from "class-validator";
+import { IsBoolean, IsNotEmpty, IsPort, IsString, ValidateNested } from "class-validator";
 
 export class BuildConfig {
   @Expose()

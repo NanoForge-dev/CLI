@@ -1,9 +1,6 @@
-import { Input } from "../../../command";
+import { Input } from "./input.type";
 
-export const getStringInput = (
-  input: Input,
-  field: string,
-): string | undefined => {
+export const getStringInput = (input: Input, field: string): string | undefined => {
   const value = input.get(field)?.value;
   if (value === undefined) return undefined;
   if (typeof value === "string") return value;
@@ -18,10 +15,7 @@ export const getStringInputWithDefault = (
   return getStringInput(input, field) ?? defaultValue;
 };
 
-export const getBooleanInput = (
-  input: Input,
-  field: string,
-): boolean | undefined => {
+export const getBooleanInput = (input: Input, field: string): boolean | undefined => {
   const value = input.get(field)?.value;
   if (value === undefined) return undefined;
   if (typeof value === "boolean") return value;
@@ -36,10 +30,7 @@ export const getBooleanInputWithDefault = (
   return getBooleanInput(input, field) ?? defaultValue;
 };
 
-export const getArrayInput = (
-  input: Input,
-  field: string,
-): string[] | undefined => {
+export const getArrayInput = (input: Input, field: string): string[] | undefined => {
   const value = input.get(field)?.value;
   if (value === undefined) return undefined;
   if (typeof value === "object" && Array.isArray(value)) return value;
