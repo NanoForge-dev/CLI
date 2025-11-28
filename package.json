@@ -20,7 +20,6 @@
   "files": [
     "dist/nf.js"
   ],
-  "main": "./dist/nf.js",
   "bin": {
     "nf": "dist/nf.js"
   },
@@ -35,7 +34,7 @@
   "funding": "",
   "scripts": {
     "build": "tsc --noEmit && tsup",
-    "start": "node --trace-deprecation dist/nf.js",
+    "start": "node dist/nf.js",
     "lint": "prettier --check . && eslint --format=pretty src",
     "format": "prettier --write . && eslint --fix --format=pretty src",
     "prepack": "pnpm run build && pnpm run lint",
@@ -88,8 +87,7 @@
     "node": "24.11.0"
   },
   "publishConfig": {
-    "access": "public",
-    "provenance": true
+    "access": "public"
   },
   "lint-staged": {
     "**/*.ts": [

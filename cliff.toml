@@ -41,9 +41,9 @@ body = """
 {% if github.contributors | filter(attribute="is_first_time", value=true) | length %}\
 	\n### New Contributors\n
 	{% for contributor in github.contributors | filter(attribute="is_first_time", value=true) %}\
-		* @{{ contributor.username }} made their first contribution in #{{ contributor.pr_number }}
+		- @{{ contributor.username }} made their first contribution in #{{ contributor.pr_number }}
 	{% endfor %}\
-{% endif %}\n
+{% endif %}
 """
 trim = true
 footer = ""
@@ -52,28 +52,28 @@ footer = ""
 conventional_commits = true
 filter_unconventional = true
 commit_parsers = [
-	{ message = "^feat", group = "Features"},
-	{ message = "^fix", group = "Bug Fixes"},
-	{ message = "^docs", group = "Documentation"},
-	{ message = "^perf", group = "Performance"},
-	{ message = "^refactor", group = "Refactor"},
-	{ message = "^types", group = "Typings"},
-	{ message = ".*deprecated", body = ".*deprecated", group = "Deprecation"},
-	{ message = "^revert", skip = true},
-	{ message = "^style", group = "Styling"},
-	{ message = "^test", group = "Testing"},
-	{ message = "^chore", skip = true},
-	{ message = "^ci", skip = true},
-	{ message = "^build", skip = true},
-	{ body = ".*security", group = "Security"},
+    { message = "^feat", group = "Features"},
+    { message = "^fix", group = "Bug Fixes"},
+    { message = "^docs", group = "Documentation"},
+    { message = "^perf", group = "Performance"},
+    { message = "^refactor", group = "Refactor"},
+    { message = "^types", group = "Typings"},
+    { message = ".*deprecated", body = ".*deprecated", group = "Deprecation"},
+    { message = "^revert", skip = true},
+    { message = "^style", group = "Styling"},
+    { message = "^test", group = "Testing"},
+    { message = "^chore", skip = true},
+    { message = "^ci", skip = true},
+    { message = "^build", skip = true},
+    { body = ".*security", group = "Security"},
 ]
 filter_commits = true
 protect_breaking_commits = true
-tag_pattern = "@nanoforge-dev/cli@[0-9]*"
+tag_pattern = "^[0-9]+"
 ignore_tags = ""
 topo_order = false
 sort_commits = "newest"
 
 [remote.github]
-owner = "nanoforge-dev"
+owner = "NanoForge-dev"
 repo = "cli"
