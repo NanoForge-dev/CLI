@@ -6,7 +6,7 @@ import { Input, getDirectoryInput, getStringInputWithDefault } from "@lib/input"
 import { PackageManager, PackageManagerFactory } from "@lib/package-manager";
 import { Messages } from "@lib/ui";
 
-import { getCwd } from "@utils/path";
+import { getCwd, getModulePath } from "@utils/path";
 
 import { getConfig } from "~/action/common/config";
 
@@ -47,7 +47,7 @@ export class StartAction extends AbstractAction {
   }
 
   private async startClient(port: string, gameExposurePort: string): Promise<void> {
-    const path = join(__dirname, "../../../node_modules/@nanoforge-dev/loader-client");
+    const path = getModulePath("@nanoforge-dev/loader-client");
 
     fs.writeFileSync(
       join(path, "src/env.json"),
@@ -70,7 +70,7 @@ export class StartAction extends AbstractAction {
     port: string,
     clientPort: string,
   ): Promise<void> {
-    const path = join(__dirname, "../../../node_modules/@nanoforge-dev/loader-server");
+    const path = getModulePath("@nanoforge-dev/loader-server");
     return runPart("GameExposure", path, "dist/server.js", {
       PORT: port,
       GAME_DIR: getCwd(join(directory, gameDir)),

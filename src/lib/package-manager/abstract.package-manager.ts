@@ -1,5 +1,5 @@
 import { bold, green, red, yellow } from "ansis";
-import ora from "ora";
+import ora, { Ora } from "ora";
 
 import { AbstractRunner } from "@lib/runner/abstract.runner";
 import { Messages } from "@lib/ui";
@@ -13,6 +13,8 @@ const SPINNER = (message: string) =>
     text: message,
   });
 
+const FAIL_SPINNER = (spinner: Ora) => () => spinner.fail();
+
 export abstract class AbstractPackageManager {
   constructor(protected runner: AbstractRunner) {}
 
@@ -22,11 +24,12 @@ export abstract class AbstractPackageManager {
     try {
       const commandArgs = [this.cli.install, this.cli.silentFlag];
       const collect = true;
-      await this.runner.run(commandArgs, collect, getCwd(directory));
+      await this.runner.run(commandArgs, collect, getCwd(directory), undefined, undefined, () =>
+        spinner.fail(),
+      );
       spinner.succeed();
       this.printInstallSuccess();
     } catch {
-      spinner.fail();
       const commandArgs = [this.cli.install];
       const commandToRun = this.runner.rawFullCommand(commandArgs);
       this.printInstallFailure(commandToRun);
@@ -70,11 +73,17 @@ export abstract class AbstractPackageManager {
         ...(flags ?? []),
       ];
       const collect = true;
-      await this.runner.run(commandArgs, collect, getCwd(directory));
+      await this.runner.run(
+        commandArgs,
+        collect,
+        getCwd(directory),
+        undefined,
+        undefined,
+        FAIL_SPINNER(spinner),
+      );
       spinner.succeed();
       return true;
     } catch {
-      spinner.fail();
       const commandArgs = [this.cli.install];
       const commandToRun = this.runner.rawFullCommand(commandArgs);
       console.error(red(Messages.BUILD_PART_FAILED(name, bold(commandToRun))));
@@ -121,7 +130,14 @@ export abstract class AbstractPackageManager {
 
     try {
       const collect = true;
-      await this.runner.run(commandArguments, collect, getCwd(directory));
+      await this.runner.run(
+        commandArguments,
+        collect,
+        getCwd(directory),
+        undefined,
+        undefined,
+        FAIL_SPINNER(spinner),
+      );
 
       spinner.succeed();
       this.printInstallSuccess(dependencies);

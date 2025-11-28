@@ -15,6 +15,16 @@ export const Messages = {
   NEW_START: "NanoForge Project Creation",
   NEW_SUCCESS: `${Emojis.ROCKET}  Project successfully created !`,
   NEW_FAILED: `${Emojis.SCREAM}  Project creation failed !`,
+  NEW_NAME_QUESTION: "What is the name of your project ?",
+  NEW_PACKAGE_MANAGER_QUESTION: "Which package manager do you want to use ?",
+  NEW_LANGUAGE_QUESTION: "Which language do you want to use ?",
+  NEW_STRICT_QUESTION: "Do you want to use types strict mode ?",
+  NEW_SCHEMATICS_START: "Schematics execution",
+  NEW_SCHEMATIC_IN_PROGRESS: (name: string) => `Executing schematic ${name}...`,
+  NEW_SCHEMATIC_SUCCESS: (name: string) =>
+    `${Emojis.ROCKET}  Schematic ${name} executed successfully !`,
+  NEW_SCHEMATIC_FAILED: (name: string) =>
+    `${Emojis.SCREAM}  Schematic ${name} execution failed. See error below for more details.`,
   PACKAGE_MANAGER_INSTALLATION_IN_PROGRESS: `Installation in progress... ${Emojis.COFFEE}`,
   PACKAGE_MANAGER_INSTALLATION_NOTHING: "Nothing to install, terminated.",
   PACKAGE_MANAGER_INSTALLATION_SUCCEED: (names?: string[]) =>

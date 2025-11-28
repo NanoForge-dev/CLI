@@ -12,7 +12,7 @@ const getPackageManagerInput = (inputs: Input) => {
 export const getNewPackageManagerInputOrAsk = (inputs: Input) => {
   return getInputOrAsk(getPackageManagerInput(inputs), () =>
     askSelect<"npm" | "yarn" | "pnpm" | "bun">(
-      Messages.NEW_NAME_QUESTION,
+      Messages.NEW_PACKAGE_MANAGER_QUESTION,
       [{ value: "npm" }, { value: "yarn" }, { value: "pnpm" }, { value: "bun" }],
       {
         default: "npm",

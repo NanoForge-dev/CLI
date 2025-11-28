@@ -21,6 +21,7 @@ export class AbstractRunner {
     cwd: string = process.cwd(),
     env?: Record<string, string>,
     listeners?: RunnerListeners,
+    failSpinner?: () => void,
   ): Promise<null | string> {
     const options: SpawnOptions = {
       cwd,
@@ -29,7 +30,10 @@ export class AbstractRunner {
       env: { ...process.env, ...env },
     };
     return new Promise<null | string>((resolve, reject) => {
-      const child: ChildProcess = spawn(`${this.binary}`, [...this.args, ...args], options);
+      const child: ChildProcess = spawn(
+        `${this.binary} ${[...this.args, ...args].join(" ")}`,
+        options,
+      );
 
       const res: string[] = [];
       child.stdout?.on(
@@ -45,7 +49,10 @@ export class AbstractRunner {
         if (code === 0) {
           resolve(collect && res.length ? res.join("\n") : null);
         } else {
-          console.error(red(Messages.RUNNER_EXECUTION_ERROR([this.binary, ...args].join(" "))));
+          if (failSpinner) failSpinner();
+          console.error(
+            red(Messages.RUNNER_EXECUTION_ERROR([this.binary, ...this.args, ...args].join(" "))),
+          );
           if (res.length) {
             console.error();
             console.error(res.join("\n"));
