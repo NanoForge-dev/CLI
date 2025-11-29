@@ -1,7 +1,13 @@
 import { red } from "ansis";
 import { ChildProcess, SpawnOptions, spawn } from "child_process";
+import * as process from "node:process";
 
 import { Messages } from "../ui";
+
+interface RunnerListeners {
+  onStdout?: (chunk: any) => void;
+  onStderr?: (chunk: any) => void;
+}
 
 export class AbstractRunner {
   constructor(
@@ -10,15 +16,17 @@ export class AbstractRunner {
   ) {}
 
   public async run(
-    command: string,
+    args: string[],
     collect = false,
     cwd: string = process.cwd(),
+    env?: Record<string, string>,
+    listeners?: RunnerListeners,
   ): Promise<null | string> {
-    const args: string[] = [command];
     const options: SpawnOptions = {
       cwd,
       stdio: collect ? "pipe" : "inherit",
       shell: true,
+      env: { ...process.env, ...env },
     };
     return new Promise<null | string>((resolve, reject) => {
       const child: ChildProcess = spawn(
@@ -28,11 +36,15 @@ export class AbstractRunner {
       );
 
       const res: string[] = [];
-      child.stdout?.on("data", (data) =>
-        res.push(data.toString().replace(/\r\n|\n/, "")),
+      child.stdout?.on(
+        "data",
+        listeners?.onStdout ??
+          ((data) => res.push(data.toString().replace(/\r\n|\n/, ""))),
       );
-      child.stderr?.on("data", (data) =>
-        res.push(data.toString().replace(/\r\n|\n/, "")),
+      child.stderr?.on(
+        "data",
+        listeners?.onStderr ??
+          ((data) => res.push(data.toString().replace(/\r\n|\n/, ""))),
       );
 
       child.on("close", (code) => {
@@ -40,19 +52,23 @@ export class AbstractRunner {
           resolve(collect && res.length ? res.join("\n") : null);
         } else {
           console.error(
-            red(Messages.RUNNER_EXECUTION_ERROR(`${this.binary} ${command}`)),
+            red(
+              Messages.RUNNER_EXECUTION_ERROR([this.binary, ...args].join(" ")),
+            ),
           );
-          console.error();
-          console.error(res.join("\n"));
-          console.error();
+          if (res.length) {
+            console.error();
+            console.error(res.join("\n"));
+            console.error();
+          }
           reject();
         }
       });
     });
   }
 
-  public rawFullCommand(command: string): string {
-    const commandArgs: string[] = [...this.args, command];
+  public rawFullCommand(args: string[]): string {
+    const commandArgs: string[] = [...this.args, ...args];
     return `${this.binary} ${commandArgs.join(" ")}`;
   }
 }

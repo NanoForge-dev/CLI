@@ -1,6 +1,6 @@
 {
-  "name": "@nanoforge/cli",
-  "version": "1.0.0",
+  "name": "@nanoforge-dev/cli",
+  "version": "0.0.1",
   "description": "NanoForge CLI",
   "homepage": "https://github.com/NanoForge-dev/CLI#readme",
   "license": "MIT",
@@ -34,12 +34,17 @@
   },
   "dependencies": {
     "@inquirer/prompts": "^7.9.0",
+    "@nanoforge-dev/loader-client": "^0.0.2",
+    "@nanoforge-dev/loader-server": "^0.0.2",
     "ansis": "^4.2.0",
     "chokidar": "^4.0.3",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.2",
     "cli-table3": "^0.6.5",
     "commander": "^14.0.2",
     "node-emoji": "^2.2.0",
-    "ora": "^9.0.0"
+    "ora": "^9.0.0",
+    "reflect-metadata": "^0.2.2"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.1.0",

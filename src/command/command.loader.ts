@@ -3,14 +3,17 @@ import { Command } from "commander";
 
 import { BuildAction } from "../action/actions/build.action";
 import { InstallAction } from "../action/actions/install.action";
+import { StartAction } from "../action/actions/start.action";
 import { Prefixes } from "../lib/ui";
 import { BuildCommand } from "./commands/build.command";
 import { InstallCommand } from "./commands/install.command";
+import { StartCommand } from "./commands/start.command";
 
 export class CommandLoader {
   public static async load(program: Command): Promise<void> {
     new InstallCommand(new InstallAction()).load(program);
     new BuildCommand(new BuildAction()).load(program);
+    new StartCommand(new StartAction()).load(program);
     this.handleInvalidCommand(program);
   }
 
