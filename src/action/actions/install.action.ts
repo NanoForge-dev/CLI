@@ -11,6 +11,7 @@ import { generateInput } from "../../lib/questions/questions";
 import { Messages } from "../../lib/ui";
 import { promptError } from "../../lib/utils/errors";
 import { AbstractAction } from "../abstract.action";
+import { getDirectoryInput } from "../common/inputs";
 
 export class InstallAction extends AbstractAction {
   public async handle(args: Input, options: Input) {
@@ -29,11 +30,6 @@ export class InstallAction extends AbstractAction {
 }
 
 const getLibrariesNamesInput = (inputs: Input) => inputs.get("names");
-
-const getDirectoryInput = (inputs: Input): string => {
-  const directoryOption = inputs.get("directory");
-  return (directoryOption && (directoryOption.value as string)) || ".";
-};
 
 const askForMissingInformation = async (args: Input) => {
   const namesInput = getLibrariesNamesInput(args);

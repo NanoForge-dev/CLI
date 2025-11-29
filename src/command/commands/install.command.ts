@@ -15,7 +15,7 @@ export class InstallCommand extends AbstractCommand {
       .description("add NanoForge library to your project")
       .option(
         "-d, --directory [directory]",
-        "specify the destination directory",
+        "specify the directory of your project",
       )
       .action(async (names: string[], rawOptions: InstallOptions) => {
         const options: Input = new Map();
