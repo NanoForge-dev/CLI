@@ -1,7 +1,8 @@
 import { Command } from "commander";
 
+import { Input } from "@lib/input";
+
 import { AbstractCommand } from "../abstract.command";
-import { Input } from "../command.input.type";
 
 interface StartOptions {
   directory?: string;
@@ -16,23 +17,13 @@ export class StartCommand extends AbstractCommand {
     program
       .command("start")
       .description("start your game")
-      .option(
-        "-d, --directory [directory]",
-        "specify the directory of your project",
-      )
-      .option(
-        "-c, --config [config]",
-        "path to the config file",
-        "nanoforge.config.json",
-      )
+      .option("-d, --directory [directory]", "specify the directory of your project")
+      .option("-c, --config [config]", "path to the config file", "nanoforge.config.json")
       .option(
         "-p, --client-port [clientPort]",
         "specify the port of the loader (the website to load the game)",
       )
-      .option(
-        "--game-exposure-port [gameExposurePort]",
-        "specify the port of the game exposure",
-      )
+      .option("--game-exposure-port [gameExposurePort]", "specify the port of the game exposure")
       .option("--server-port [serverPort]", "specify the port of the server")
       .action(async (rawOptions: StartOptions) => {
         const options: Input = new Map();

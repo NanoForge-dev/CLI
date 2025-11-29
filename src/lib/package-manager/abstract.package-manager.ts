@@ -1,15 +1,19 @@
 import { bold, green, red, yellow } from "ansis";
-import ora from "ora";
+import ora, { Ora } from "ora";
 
-import { AbstractRunner } from "../runner";
-import { Messages } from "../ui";
-import { getCwd } from "../utils/path";
+import { AbstractRunner } from "@lib/runner/abstract.runner";
+import { Messages } from "@lib/ui";
+
+import { getCwd } from "@utils/path";
+
 import { PackageManagerCommands } from "./package-manager-commands";
 
 const SPINNER = (message: string) =>
   ora({
     text: message,
   });
+
+const FAIL_SPINNER = (spinner: Ora) => () => spinner.fail();
 
 export abstract class AbstractPackageManager {
   constructor(protected runner: AbstractRunner) {}
@@ -20,11 +24,12 @@ export abstract class AbstractPackageManager {
     try {
       const commandArgs = [this.cli.install, this.cli.silentFlag];
       const collect = true;
-      await this.runner.run(commandArgs, collect, getCwd(directory));
+      await this.runner.run(commandArgs, collect, getCwd(directory), undefined, undefined, () =>
+        spinner.fail(),
+      );
       spinner.succeed();
       this.printInstallSuccess();
     } catch {
-      spinner.fail();
       const commandArgs = [this.cli.install];
       const commandToRun = this.runner.rawFullCommand(commandArgs);
       this.printInstallFailure(commandToRun);
@@ -37,18 +42,12 @@ export abstract class AbstractPackageManager {
     return this.runner.run(commandArguments, collect) as Promise<string>;
   }
 
-  public addProduction(
-    directory: string,
-    dependencies: string[],
-  ): Promise<boolean> {
+  public addProduction(directory: string, dependencies: string[]): Promise<boolean> {
     const command = [this.cli.add, this.cli.saveFlag];
     return this.add(command, directory, dependencies);
   }
 
-  public addDevelopment(
-    directory: string,
-    dependencies: string[],
-  ): Promise<boolean> {
+  public addDevelopment(directory: string, dependencies: string[]): Promise<boolean> {
     const command = [this.cli.add, this.cli.saveDevFlag];
     return this.add(command, directory, dependencies);
   }
@@ -60,8 +59,7 @@ export abstract class AbstractPackageManager {
     output: string,
     flags?: string[],
   ): Promise<boolean> {
-    if (!this.cli.build)
-      throw new Error(`Package manager ${this.name} does not support building`);
+    if (!this.cli.build) throw new Error(`Package manager ${this.name} does not support building`);
 
     const spinner = SPINNER(Messages.BUILD_PART_IN_PROGRESS(name));
     spinner.start();
@@ -75,11 +73,17 @@ export abstract class AbstractPackageManager {
         ...(flags ?? []),
       ];
       const collect = true;
-      await this.runner.run(commandArgs, collect, getCwd(directory));
+      await this.runner.run(
+        commandArgs,
+        collect,
+        getCwd(directory),
+        undefined,
+        undefined,
+        FAIL_SPINNER(spinner),
+      );
       spinner.succeed();
       return true;
     } catch {
-      spinner.fail();
       const commandArgs = [this.cli.install];
       const commandToRun = this.runner.rawFullCommand(commandArgs);
       console.error(red(Messages.BUILD_PART_FAILED(name, bold(commandToRun))));
@@ -94,8 +98,7 @@ export abstract class AbstractPackageManager {
     env: Record<string, string> = {},
     flags: string[] = [],
   ): Promise<boolean> {
-    if (!this.cli.run)
-      throw new Error(`Package manager ${this.name} does not support running`);
+    if (!this.cli.run) throw new Error(`Package manager ${this.name} does not support running`);
 
     try {
       console.info(Messages.RUN_PART_IN_PROGRESS(name));
@@ -127,7 +130,14 @@ export abstract class AbstractPackageManager {
 
     try {
       const collect = true;
-      await this.runner.run(commandArguments, collect, getCwd(directory));
+      await this.runner.run(
+        commandArguments,
+        collect,
+        getCwd(directory),
+        undefined,
+        undefined,
+        FAIL_SPINNER(spinner),
+      );
 
       spinner.succeed();
       this.printInstallSuccess(dependencies);
@@ -147,9 +157,7 @@ export abstract class AbstractPackageManager {
   }
 
   private printInstallFailure(command: string) {
-    console.error(
-      red(Messages.PACKAGE_MANAGER_INSTALLATION_FAILED(bold(command))),
-    );
+    console.error(red(Messages.PACKAGE_MANAGER_INSTALLATION_FAILED(bold(command))));
   }
 
   private onRunStdout = (name: string) => (chunk: string) => {

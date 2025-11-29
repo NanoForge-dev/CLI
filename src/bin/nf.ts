@@ -2,11 +2,9 @@
 import { program } from "commander";
 import "reflect-metadata";
 
-import { CommandLoader } from "../command";
-import {
-  loadLocalBinCommandLoader,
-  localBinExists,
-} from "../lib/utils/local-binaries";
+import { loadLocalBinCommandLoader, localBinExists } from "@utils/local-binaries";
+
+import { CommandLoader } from "~/command";
 
 const bootstrap = async () => {
   program

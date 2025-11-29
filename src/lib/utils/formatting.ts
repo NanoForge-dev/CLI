@@ -1,6 +1,6 @@
-export function normalizeToKebabCase(str: string) {
+export const toKebabCase = (str: string): string => {
   return str
-    .replace(/([a-z\d])([A-Z])/g, "$1-$2")
-    .toLowerCase()
-    .replace(/\s/g, "-");
-}
+    .replace(/([a-z0-9]|(?=[A-Z]))([A-Z])/g, "$1-$2")
+    .replace(/[\s_]+/g, "-")
+    .toLowerCase();
+};

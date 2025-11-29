@@ -1,17 +1,56 @@
 {
+  "$schema": "https://json.schemastore.org/tsconfig.json",
+  // Mapped from https://www.typescriptlang.org/tsconfig
   "compilerOptions": {
-    "declaration": true,
-    "module": "commonjs",
-    "target": "ES2021",
+    // Type Checking
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": false,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "skipLibCheck": true,
-    "sourceMap": false,
-    "allowJs": true,
     "strict": true,
-    "experimentalDecorators": true,
-    "useUnknownInCatchVariables": false,
+
+    // Modules
+    "allowArbitraryExtensions": false,
+    "allowImportingTsExtensions": false,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
     "resolveJsonModule": true,
-    "types": ["node"]
+    "resolvePackageJsonExports": true,
+    "resolvePackageJsonImports": true,
+
+    // Emit
+    "declaration": true,
+    "declarationMap": true,
+    "importHelpers": false,
+    "newLine": "lf",
+    "noEmitHelpers": true,
+    "outDir": "dist",
+    "removeComments": false,
+    "sourceMap": true,
+
+    // Interop Constraints
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": false,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+
+    // Language and Environment
+    "experimentalDecorators": true,
+    "lib": ["ESNext", "esnext.disposable"],
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "paths": {
+      "~/*": ["./src/*"],
+      "@utils/*": ["./src/lib/utils/*"],
+      "@lib/*": ["./src/lib/*"]
+    }
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "e2e"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
 }
