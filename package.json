@@ -45,7 +45,7 @@
   "dependencies": {
     "@angular-devkit/schematics": "^21.0.1",
     "@angular-devkit/schematics-cli": "^21.0.1",
-    "@inquirer/prompts": "^7.9.0",
+    "@inquirer/prompts": "^8.0.0",
     "@nanoforge-dev/loader-client": "^0.0.2",
     "@nanoforge-dev/loader-server": "^0.0.2",
     "@nanoforge-dev/schematics": "^0.0.2",
