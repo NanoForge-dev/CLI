@@ -24,8 +24,8 @@ importers:
         specifier: ^0.0.2
         version: 0.0.2(typescript@5.9.3)
       '@nanoforge-dev/schematics':
-        specifier: file:../schematics
-        version: file:../schematics(chokidar@4.0.3)
+        specifier: 1.0.0
+        version: 1.0.0(chokidar@4.0.3)
       ansis:
         specifier: ^4.2.0
         version: 4.2.0
@@ -643,9 +643,9 @@ packages:
     peerDependencies:
       typescript: ^5
 
-  '@nanoforge-dev/schematics@file:../schematics':
-    resolution: {directory: ../schematics, type: directory}
-    engines: {node: 24.11.0}
+  '@nanoforge-dev/schematics@1.0.0':
+    resolution: {integrity: sha512-ohGt5VPSosar2E8NSGKLi1dbnXmlHEcFVhk8Kj4+/RboCbUJroE76tvF4Ogw9nihJPE2voHX90eJnOOilfMoqg==}
+    engines: {node: 24.11.1}
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -2966,7 +2966,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@nanoforge-dev/schematics@file:../schematics(chokidar@4.0.3)':
+  '@nanoforge-dev/schematics@1.0.0(chokidar@4.0.3)':
     dependencies:
       '@angular-devkit/core': 21.0.1(chokidar@4.0.3)
       '@angular-devkit/schematics': 21.0.1(chokidar@4.0.3)

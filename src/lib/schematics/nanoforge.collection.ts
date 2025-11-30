@@ -20,6 +20,16 @@ export class NanoforgeCollection extends AbstractCollection {
       alias: "config",
       description: "Generate a CLI configuration file",
     },
+    {
+      name: "part-base",
+      alias: "base",
+      description: "Generate a NanoForge Part Base",
+    },
+    {
+      name: "part-main",
+      alias: "main",
+      description: "Generate a NanoForge Part Main file",
+    },
   ];
 
   constructor(runner: AbstractRunner, cwd?: string) {
@@ -29,11 +39,11 @@ export class NanoforgeCollection extends AbstractCollection {
   public override async execute(
     name: string,
     options: SchematicOption[],
-    extraFlags?: string,
+    flags?: string[],
     failSpinner?: () => void,
   ) {
     const schematic: string = this.validate(name);
-    await super.execute(schematic, options, extraFlags, failSpinner);
+    await super.execute(schematic, options, flags, failSpinner);
   }
 
   public getSchematics(): Schematic[] {

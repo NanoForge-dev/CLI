@@ -14,11 +14,10 @@ export abstract class AbstractCollection {
   public async execute(
     name: string,
     options: SchematicOption[],
-    extraFlags?: string,
+    flags?: string[],
     failSpinner?: () => void,
   ) {
-    let command = this.buildCommandLine(name, options);
-    command = extraFlags ? command.concat(` ${extraFlags}`) : command;
+    const command = this.buildCommandLine(name, options, flags);
     await this.runner.run(
       command,
       true,
@@ -31,8 +30,12 @@ export abstract class AbstractCollection {
 
   public abstract getSchematics(): Schematic[];
 
-  private buildCommandLine(name: string, options: SchematicOption[]): string[] {
-    return [`${this.collection}:${name}`, ...this.buildOptions(options)];
+  private buildCommandLine(
+    name: string,
+    options: SchematicOption[],
+    flags: string[] = [],
+  ): string[] {
+    return [`${this.collection}:${name}`, ...flags, ...this.buildOptions(options)];
   }
 
   private buildOptions(options: SchematicOption[]): string[] {
