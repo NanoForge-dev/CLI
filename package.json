@@ -48,7 +48,7 @@
     "@inquirer/prompts": "^7.9.0",
     "@nanoforge-dev/loader-client": "^0.0.2",
     "@nanoforge-dev/loader-server": "^0.0.2",
-    "@nanoforge-dev/schematics": "1.0.0",
+    "@nanoforge-dev/schematics": "^1.0.1",
     "ansis": "^4.2.0",
     "chokidar": "^4.0.3",
     "class-transformer": "^0.5.1",
