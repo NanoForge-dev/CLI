@@ -1,5 +1,3 @@
-import ora from "ora";
-
 import { Input, getDirectoryInput } from "@lib/input";
 import { getNewInitFunctionsWithDefault } from "@lib/input/inputs/new/init-functions.input";
 import { getNewInstallPackagesOrAsk } from "@lib/input/inputs/new/install-packages.input";
@@ -9,15 +7,11 @@ import { getNewPackageManagerInputOrAsk } from "@lib/input/inputs/new/package-ma
 import { getNewPathInput } from "@lib/input/inputs/new/path.input";
 import { getNewServerOrAsk } from "@lib/input/inputs/new/server.input";
 import { getNewStrictOrAsk } from "@lib/input/inputs/new/strict.input";
-import {
-  AbstractCollection,
-  Collection,
-  CollectionFactory,
-  SchematicOption,
-} from "@lib/schematics";
+import { AbstractCollection, Collection, CollectionFactory } from "@lib/schematics";
 import { Messages } from "@lib/ui";
 
 import { AbstractAction } from "../abstract.action";
+import { executeSchematic } from "../common/schematics";
 
 interface NewOptions {
   name: string;
@@ -69,7 +63,7 @@ const generateApplicationFiles = async (values: NewOptions, directory: string) =
   const collection: AbstractCollection = CollectionFactory.create(Collection.NANOFORGE, directory);
 
   console.info();
-  console.info(Messages.NEW_SCHEMATICS_START);
+  console.info(Messages.SCHEMATICS_START);
   console.info();
 
   await executeSchematic("Application", collection, "application", {
@@ -115,33 +109,4 @@ const generateApplicationFiles = async (values: NewOptions, directory: string) =
       initFunctions: values.initFunctions,
     });
   }
-};
-
-const getSpinner = (message: string) =>
-  ora({
-    text: message,
-  });
-
-const executeSchematic = async (
-  name: string,
-  collection: AbstractCollection,
-  schematicName: string,
-  options: object,
-) => {
-  const spinner = getSpinner(Messages.NEW_SCHEMATIC_IN_PROGRESS(name));
-  spinner.start();
-  await collection.execute(schematicName, mapSchematicOptions(options), undefined, () =>
-    spinner.fail(Messages.NEW_SCHEMATIC_FAILED(name)),
-  );
-  spinner.succeed(Messages.NEW_SCHEMATIC_SUCCESS(name));
-};
-
-const mapSchematicOptions = (inputs: object): SchematicOption[] => {
-  return Object.entries(inputs).reduce((old, [key, value]) => {
-    if (value === undefined) return old;
-    return [
-      ...old,
-      new SchematicOption(key, typeof value === "object" ? mapSchematicOptions(value) : value),
-    ];
-  }, [] as SchematicOption[]);
 };

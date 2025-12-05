@@ -1,6 +1,9 @@
 import { Config } from "./config.type";
 
 export const CONFIG_DEFAULTS: Config = {
+  name: "nanoforge-app",
+  language: "ts",
+  initFunctions: true,
   client: {
     port: "3000",
     gameExposurePort: "3001",

@@ -1,5 +1,5 @@
 import { Expose, Type } from "class-transformer";
-import { IsBoolean, IsNotEmpty, IsPort, IsString, ValidateNested } from "class-validator";
+import { IsBoolean, IsEnum, IsNotEmpty, IsPort, IsString, ValidateNested } from "class-validator";
 
 export class BuildConfig {
   @Expose()
@@ -61,6 +61,19 @@ export class ServerConfig {
 }
 
 export class Config {
+  @Expose()
+  @IsString()
+  @IsNotEmpty()
+  name!: string;
+
+  @Expose()
+  @IsEnum(["ts", "js"])
+  language!: "ts" | "js";
+
+  @Expose()
+  @IsBoolean()
+  initFunctions!: boolean;
+
   @Expose()
   @Type(() => ClientConfig)
   @ValidateNested()

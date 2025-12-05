@@ -21,11 +21,11 @@ export const Messages = {
   NEW_STRICT_QUESTION: "Do you want to use types strict mode ?",
   NEW_SERVER_QUESTION: "Do you want generate a server to create a multiplayer game ?",
   NEW_INSTALL_PACKAGES_QUESTION: "Do you want install packages ?",
-  NEW_SCHEMATICS_START: "Schematics execution",
-  NEW_SCHEMATIC_IN_PROGRESS: (name: string) => `Executing schematic ${name}...`,
-  NEW_SCHEMATIC_SUCCESS: (name: string) =>
+  SCHEMATICS_START: "Schematics execution",
+  SCHEMATIC_IN_PROGRESS: (name: string) => `Executing schematic ${name}...`,
+  SCHEMATIC_SUCCESS: (name: string) =>
     `${Emojis.ROCKET}  Schematic ${name} executed successfully !`,
-  NEW_SCHEMATIC_FAILED: (name: string) =>
+  SCHEMATIC_FAILED: (name: string) =>
     `${Emojis.SCREAM}  Schematic ${name} execution failed. See error below for more details.`,
   PACKAGE_MANAGER_INSTALLATION_IN_PROGRESS: `Installation in progress... ${Emojis.COFFEE}`,
   PACKAGE_MANAGER_INSTALLATION_NOTHING: "Nothing to install, terminated.",
