@@ -72,6 +72,7 @@ const generateApplicationFiles = async (values: NewOptions, directory: string) =
     packageManager: values.packageManager,
     language: values.language,
     strict: values.strict,
+    server: values.server,
   });
   await executeSchematic("Configuration", collection, "configuration", {
     name: values.name,

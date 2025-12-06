@@ -13,6 +13,7 @@ import { AbstractAction } from "../abstract.action";
 interface BuildPart {
   entry: string;
   output: string;
+  target: "client" | "server";
 }
 
 export class BuildAction extends AbstractAction {
@@ -27,6 +28,7 @@ export class BuildAction extends AbstractAction {
       const client = getPart(
         config.client.build,
         options.get("clientDirectory")?.value as string | undefined,
+        "client",
       );
       let res = await buildPart("Client", client, directory);
 
@@ -34,6 +36,7 @@ export class BuildAction extends AbstractAction {
         const server = getPart(
           config.server.build,
           options.get("serverDirectory")?.value as string | undefined,
+          "server",
         );
         res = (await buildPart("Server", server, directory)) ? res : false;
       }
@@ -50,10 +53,15 @@ export class BuildAction extends AbstractAction {
   }
 }
 
-const getPart = (config: BuildConfig, directoryOption: string | undefined): BuildPart => {
+const getPart = (
+  config: BuildConfig,
+  directoryOption: string | undefined,
+  target: "client" | "server",
+): BuildPart => {
   return {
     entry: config.entryFile,
     output: directoryOption || config.outDir,
+    target: target,
   };
 };
 
@@ -65,6 +73,8 @@ const buildPart = async (name: string, part: BuildPart, directory: string) => {
     return await packageManager.build(name, directory, part.entry, part.output, [
       "--asset-naming",
       "[name].[ext]",
+      "--target",
+      part.target === "client" ? "browser" : "node",
     ]);
   } catch (error: any) {
     if (error && error.message) {

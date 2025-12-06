@@ -1,5 +1,5 @@
 import * as ansis from "ansis";
-import * as fs from "node:fs";
+import * as console from "node:console";
 import { join } from "path";
 
 import { Input, getDirectoryInput, getStringInputWithDefault } from "@lib/input";
@@ -25,19 +25,10 @@ export class StartAction extends AbstractAction {
       const serverDir = config.server.runtime.dir;
 
       const clientPort = getStringInputWithDefault(options, "clientPort", config.client.port);
-      const gameExposurePort = getStringInputWithDefault(
-        options,
-        "gameExposurePort",
-        config.client.gameExposurePort,
-      );
-      const serverPort = getStringInputWithDefault(options, "serverPort", config.server.port);
 
       await Promise.all([
-        config.server.enable
-          ? this.startServer(directory, join(serverDir, "index.js"), serverPort)
-          : undefined,
-        this.startGameExposure(directory, clientDir, gameExposurePort, clientPort),
-        this.startClient(clientPort, gameExposurePort),
+        config.server.enable ? this.startServer(directory, serverDir) : undefined,
+        this.startClient(clientPort, directory, clientDir),
       ]);
       process.exit(0);
     } catch (e) {
@@ -46,47 +37,26 @@ export class StartAction extends AbstractAction {
     }
   }
 
-  private async startClient(port: string, gameExposurePort: string): Promise<void> {
-    const path = getModulePath("@nanoforge-dev/loader-client");
+  private async startClient(port: string, directory: string, gameDir: string): Promise<void> {
+    const path = getModulePath("@nanoforge-dev/loader-client/package.json", true);
 
-    fs.writeFileSync(
-      join(path, "src/env.json"),
-      JSON.stringify({
-        GAME_EXPOSURE_URL: `http://localhost:${gameExposurePort}`,
-      }),
-    );
-
-    await runPart("Client Loader build", path, "build:silent", undefined, ["--silent"]);
-
-    return runPart("Client", path, "dist/index.html", {
-      PORT: port,
-      GAME_EXPOSURE_URL: `http://localhost:${gameExposurePort}`,
-    });
-  }
-
-  private startGameExposure(
-    directory: string,
-    gameDir: string,
-    port: string,
-    clientPort: string,
-  ): Promise<void> {
-    const path = getModulePath("@nanoforge-dev/loader-server");
-    return runPart("GameExposure", path, "dist/server.js", {
+    return runPart("Client", path, {
       PORT: port,
       GAME_DIR: getCwd(join(directory, gameDir)),
-      CLIENT_URL: `http://localhost:${clientPort}`,
     });
   }
 
-  private startServer(directory: string, file: string, port: string): Promise<void> {
-    return runPart("Server", directory, file, { PORT: port });
+  private startServer(directory: string, gameDir: string): Promise<void> {
+    const path = getModulePath("@nanoforge-dev/loader-server/package.json", true);
+    return runPart("Server", path, {
+      GAME_DIR: getCwd(join(directory, gameDir)),
+    });
   }
 }
 
 const runPart = async (
   part: string,
   directory: string,
-  file: string,
   env?: Record<string, string>,
   flags?: string[],
 ) => {
@@ -94,7 +64,7 @@ const runPart = async (
 
   try {
     const packageManager = PackageManagerFactory.create(packageManagerName);
-    await packageManager.run(part, directory, file, env, flags);
+    await packageManager.run(part, directory, "start", env, flags, true);
   } catch (error: any) {
     if (error && error.message) {
       console.error(ansis.red(error.message));

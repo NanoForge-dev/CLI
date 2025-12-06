@@ -18,7 +18,7 @@
     "Tchips <leo.outmizguine@epitech.eu>"
   ],
   "files": [
-    "dist/nf.js"
+    "dist"
   ],
   "bin": {
     "nf": "dist/nf.js"
@@ -46,9 +46,9 @@
     "@angular-devkit/schematics": "^21.0.1",
     "@angular-devkit/schematics-cli": "^21.0.1",
     "@inquirer/prompts": "^7.9.0",
-    "@nanoforge-dev/loader-client": "^0.0.2",
-    "@nanoforge-dev/loader-server": "^0.0.2",
-    "@nanoforge-dev/schematics": "^1.0.1",
+    "@nanoforge-dev/loader-client": "^1.0.1",
+    "@nanoforge-dev/loader-server": "^1.0.0",
+    "@nanoforge-dev/schematics": "^1.0.2",
     "ansis": "^4.2.0",
     "chokidar": "^4.0.3",
     "class-transformer": "^0.5.1",
