@@ -1,11 +1,11 @@
 import { Input, getDirectoryInput } from "@lib/input";
 import { getNewInitFunctionsWithDefault } from "@lib/input/inputs/new/init-functions.input";
-import { getNewInstallPackagesOrAsk } from "@lib/input/inputs/new/install-packages.input";
 import { getNewLanguageInputOrAsk } from "@lib/input/inputs/new/language.input";
 import { getNewNameInputOrAsk } from "@lib/input/inputs/new/name.input";
 import { getNewPackageManagerInputOrAsk } from "@lib/input/inputs/new/package-manager.input";
 import { getNewPathInput } from "@lib/input/inputs/new/path.input";
 import { getNewServerOrAsk } from "@lib/input/inputs/new/server.input";
+import { getNewSkipInstallOrAsk } from "@lib/input/inputs/new/skip-install.input";
 import { getNewStrictOrAsk } from "@lib/input/inputs/new/strict.input";
 import { AbstractCollection, Collection, CollectionFactory } from "@lib/schematics";
 import { Messages } from "@lib/ui";
@@ -21,7 +21,7 @@ interface NewOptions {
   strict: boolean;
   server: boolean;
   initFunctions: boolean;
-  installPackages: boolean;
+  skipInstall: boolean;
 }
 
 export class NewAction extends AbstractAction {
@@ -54,7 +54,7 @@ const getSchemaValues = async (inputs: Input): Promise<NewOptions> => {
     strict: await getNewStrictOrAsk(inputs),
     server: await getNewServerOrAsk(inputs),
     initFunctions: getNewInitFunctionsWithDefault(inputs),
-    installPackages: await getNewInstallPackagesOrAsk(inputs),
+    skipInstall: await getNewSkipInstallOrAsk(inputs),
   };
 };
 
