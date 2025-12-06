@@ -20,7 +20,7 @@ export const Messages = {
   NEW_LANGUAGE_QUESTION: "Which language do you want to use ?",
   NEW_STRICT_QUESTION: "Do you want to use types strict mode ?",
   NEW_SERVER_QUESTION: "Do you want generate a server to create a multiplayer game ?",
-  NEW_INSTALL_PACKAGES_QUESTION: "Do you want install packages ?",
+  NEW_SKIP_INSTALL_QUESTION: "Do you want to skip installation ?",
   SCHEMATICS_START: "Schematics execution",
   SCHEMATIC_IN_PROGRESS: (name: string) => `Executing schematic ${name}...`,
   SCHEMATIC_SUCCESS: (name: string) =>
