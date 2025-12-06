@@ -97,12 +97,15 @@ export abstract class AbstractPackageManager {
     file: string,
     env: Record<string, string> = {},
     flags: string[] = [],
+    silent = false,
   ): Promise<boolean> {
     if (!this.cli.run) throw new Error(`Package manager ${this.name} does not support running`);
 
     try {
       console.info(Messages.RUN_PART_IN_PROGRESS(name));
-      const commandArgs = [...flags, this.cli.run, file];
+      const commandArgs = [...flags, this.cli.run];
+      if (silent) commandArgs.push(this.cli.silentFlag);
+      commandArgs.push(file);
       await this.runner.run(commandArgs, true, getCwd(directory), env, {
         onStdout: this.onRunStdout(name),
         onStderr: this.onRunStderr(name),

@@ -9,6 +9,8 @@ function createTsupConfig({
   target = "esnext",
   skipNodeModulesBundle = true,
   clean = true,
+  shims = format.includes("cjs"),
+  cjsInterop = format.includes("cjs"),
   minify = false,
   terserOptions = {
     mangle: false,
@@ -17,6 +19,7 @@ function createTsupConfig({
   },
   splitting = false,
   keepNames = true,
+  dts = true,
   sourcemap = true,
   esbuildPlugins = [],
   treeshake = false,
@@ -31,10 +34,13 @@ function createTsupConfig({
     skipNodeModulesBundle,
     target,
     clean,
+    shims,
+    cjsInterop,
     minify,
     terserOptions,
     splitting,
     keepNames,
+    dts,
     sourcemap,
     esbuildPlugins,
     treeshake,
@@ -42,4 +48,7 @@ function createTsupConfig({
   });
 }
 
-export default [createTsupConfig()];
+export default [
+  createTsupConfig({ dts: false, sourcemap: false }),
+  createTsupConfig({ entry: ["src/command/command.loader.ts"] }),
+];
