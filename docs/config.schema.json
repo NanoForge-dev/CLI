@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nanoforge-dev.github.io/docs/cli/config.schema.json",
+  "title": "Nanoforge CLI config",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "the project name"
+    },
+    "language": {
+      "enum": ["ts", "js"]
+    },
+    "initFunctions": {
+      "type": "boolean"
+    }
+  }
+}
