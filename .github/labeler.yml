@@ -1,0 +1,29 @@
+command:build:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/command/commands/build.ts
+          - src/action/actions/build.ts
+
+command:generate:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/command/commands/generate.ts
+          - src/action/actions/generate.ts
+
+command:install:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/command/commands/install.ts
+          - src/action/actions/install.ts
+
+command:new:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/command/commands/new.ts
+          - src/action/actions/new.ts
+
+command:start:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/command/commands/start.ts
+          - src/action/actions/start.ts

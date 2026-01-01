@@ -1,0 +1,23 @@
+command:build:
+  - "### Which command is this (bug
+    report|feature request) for\\?\\n\\nbuild\\n"
+
+command:generate:
+  - "### Which command is this (bug
+    report|feature request) for\\?\\n\\ngenerate\\n"
+
+command:help:
+  - "### Which command is this (bug
+    report|feature request) for\\?\\n\\nhelp\\n"
+
+command:install:
+  - "### Which command is this (bug
+    report|feature request) for\\?\\n\\ninstall\\n"
+
+command:new:
+  - "### Which command is this (bug
+    report|feature request) for\\?\\n\\nnew\\n"
+
+command:start:
+  - "### Which command is this (bug
+    report|feature request) for\\?\\n\\nstart\\n"
