@@ -21,7 +21,7 @@ jobs:
           path: docs
           repository: nanoforge-dev/docs
           token: ${{ secrets.ACTIONS_KEY }}
-          
+
       - name: setup git
         run: |
           git config --global user.name "github-actions[bot]"
@@ -29,7 +29,8 @@ jobs:
 
       - name: synchronize docs
         run: |
-          cp cli/docs -r docs/cli
+          mkdir -p docs/cli
+          cp cli/docs/. -r docs/cli
           cd docs
           git add .
           git commit -m "chore(cli): updating docs"

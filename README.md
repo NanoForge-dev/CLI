@@ -8,6 +8,7 @@
 		<a href="https://github.com/NanoForge-dev/CLI/actions"><img src="https://github.com/NanoForge-dev/CLI/actions/workflows/tests.yml/badge.svg" alt="Tests status" /></a>
 		<a href="https://github.com/NanoForge-dev/CLI/commits/main"><img src="https://img.shields.io/github/last-commit/NanoForge-dev/CLI.svg?logo=github&logoColor=ffffff" alt="Last commit." /></a>
 		<a href="https://github.com/NanoForge-dev/CLI/graphs/contributors"><img src="https://img.shields.io/github/contributors/NanoForge-dev/CLI.svg?maxAge=3600&logo=github&logoColor=fff&color=00c7be" alt="contributors" /></a>
+		<a href="https://github.com/NanoForge-dev/docs/actions/workflows/deploy.yml"><img src="https://github.com/NanoForge-dev/docs/actions/workflows/deploy.yml/badge.svg" alt="Documentation status" /></a>
 	</p>
 </div>
 
@@ -30,6 +31,9 @@ And then create a new project :
 ```bash
 nf new
 ```
+## Documentation
+
+The documentation for nanoforge cli can be found at : [https://nanoforge-dev.github.io/docs/cli](https://nanoforge-dev.github.io/docs/cli)
 
 ## Commands
 
@@ -91,6 +95,7 @@ Used to start your nanoforge project
 
 ## Contributing
 
+<<<<<<< HEAD
 Please read through our [contribution guidelines][contributing] before starting a pull request. We welcome contributions of all kinds, not just code! If you're stuck for ideas, look for the [good first issue][good-first-issue] label on issues in the repository. If you have any questions about the project, feel free to ask them on [Discussions][discussions]. Before creating your own issue or pull request, always check to see if one already exists! Don't rush contributions, take your time and ensure you're doing it correctly.
 
 ## Help
@@ -102,3 +107,6 @@ If you don't understand something in the documentation, you are experiencing pro
 [cli-source]: https://github.com/NanoForge-dev/CLI
 [github-releases]: https://github.com/NanoForge-dev/CLI/releases
 [good-first-issue]: https://github.com/NanoForge-dev/CLI/contribute
+=======
+The config file schema can be found at : [https://nanoforge-dev.github.io/docs/cli/config-schema.json](https://nanoforge-dev.github.io/docs/cli/config-schema.json)
+>>>>>>> 210277f (docs: finish setup auto docs)
