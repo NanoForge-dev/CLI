@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nanoforge-dev.github.io/docs/cli/client-config.schema.json",
+  "title": "Nanoforge CLI client config",
+  "type": "object",
+  "properties": {
+    "port": {
+      "type": "string",
+      "description": "the port to use"
+    },
+    "gameExposurePort": {
+      "type": "string"
+    },
+    "build": {
+      "$ref": "https://nanoforge-dev.github.io/docs/cli/build-config.schema.json"
+    },    
+    "runtime": {
+      "$ref": "https://nanoforge-dev.github.io/docs/cli/run-config.schema.json"
+    }
+  },
+  "required": ["port", "gameExposurePort", "build", "runtime"]
+}
