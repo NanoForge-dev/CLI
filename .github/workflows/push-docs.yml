@@ -10,19 +10,28 @@ jobs:
   synchronize:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout cli
         uses: actions/checkout@v5
+        with:
+          path: cli
+
+      - name: Checkout docs
+        uses: actions/checkout@v5
+        with:
+          path: docs
+          repository: nanoforge-dev/docs
+          token: ${{ secrets.ACTIONS_KEY }}
 
       - name: setup git
         run: |
-          git config user.name "Github Action Bot"
-          git config user.email "<>"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "username@users.noreply.github.com"
 
       - name: synchronize docs
         run: |
-          mkdir temp
-          cd temp
-          git clone git@github.com:NanoForge-dev/docs.git
-          cp ../docs docs/cli
+          mkdir -p docs/cli
+          cp cli/docs/. -r docs/cli
           cd docs
+          git add .
+          git commit -m "chore(cli): updating docs"
           git push origin main
