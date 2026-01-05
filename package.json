@@ -47,7 +47,7 @@
     "@angular-devkit/schematics-cli": "^21.0.1",
     "@inquirer/prompts": "^7.9.0",
     "@nanoforge-dev/loader-client": "^1.0.1",
-    "@nanoforge-dev/loader-server": "^1.0.0",
+    "@nanoforge-dev/loader-server": "^1.0.1",
     "@nanoforge-dev/schematics": "^1.0.2",
     "ansis": "^4.2.0",
     "chokidar": "^4.0.3",
