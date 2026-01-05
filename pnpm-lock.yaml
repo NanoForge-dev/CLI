@@ -21,8 +21,8 @@ importers:
         specifier: ^1.0.1
         version: 1.0.1
       '@nanoforge-dev/loader-server':
-        specifier: ^1.0.0
-        version: 1.0.0
+        specifier: ^1.0.1
+        version: 1.0.1
       '@nanoforge-dev/schematics':
         specifier: ^1.0.2
         version: 1.0.2(chokidar@4.0.3)
@@ -644,8 +644,8 @@ packages:
     resolution: {integrity: sha512-dPGmvAOSD9/Ypge8BNRBRRNPEDSwvwIYZ8BVOiwcz7A0n9mKkUPL2WfXuFoYPl3FBiiASM/soWYPjAjPQdIIwQ==}
     engines: {node: 24.11.0}
 
-  '@nanoforge-dev/loader-server@1.0.0':
-    resolution: {integrity: sha512-ssXzg9D+pWq2RiaBTcSvfLWTJW11AaYX/KUYdw42iI3pgVASFK1IlzFpijrsHvkT2An7fk5dUYrQMgXKYuhdIw==}
+  '@nanoforge-dev/loader-server@1.0.1':
+    resolution: {integrity: sha512-VylOn2dL9zz0dIrTGqfkfsXO0Q+9ZhROGs0+SrrZ7MuGJtlSfmyZszW1jB1k04aZYSof8X9JaYiILDoGF8VNlg==}
     engines: {node: 24.11.0}
 
   '@nanoforge-dev/loader-website@1.0.0':
@@ -2759,7 +2759,7 @@ snapshots:
       '@nanoforge-dev/loader-website': 1.0.0
       bun: 1.3.3
 
-  '@nanoforge-dev/loader-server@1.0.0': {}
+  '@nanoforge-dev/loader-server@1.0.1': {}
 
   '@nanoforge-dev/loader-website@1.0.0': {}
 
