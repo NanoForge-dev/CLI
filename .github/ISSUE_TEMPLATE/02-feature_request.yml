@@ -1,13 +1,13 @@
 name: Feature request
 description: Request a new feature
-labels: [enhancement request]
+labels: [enhancement]
 body:
   - type: markdown
     attributes:
       value: |
         Thank you for submitting an idea !
   - type: dropdown
-    id: application_or_command
+    id: command
     attributes:
       label: Which command is this feature request for?
       options:

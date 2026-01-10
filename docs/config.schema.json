@@ -16,7 +16,7 @@
     },
     "client": {
       "$ref": "https://nanoforge-dev.github.io/docs/cli/client-config.schema.json"
-    },    
+    },
     "server": {
       "$ref": "https://nanoforge-dev.github.io/docs/cli/server-config.schema.json"
     }
