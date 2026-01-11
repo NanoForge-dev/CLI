@@ -13,7 +13,7 @@
     },
     "build": {
       "$ref": "https://nanoforge-dev.github.io/docs/cli/build-config.schema.json"
-    },    
+    },
     "runtime": {
       "$ref": "https://nanoforge-dev.github.io/docs/cli/run-config.schema.json"
     }

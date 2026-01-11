@@ -7,7 +7,7 @@
     "dir": {
       "type": "string",
       "description": "the directory to use"
-    },
+    }
   },
   "required": ["dir"]
 }

@@ -1,9 +1,11 @@
-name: synchronize-docs
+name: Synchronize Docs
 
 on:
   push:
     branches:
       - main
+    paths:
+      - "docs/**"
   workflow_dispatch:
 
 jobs:

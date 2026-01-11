@@ -11,7 +11,7 @@
     "outDir": {
       "type": "string",
       "description": "the directory where to put the built files"
-    },
+    }
   },
   "required": ["entryFile", "outDir"]
 }
