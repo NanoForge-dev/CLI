@@ -46,8 +46,8 @@
     "@angular-devkit/schematics": "^21.0.1",
     "@angular-devkit/schematics-cli": "^21.0.1",
     "@inquirer/prompts": "^7.9.0",
-    "@nanoforge-dev/loader-client": "^1.0.1",
-    "@nanoforge-dev/loader-server": "^1.0.1",
+    "@nanoforge-dev/loader-client": "^1.1.0",
+    "@nanoforge-dev/loader-server": "^1.1.0",
     "@nanoforge-dev/schematics": "^1.0.2",
     "ansis": "^4.2.0",
     "chokidar": "^4.0.3",
@@ -78,7 +78,6 @@
     "husky": "^9.1.7",
     "lint-staged": "^16.2.6",
     "prettier": "^3.6.2",
-    "taze": "^19.9.0",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.46.2"

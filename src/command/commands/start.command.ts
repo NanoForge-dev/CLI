@@ -10,6 +10,7 @@ interface StartOptions {
   clientPort?: string;
   gameExposurePort?: string;
   serverPort?: string;
+  watch?: boolean;
 }
 
 export class StartCommand extends AbstractCommand {
@@ -25,6 +26,7 @@ export class StartCommand extends AbstractCommand {
       )
       .option("--game-exposure-port [gameExposurePort]", "specify the port of the game exposure")
       .option("--server-port [serverPort]", "specify the port of the server")
+      .option("--watch", "run app in watching mode", false)
       .action(async (rawOptions: StartOptions) => {
         const options: Input = new Map();
         options.set("directory", { value: rawOptions.directory });
@@ -34,6 +36,7 @@ export class StartCommand extends AbstractCommand {
           value: rawOptions.gameExposurePort,
         });
         options.set("serverPort", { value: rawOptions.serverPort });
+        options.set("watch", { value: rawOptions.watch });
 
         const args: Input = new Map();
 
