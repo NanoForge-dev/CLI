@@ -2,8 +2,7 @@ import * as ansis from "ansis";
 import * as console from "node:console";
 import { join } from "path";
 
-import { Input, getDirectoryInput, getStringInputWithDefault } from "@lib/input";
-import { getWatchInput } from "@lib/input/inputs/watch.input";
+import { Input, getDirectoryInput, getStringInputWithDefault, getWatchInput } from "@lib/input";
 import { PackageManager, PackageManagerFactory } from "@lib/package-manager";
 import { Messages } from "@lib/ui";
 

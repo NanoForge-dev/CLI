@@ -58,10 +58,13 @@ export abstract class AbstractPackageManager {
     entry: string,
     output: string,
     flags?: string[],
+    watch?: boolean,
   ): Promise<boolean> {
     if (!this.cli.build) throw new Error(`Package manager ${this.name} does not support building`);
 
-    const spinner = SPINNER(Messages.BUILD_PART_IN_PROGRESS(name));
+    const spinner = SPINNER(
+      (watch ? Messages.BUILD_PART_WATCH_IN_PROGRESS : Messages.BUILD_PART_IN_PROGRESS)(name),
+    );
     spinner.start();
     try {
       const commandArgs = [

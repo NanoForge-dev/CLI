@@ -4,7 +4,9 @@ import { Emojis } from "./emojis";
 
 export const Messages = {
   BUILD_START: "NanoForge Build",
-  BUILD_PART_IN_PROGRESS: (part: string) => `Building ${part}...`,
+  BUILD_WATCH_START: "Start watching mode",
+  BUILD_PART_IN_PROGRESS: (part: string) => `Building ${part}`,
+  BUILD_PART_WATCH_IN_PROGRESS: (part: string) => `${part} updated. Rebuilding`,
   BUILD_NOTHING: "Nothing to build, terminated.",
   BUILD_SUCCESS: `${Emojis.ROCKET}  Build succeeded !`,
   BUILD_PART_FAILED: (part: string, commandToRunManually: string) =>
