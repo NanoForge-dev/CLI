@@ -121,6 +121,24 @@ export abstract class AbstractPackageManager {
     }
   }
 
+  async runDev(
+    directory: string,
+    command: string,
+    env: Record<string, string> = {},
+    flags: string[] = [],
+    collect = true,
+  ): Promise<boolean> {
+    if (!this.cli.run) throw new Error(`Package manager ${this.name} does not support running`);
+
+    try {
+      const commandArgs = [this.cli.run, command, ...flags];
+      await this.runner.run(commandArgs, collect, getCwd(directory), env);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
   private async add(args: string[], directory: string, dependencies: string[]) {
     if (!dependencies.length) {
       console.info();
