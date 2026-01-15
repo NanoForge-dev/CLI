@@ -1,87 +1,410 @@
-Usage
-=====
+# Usage
 
-Creating a new project
-----------------------
+This document explains how to use the Nanoforge CLI to create, develop, and build a game project. It is written as a **workflow-first guide**, followed by a complete **command reference**.
 
-In order to create a new project you need to use:
+## Quick Start
 
-.. code-block:: bash
+A typical Nanoforge development workflow looks like this:
 
-	nf new
+1. Create a new project using `nf new`.
+2. Start the development environment using `nf start`.
+3. Develop your game while the dev server is running.
+4. Build the game for production using `nf build`.
 
-Commands
---------
+If you follow the steps above in order, you can successfully develop and build a Nanoforge game from scratch.
 
-Multiple commands exists to the cli:
+## Development Workflow
 
-* :ref:`build`
-* :ref:`generate`
-* :ref:`install_add`
-* :ref:`new`
-* :ref:`start`
+### Step 1: Create a New Project
 
-.. _build:
+Use the `nf new` command to scaffold a new Nanoforge project. This creates the project directory, initializes configuration files, and sets up the client and optional server structure.
 
-build
-^^^^^
+### Step 2: Start Development Mode
 
-Used to build your nanoforge project.
+Run `nf start` inside your project directory to start the development server. This command typically launches the client and server processes and watches for file changes.
 
-* ``-d, --directory [directory]`` specify the directory of the nanoforge project to build.
-* ``-c, --config [config]`` path to the config file. (`Schema <https://nanoforge-dev.github.io/docs/cli/config.schema.json>`__)
-* ``--client-outDir [clientDirectory]`` specifies the client directory.
-* ``--server-outDir [serverDirectory]`` specifies the server directory.
+### Step 3: Build for Production
 
-.. _generate:
+Once development is complete, use `nf build` to generate optimized production assets.
 
-generate
-^^^^^^^^
+## CLI Commands Reference
 
-Used to generate nanoforge project files from config
+The following sections document each CLI command in detail.
 
-* ``-d, --directory [directory]`` specify the directory of the nanoforge project to build.
-* ``-c, --config [config]`` path to the config file. (`Schema <https://nanoforge-dev.github.io/docs/cli/config.schema.json>`__)
+# nf new
 
-.. _install_add:
+## Synopsis
 
-install/add
-^^^^^^^^^^^
+::
 
-Used to add a nanoforge library to your project
+nf new [options]
 
-* ``-d, --directory [directory]`` specify the directory of the nanoforge project to build.
+## Description
 
-.. _new:
+Creates a new Nanoforge project and initializes the required directory structure and configuration files.
 
-new
-^^^
+## Options
 
-Used to create a new nanoforge project
+`-d, --directory <path>`
+Directory where the project will be created. Defaults to the current directory.
 
-* ``-d, --directory [directory]`` specify the directory of your project
-* ``--name [name]`` specify the name of your project
-* ``--path [path]`` specify the path of your project
-* ``--package-manager [packageManager]`` specify the package manager of your project
-* ``--language [language]`` specify the language of your project
-* ``--strict`` use strict mode
-* ``--no-strict`` do not use strict mode
-* ``--server`` create a server
-* ``--no-server`` do not create a server
-* ``--init-functions`` initialize functions
-* ``--no-init-functions`` do not initialize functions
-* ``--skip-install`` skip installing dependencies
-* ``--no-skip-install`` do not skip installing dependencies
+`--name <project-name>`
+Name of the game project.
 
-.. _start:
+`--language <ts|js>`
+Programming language for the project. Default is `ts`.
 
-start
-^^^^^
+`--server / --no-server`
+Enable or disable server scaffolding.
 
-Used to start your nanoforge project
+## Examples
 
-* ``-d, --directory [directory]`` specify the directory of your project
-* ``-c, --config [config]`` path to the config file (default: "nanoforge.config.json") (`Schema <https://nanoforge-dev.github.io/docs/cli/config.schema.json>`__)
-* ``-p, --client-port [clientPort]`` specify the port of the loader (the website to load the game)
-* ``--game-exposure-port [gameExposurePort]`` specify the port of the game exposure
-* ``--server-port [serverPort]`` specify the port of the server
+::
+
+nf new --name my-game --language ts
+
+# nf start
+
+## Synopsis
+
+::
+
+nf start [options]
+
+## Description
+
+Starts the Nanoforge development environment. This command runs the client and server in development mode and watches for file changes.
+
+## Options
+
+`--client-port <port>`
+Port on which the client development server will run.
+
+`--server-port <port>`
+Port on which the server will run.
+
+`--open`
+Automatically open the game in a browser after startup.
+
+## Examples
+
+::
+
+nf start
+nf start --client-port 3000 --server-port 4000
+
+# nf build
+
+## Synopsis
+
+::
+
+nf build [options]
+
+## Description
+
+Builds the Nanoforge project for production. This command generates optimized assets based on the build configuration.
+
+## Options
+
+`-o, --output <directory>`
+Output directory for the production build.
+
+`--minify`
+Enable asset minification.
+
+`--sourcemap`
+Generate source maps for debugging.
+
+## Examples
+
+::
+
+nf build
+nf build --output dist --minify
+
+# nf generate
+
+## Synopsis
+
+::
+
+nf generate <type> [options]
+
+## Description
+
+Generates project resources such as assets, entities, or boilerplate code.
+
+## Arguments
+
+`<type>`
+Type of resource to generate.
+
+## Options
+
+`--name <resource-name>`
+Name of the resource to generate.
+
+## Examples
+
+::
+
+nf generate entity --name player
+
+# nf install add
+
+## Synopsis
+
+::
+
+nf install add <package>
+
+## Description
+
+Installs and adds a dependency or plugin to the Nanoforge project.
+
+## Arguments
+
+`<package>`
+Name of the package to install.
+
+## Options
+
+`--dev`
+Install the package as a development dependency.
+
+## Examples
+
+::
+
+nf install add nanoforge-plugin-example
+
+## Configuration
+
+Nanoforge uses configuration files to control runtime and build behavior. These configuration files are typically created during project initialization.
+
+Common configuration files include:
+
+* `nanoforge.config.json` – Main project configuration
+* Client configuration
+* Server configuration
+* Build configuration
+* Run configuration
+
+Commands that use configuration:
+
+* `nf start` reads client and server configuration values.
+* `nf build` reads build configuration values.
+
+When both CLI flags and configuration values are provided, **CLI flags take precedence**.
+
+## Notes
+
+* Always run CLI commands from the root of your Nanoforge project.
+* Ensure configuration files are valid before running build or start commands.
+* Refer to configuration schema files for advanced configuration options.
+# Usage
+
+This document explains how to use the Nanoforge CLI to create, develop, and build a game project. It is written as a **workflow-first guide**, followed by a complete **command reference**.
+
+## Quick Start (Happy Path)
+
+A typical Nanoforge development workflow looks like this:
+
+1. Create a new project using `nf new`.
+2. Start the development environment using `nf start`.
+3. Develop your game while the dev server is running.
+4. Build the game for production using `nf build`.
+
+If you follow the steps above in order, you can successfully develop and build a Nanoforge game from scratch.
+
+## Development Workflow
+
+### Step 1: Create a New Project
+
+Use the `nf new` command to scaffold a new Nanoforge project. This creates the project directory, initializes configuration files, and sets up the client and optional server structure.
+
+### Step 2: Start Development Mode
+
+Run `nf start` inside your project directory to start the development server. This command typically launches the client and server processes and watches for file changes.
+
+### Step 3: Build for Production
+
+Once development is complete, use `nf build` to generate optimized production assets.
+
+## CLI Commands Reference
+
+The following sections document each CLI command in detail.
+
+# nf new
+
+## Synopsis
+
+::
+
+nf new [options]
+
+## Description
+
+Creates a new Nanoforge project and initializes the required directory structure and configuration files.
+
+## Options
+
+`-d, --directory <path>`
+Directory where the project will be created. Defaults to the current directory.
+
+`--name <project-name>`
+Name of the game project.
+
+`--language <ts|js>`
+Programming language for the project. Default is `ts`.
+
+`--server / --no-server`
+Enable or disable server scaffolding.
+
+## Examples
+
+::
+
+nf new --name my-game --language ts
+
+# nf start
+
+## Synopsis
+
+::
+
+nf start [options]
+
+## Description
+
+Starts the Nanoforge development environment. This command runs the client and server in development mode and watches for file changes.
+
+## Options
+
+`--client-port <port>`
+Port on which the client development server will run.
+
+`--server-port <port>`
+Port on which the server will run.
+
+`--open`
+Automatically open the game in a browser after startup.
+
+## Examples
+
+::
+
+nf start
+nf start --client-port 3000 --server-port 4000
+
+# nf build
+
+## Synopsis
+
+::
+
+nf build [options]
+
+## Description
+
+Builds the Nanoforge project for production. This command generates optimized assets based on the build configuration.
+
+## Options
+
+`-o, --output <directory>`
+Output directory for the production build.
+
+`--minify`
+Enable asset minification.
+
+`--sourcemap`
+Generate source maps for debugging.
+
+## Examples
+
+::
+
+nf build
+nf build --output dist --minify
+
+# nf generate
+
+## Synopsis
+
+::
+
+nf generate <type> [options]
+
+## Description
+
+Generates project resources such as assets, entities, or boilerplate code.
+
+## Arguments
+
+`<type>`
+Type of resource to generate.
+
+## Options
+
+`--name <resource-name>`
+Name of the resource to generate.
+
+## Examples
+
+::
+
+nf generate entity --name player
+
+# nf install add
+
+## Synopsis
+
+::
+
+nf install add <package>
+
+## Description
+
+Installs and adds a dependency or plugin to the Nanoforge project.
+
+## Arguments
+
+`<package>`
+Name of the package to install.
+
+## Options
+
+`--dev`
+Install the package as a development dependency.
+
+## Examples
+
+::
+
+nf install add nanoforge-plugin-example
+
+## Configuration
+
+Nanoforge uses configuration files to control runtime and build behavior. These configuration files are typically created during project initialization.
+
+Common configuration files include:
+
+* `nanoforge.config.json` – Main project configuration
+* Client configuration
+* Server configuration
+* Build configuration
+* Run configuration
+
+Commands that use configuration:
+
+* `nf start` reads client and server configuration values.
+* `nf build` reads build configuration values.
+
+When both CLI flags and configuration values are provided, **CLI flags take precedence**.
+
+## Notes
+
+* Always run CLI commands from the root of your Nanoforge project.
+* Ensure configuration files are valid before running build or start commands.
+* Refer to configuration schema files for advanced configuration options.
