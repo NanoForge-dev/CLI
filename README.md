@@ -54,6 +54,14 @@ Used to build your nanoforge project.
 - `-c, --config [config]` path to the config file.
 - `--client-outDir [clientDirectory]` specifies the client directory.
 - `--server-outDir [serverDirectory]` specifies the server directory.
+- `--watch` build app in watching mode. (default : `false`)
+
+### `dev`
+
+Used to run your nanoforge project in dev mode.
+
+- `-d, --directory [directory]` specify the directory of the nanoforge project to build.
+- `--generate` generate app files from config, like generate command in dev mode. (default : `false`)
 
 ### `generate`
 
@@ -61,6 +69,7 @@ Used to generate nanoforge project files from config
 
 - `-d, --directory [directory]` specify the directory of the nanoforge project to build.
 - `-c, --config [config]` path to the config file.
+- `--watch` generate app in watching mode. (default : `false`)
 
 ### `install` or `add`
 
@@ -95,6 +104,7 @@ Used to start your nanoforge project
 - `-p, --client-port [clientPort]` specify the port of the loader (the website to load the game)
 - `--game-exposure-port [gameExposurePort]` specify the port of the game exposure
 - `--server-port [serverPort]` specify the port of the server
+- `--watch` run app in watching mode. (default : `false`)
 
 ## Contributing
 
