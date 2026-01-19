@@ -4,25 +4,24 @@ import { Input } from "@lib/input";
 
 import { AbstractCommand } from "../abstract.command";
 
-interface GenerateOptions {
+interface DevOptions {
   directory?: string;
   config?: string;
-  watch?: boolean;
+  generate?: boolean;
 }
 
-export class GenerateCommand extends AbstractCommand {
+export class DevCommand extends AbstractCommand {
   public load(program: Command) {
     program
-      .command("generate")
-      .description("generate nanoforge files from config")
+      .command("dev")
+      .description("run your game in dev mode")
       .option("-d, --directory [directory]", "specify the directory of your project")
-      .option("-c, --config [config]", "path to the config file", "nanoforge.config.json")
-      .option("--watch", "generate app in watching mode", false)
-      .action(async (rawOptions: GenerateOptions) => {
+      .option("--generate", "generate app from config", false)
+      .action(async (rawOptions: DevOptions) => {
         const options: Input = new Map();
         options.set("directory", { value: rawOptions.directory });
         options.set("config", { value: rawOptions.config });
-        options.set("watch", { value: rawOptions.watch });
+        options.set("generate", { value: rawOptions.generate });
 
         const args: Input = new Map();
 

@@ -4,7 +4,9 @@ import { Emojis } from "./emojis";
 
 export const Messages = {
   BUILD_START: "NanoForge Build",
-  BUILD_PART_IN_PROGRESS: (part: string) => `Building ${part}...`,
+  BUILD_WATCH_START: "Start watching mode",
+  BUILD_PART_IN_PROGRESS: (part: string) => `Building ${part}`,
+  BUILD_PART_WATCH_IN_PROGRESS: (part: string) => `${part} updated. Rebuilding`,
   BUILD_NOTHING: "Nothing to build, terminated.",
   BUILD_SUCCESS: `${Emojis.ROCKET}  Build succeeded !`,
   BUILD_PART_FAILED: (part: string, commandToRunManually: string) =>
@@ -21,8 +23,16 @@ export const Messages = {
   NEW_STRICT_QUESTION: "Do you want to use types strict mode ?",
   NEW_SERVER_QUESTION: "Do you want generate a server to create a multiplayer game ?",
   NEW_SKIP_INSTALL_QUESTION: "Do you want to skip installation ?",
+  GENERATE_START: "NanoForge Generate",
+  GENERATE_WATCH_START: "Start watching mode",
+  GENERATE_SUCCESS: `${Emojis.ROCKET}  Generate succeeded !`,
+  GENERATE_FAILED: `${Emojis.SCREAM}  Generate failed !`,
+  DEV_START: "NanoForge Dev mode",
+  DEV_SUCCESS: "Dev mode ended",
+  DEV_FAILED: `${Emojis.SCREAM}  Dev failed !`,
   SCHEMATICS_START: "Schematics execution",
   SCHEMATIC_IN_PROGRESS: (name: string) => `Executing schematic ${name}...`,
+  SCHEMATIC_WATCH_IN_PROGRESS: (name: string) => `Update watched. Executing schematic ${name}...`,
   SCHEMATIC_SUCCESS: (name: string) =>
     `${Emojis.ROCKET}  Schematic ${name} executed successfully !`,
   SCHEMATIC_FAILED: (name: string) =>

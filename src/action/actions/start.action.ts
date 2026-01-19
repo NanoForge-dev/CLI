@@ -2,7 +2,7 @@ import * as ansis from "ansis";
 import * as console from "node:console";
 import { join } from "path";
 
-import { Input, getDirectoryInput, getStringInputWithDefault } from "@lib/input";
+import { Input, getDirectoryInput, getStringInputWithDefault, getWatchInput } from "@lib/input";
 import { PackageManager, PackageManagerFactory } from "@lib/package-manager";
 import { Messages } from "@lib/ui";
 
@@ -26,9 +26,14 @@ export class StartAction extends AbstractAction {
 
       const clientPort = getStringInputWithDefault(options, "clientPort", config.client.port);
 
+      const watch = getWatchInput(options);
+
       await Promise.all([
-        config.server.enable ? this.startServer(directory, serverDir) : undefined,
-        this.startClient(clientPort, directory, clientDir),
+        config.server.enable ? this.startServer(directory, serverDir, watch) : undefined,
+        this.startClient(clientPort, directory, clientDir, {
+          watch,
+          serverGameDir: config.server.enable ? serverDir : undefined,
+        }),
       ]);
       process.exit(0);
     } catch (e) {
@@ -37,20 +42,40 @@ export class StartAction extends AbstractAction {
     }
   }
 
-  private async startClient(port: string, directory: string, gameDir: string): Promise<void> {
+  private async startClient(
+    port: string,
+    directory: string,
+    gameDir: string,
+    options?: {
+      watch?: boolean;
+      serverGameDir?: string;
+    },
+  ): Promise<void> {
     const path = getModulePath("@nanoforge-dev/loader-client/package.json", true);
 
-    return runPart("Client", path, {
+    const params: any = {
       PORT: port,
       GAME_DIR: getCwd(join(directory, gameDir)),
-    });
+    };
+    if (options?.watch) {
+      params["WATCH"] = "true";
+      if (options?.serverGameDir) {
+        params["WATCH_SERVER_GAME_DIR"] = getCwd(join(directory, options.serverGameDir));
+      }
+    }
+
+    return runPart("Client", path, params);
   }
 
-  private startServer(directory: string, gameDir: string): Promise<void> {
+  private startServer(directory: string, gameDir: string, watch: boolean): Promise<void> {
     const path = getModulePath("@nanoforge-dev/loader-server/package.json", true);
-    return runPart("Server", path, {
+
+    const params: any = {
       GAME_DIR: getCwd(join(directory, gameDir)),
-    });
+    };
+    if (watch) params["WATCH"] = "true";
+
+    return runPart("Server", path, params);
   }
 }
 

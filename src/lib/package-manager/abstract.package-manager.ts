@@ -58,10 +58,13 @@ export abstract class AbstractPackageManager {
     entry: string,
     output: string,
     flags?: string[],
+    watch?: boolean,
   ): Promise<boolean> {
     if (!this.cli.build) throw new Error(`Package manager ${this.name} does not support building`);
 
-    const spinner = SPINNER(Messages.BUILD_PART_IN_PROGRESS(name));
+    const spinner = SPINNER(
+      (watch ? Messages.BUILD_PART_WATCH_IN_PROGRESS : Messages.BUILD_PART_IN_PROGRESS)(name),
+    );
     spinner.start();
     try {
       const commandArgs = [
@@ -114,6 +117,24 @@ export abstract class AbstractPackageManager {
       return true;
     } catch {
       console.error(red(Messages.RUN_PART_FAILED(name)));
+      return false;
+    }
+  }
+
+  async runDev(
+    directory: string,
+    command: string,
+    env: Record<string, string> = {},
+    flags: string[] = [],
+    collect = true,
+  ): Promise<boolean> {
+    if (!this.cli.run) throw new Error(`Package manager ${this.name} does not support running`);
+
+    try {
+      const commandArgs = [this.cli.run, command, ...flags];
+      await this.runner.run(commandArgs, collect, getCwd(directory), env);
+      return true;
+    } catch {
       return false;
     }
   }
