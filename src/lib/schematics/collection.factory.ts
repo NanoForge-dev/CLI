@@ -1,6 +1,6 @@
 import { Runner, RunnerFactory } from "../runner";
-import { SchematicRunner } from "../runner/runners/schematic.runner";
-import { AbstractCollection } from "./abstract.collection";
+import { type SchematicRunner } from "../runner/runners/schematic.runner";
+import { type AbstractCollection } from "./abstract.collection";
 import { Collection } from "./collection";
 import { NanoforgeCollection } from "./nanoforge.collection";
 

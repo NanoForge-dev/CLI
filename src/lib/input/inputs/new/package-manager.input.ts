@@ -3,7 +3,7 @@ import { Messages } from "@lib/ui";
 
 import { getInputOrAsk } from "../../ask-inputs";
 import { getStringInput } from "../../base-inputs";
-import { Input } from "../../input.type";
+import { type Input } from "../../input.type";
 
 const getPackageManagerInput = (inputs: Input) => {
   return getStringInput(inputs, "packageManager");

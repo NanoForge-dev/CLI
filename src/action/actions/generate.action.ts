@@ -1,9 +1,9 @@
 import * as console from "node:console";
 import { join } from "path";
 
-import { Config } from "@lib/config";
-import { Input, getDirectoryInput, getWatchInput } from "@lib/input";
-import { AbstractCollection, Collection, CollectionFactory } from "@lib/schematics";
+import { type Config } from "@lib/config";
+import { type Input, getDirectoryInput, getWatchInput } from "@lib/input";
+import { type AbstractCollection, Collection, CollectionFactory } from "@lib/schematics";
 import { Messages } from "@lib/ui";
 
 import { getCwd } from "@utils/path";

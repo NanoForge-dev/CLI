@@ -1,12 +1,12 @@
 import { bold, green, red, yellow } from "ansis";
-import ora, { Ora } from "ora";
+import ora, { type Ora } from "ora";
 
-import { AbstractRunner } from "@lib/runner/abstract.runner";
+import { type AbstractRunner } from "@lib/runner/abstract.runner";
 import { Messages } from "@lib/ui";
 
 import { getCwd } from "@utils/path";
 
-import { PackageManagerCommands } from "./package-manager-commands";
+import { type PackageManagerCommands } from "./package-manager-commands";
 
 const SPINNER = (message: string) =>
   ora({

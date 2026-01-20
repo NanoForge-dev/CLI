@@ -1,8 +1,8 @@
-import { BunRunner, Runner, RunnerFactory } from "@lib/runner";
+import { type BunRunner, Runner, RunnerFactory } from "@lib/runner";
 
 import { AbstractPackageManager } from "../abstract.package-manager";
 import { PackageManager } from "../package-manager";
-import { PackageManagerCommands } from "../package-manager-commands";
+import { type PackageManagerCommands } from "../package-manager-commands";
 
 export class BunPackageManager extends AbstractPackageManager {
   constructor() {

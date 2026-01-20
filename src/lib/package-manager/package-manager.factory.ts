@@ -1,4 +1,4 @@
-import { AbstractPackageManager } from "./abstract.package-manager";
+import { type AbstractPackageManager } from "./abstract.package-manager";
 import { PackageManager } from "./package-manager";
 import { BunPackageManager } from "./package-managers/bun.package-manager";
 

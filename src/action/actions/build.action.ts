@@ -3,8 +3,8 @@ import { watch } from "chokidar";
 import * as console from "node:console";
 import { dirname, join } from "path";
 
-import { BuildConfig } from "@lib/config";
-import { Input, getDirectoryInput } from "@lib/input";
+import { type BuildConfig } from "@lib/config";
+import { type Input, getDirectoryInput } from "@lib/input";
 import { getWatchInput } from "@lib/input";
 import { PackageManager, PackageManagerFactory } from "@lib/package-manager";
 import { Messages } from "@lib/ui";

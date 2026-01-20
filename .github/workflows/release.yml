@@ -20,10 +20,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Install Node.js v24
+      - name: Install Node.js v25
         uses: actions/setup-node@v6
         with:
-          node-version: 24
+          node-version: 25
           package-manager-cache: false
           registry-url: https://registry.npmjs.org/
 

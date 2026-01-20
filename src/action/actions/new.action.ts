@@ -1,4 +1,4 @@
-import { Input, getDirectoryInput } from "@lib/input";
+import { type Input, getDirectoryInput } from "@lib/input";
 import { getNewInitFunctionsWithDefault } from "@lib/input/inputs/new/init-functions.input";
 import { getNewLanguageInputOrAsk } from "@lib/input/inputs/new/language.input";
 import { getNewNameInputOrAsk } from "@lib/input/inputs/new/name.input";
@@ -7,7 +7,7 @@ import { getNewPathInput } from "@lib/input/inputs/new/path.input";
 import { getNewServerOrAsk } from "@lib/input/inputs/new/server.input";
 import { getNewSkipInstallOrAsk } from "@lib/input/inputs/new/skip-install.input";
 import { getNewStrictOrAsk } from "@lib/input/inputs/new/strict.input";
-import { AbstractCollection, Collection, CollectionFactory } from "@lib/schematics";
+import { type AbstractCollection, Collection, CollectionFactory } from "@lib/schematics";
 import { Messages } from "@lib/ui";
 
 import { AbstractAction } from "../abstract.action";

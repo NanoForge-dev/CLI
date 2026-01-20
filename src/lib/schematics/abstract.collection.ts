@@ -1,8 +1,8 @@
 import { getCwd } from "@utils/path";
 
-import { AbstractRunner } from "../runner/abstract.runner";
-import { Schematic } from "./nanoforge.collection";
-import { SchematicOption } from "./schematic.option";
+import { type AbstractRunner } from "../runner/abstract.runner";
+import { type Schematic } from "./nanoforge.collection";
+import { type SchematicOption } from "./schematic.option";
 
 export abstract class AbstractCollection {
   protected constructor(

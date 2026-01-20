@@ -1,6 +1,6 @@
 import { watch } from "chokidar";
 
-import { AbstractCollection, SchematicOption } from "@lib/schematics";
+import { type AbstractCollection, SchematicOption } from "@lib/schematics";
 import { Messages } from "@lib/ui";
 
 import { getSpinner } from "~/action/common/spinner";

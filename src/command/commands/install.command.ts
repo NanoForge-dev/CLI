@@ -1,6 +1,6 @@
-import { Command } from "commander";
+import { type Command } from "commander";
 
-import { Input } from "@lib/input";
+import { type Input } from "@lib/input";
 
 import { AbstractCommand } from "../abstract.command";
 

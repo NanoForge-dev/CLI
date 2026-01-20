@@ -1,4 +1,4 @@
-import { Input } from "./input.type";
+import { type Input } from "./input.type";
 
 export const getStringInput = (input: Input, field: string): string | undefined => {
   const value = input.get(field)?.value;

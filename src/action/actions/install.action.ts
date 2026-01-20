@@ -1,7 +1,7 @@
 import * as ansis from "ansis";
 import * as process from "node:process";
 
-import { Input, getDirectoryInput, getInstallNamesInputOrAsk } from "@lib/input";
+import { type Input, getDirectoryInput, getInstallNamesInputOrAsk } from "@lib/input";
 import { PackageManager, PackageManagerFactory } from "@lib/package-manager";
 import { Messages } from "@lib/ui";
 

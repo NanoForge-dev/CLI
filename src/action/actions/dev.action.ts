@@ -1,6 +1,6 @@
 import * as ansis from "ansis";
 
-import { Input, getDevGenerateInput, getDirectoryInput } from "@lib/input";
+import { type Input, getDevGenerateInput, getDirectoryInput } from "@lib/input";
 import { PackageManager, PackageManagerFactory } from "@lib/package-manager";
 import { Messages } from "@lib/ui";
 
