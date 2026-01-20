@@ -1,27 +1,27 @@
-import { type BunRunner, Runner, RunnerFactory } from "@lib/runner";
+import { type NpmRunner, Runner, RunnerFactory } from "@lib/runner";
 
 import { AbstractPackageManager } from "../abstract.package-manager";
 import { PackageManager } from "../package-manager";
 import { type PackageManagerCommands } from "../package-manager-commands";
 
-export class BunPackageManager extends AbstractPackageManager {
+export class NpmPackageManager extends AbstractPackageManager {
   constructor() {
-    super(RunnerFactory.create(Runner.BUN) as BunRunner);
+    super(RunnerFactory.create(Runner.NPM) as NpmRunner);
   }
 
   public get name() {
-    return PackageManager.BUN.toUpperCase();
+    return PackageManager.NPM.toUpperCase();
   }
 
   get cli(): PackageManagerCommands {
     return {
       install: "install",
-      add: "add",
+      add: "install",
       update: "update",
-      remove: "remove",
+      remove: "uninstall",
       run: "run",
       saveFlag: "--save",
-      saveDevFlag: "--dev",
+      saveDevFlag: "--save-dev",
       silentFlag: "--silent",
     };
   }

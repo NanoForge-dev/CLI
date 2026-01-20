@@ -2,7 +2,7 @@ import * as ansis from "ansis";
 import * as process from "node:process";
 
 import { type Input, getDirectoryInput, getInstallNamesInputOrAsk } from "@lib/input";
-import { PackageManager, PackageManagerFactory } from "@lib/package-manager";
+import { PackageManagerFactory } from "@lib/package-manager";
 import { Messages } from "@lib/ui";
 
 import { AbstractAction } from "../abstract.action";
@@ -27,10 +27,8 @@ export class InstallAction extends AbstractAction {
 }
 
 const installPackages = async (names: string[], directory: string) => {
-  const packageManagerName = PackageManager.BUN;
-
   try {
-    const packageManager = PackageManagerFactory.create(packageManagerName);
+    const packageManager = await PackageManagerFactory.find(directory);
     await packageManager.addProduction(directory, names);
   } catch (error: any) {
     if (error && error.message) {

@@ -35,7 +35,7 @@ interface MultiSelectOptions {
   loop: boolean;
   required: boolean;
 }
-export const askSelect = async <T = string>(
+export const askSelect = async <T extends string = string>(
   question: string,
   choices: SelectChoices<T>,
   baseOptions?: Partial<SelectOptions<T>>,
@@ -44,12 +44,12 @@ export const askSelect = async <T = string>(
     loop: true,
     ...(baseOptions ?? {}),
   };
-  return await select({
+  return (await select({
     message: question,
     choices,
     loop: options.loop,
     default: options.default,
-  }).catch(promptError);
+  }).catch(promptError)) as T;
 };
 
 export const askMultiSelect = async <T = string>(

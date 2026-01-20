@@ -50,6 +50,7 @@
     "@nanoforge-dev/loader-server": "catalog:loader",
     "@nanoforge-dev/schematics": "catalog:schematics",
     "ansis": "catalog:cli",
+    "bun": "catalog:core",
     "chokidar": "catalog:libs",
     "class-transformer": "catalog:libs",
     "class-validator": "catalog:libs",

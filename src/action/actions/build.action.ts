@@ -83,7 +83,7 @@ const buildPart = async (
   directory: string,
   options?: { watch?: boolean },
 ) => {
-  const packageManagerName = PackageManager.BUN;
+  const packageManagerName = PackageManager.LOCAL_BUN;
 
   const packageManager = PackageManagerFactory.create(packageManagerName);
 

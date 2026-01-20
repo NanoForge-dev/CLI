@@ -102,8 +102,6 @@ export abstract class AbstractPackageManager {
     flags: string[] = [],
     silent = false,
   ): Promise<boolean> {
-    if (!this.cli.run) throw new Error(`Package manager ${this.name} does not support running`);
-
     try {
       console.info(Messages.RUN_PART_IN_PROGRESS(name));
       const commandArgs = [...flags, this.cli.run];
@@ -128,8 +126,6 @@ export abstract class AbstractPackageManager {
     flags: string[] = [],
     collect = true,
   ): Promise<boolean> {
-    if (!this.cli.run) throw new Error(`Package manager ${this.name} does not support running`);
-
     try {
       const commandArgs = [this.cli.run, command, ...flags];
       await this.runner.run(commandArgs, collect, getCwd(directory), env);
