@@ -1,5 +1,5 @@
 import { red } from "ansis";
-import { ChildProcess, SpawnOptions, spawn } from "child_process";
+import { type ChildProcess, type SpawnOptions, spawn } from "child_process";
 import * as process from "node:process";
 
 import { Messages } from "@lib/ui";

@@ -3,8 +3,9 @@ export interface PackageManagerCommands {
   add: string;
   update: string;
   remove: string;
+  run: string;
   build?: string;
-  run?: string;
+  runFile?: string;
   saveFlag: string;
   saveDevFlag: string;
   silentFlag: string;

@@ -1,4 +1,4 @@
-import { Config } from "./config.type";
+import { type Config } from "./config.type";
 
 export const CONFIG_DEFAULTS: Config = {
   name: "nanoforge-app",

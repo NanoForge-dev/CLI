@@ -3,7 +3,7 @@ import { Messages } from "@lib/ui";
 
 import { getInputOrAsk } from "../../ask-inputs";
 import { getBooleanInput } from "../../base-inputs";
-import { Input } from "../../input.type";
+import { type Input } from "../../input.type";
 
 const getNewServerInput = (inputs: Input) => {
   return getBooleanInput(inputs, "server");

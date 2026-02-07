@@ -43,55 +43,49 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@angular-devkit/schematics": "^21.0.1",
-    "@angular-devkit/schematics-cli": "^21.0.1",
-    "@inquirer/prompts": "^7.9.0",
-    "@nanoforge-dev/loader-client": "^1.1.0",
-    "@nanoforge-dev/loader-server": "^1.1.0",
-    "@nanoforge-dev/schematics": "^1.0.2",
-    "ansis": "^4.2.0",
-    "chokidar": "^4.0.3",
-    "class-transformer": "^0.5.1",
-    "class-validator": "^0.14.2",
-    "cli-table3": "^0.6.5",
-    "commander": "^14.0.2",
-    "node-emoji": "^2.2.0",
-    "ora": "^9.0.0",
-    "reflect-metadata": "^0.2.2"
+    "@angular-devkit/schematics": "catalog:schematics",
+    "@angular-devkit/schematics-cli": "catalog:schematics",
+    "@inquirer/prompts": "catalog:cli",
+    "@nanoforge-dev/loader-client": "catalog:loader",
+    "@nanoforge-dev/loader-server": "catalog:loader",
+    "@nanoforge-dev/schematics": "catalog:schematics",
+    "ansis": "catalog:cli",
+    "bun": "catalog:core",
+    "chokidar": "catalog:libs",
+    "class-transformer": "catalog:libs",
+    "class-validator": "catalog:libs",
+    "commander": "catalog:cli",
+    "node-emoji": "catalog:cli",
+    "ora": "catalog:cli",
+    "reflect-metadata": "catalog:libs"
   },
   "devDependencies": {
-    "@commitlint/cli": "^20.1.0",
-    "@commitlint/config-conventional": "^20.0.0",
-    "@eslint/js": "^9.39.0",
-    "@favware/cliff-jumper": "^6.0.0",
-    "@nanoforge-dev/actions": "^1.0.2",
-    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
-    "@types/inquirer": "^9.0.9",
-    "@types/node": "^24.10.1",
-    "@typescript-eslint/eslint-plugin": "^8.46.2",
-    "@typescript-eslint/parser": "^8.46.2",
-    "eslint": "^9.39.0",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-formatter-pretty": "^7.0.0",
-    "eslint-plugin-prettier": "^5.5.4",
-    "globals": "^16.5.0",
-    "husky": "^9.1.7",
-    "lint-staged": "^16.2.6",
-    "prettier": "^3.6.2",
-    "tsup": "^8.5.1",
-    "typescript": "^5.9.3",
-    "typescript-eslint": "^8.46.2"
+    "@commitlint/cli": "catalog:ci",
+    "@commitlint/config-conventional": "catalog:ci",
+    "@favware/cliff-jumper": "catalog:ci",
+    "@nanoforge-dev/actions": "catalog:ci",
+    "@nanoforge-dev/utils-eslint-config": "catalog:lint",
+    "@nanoforge-dev/utils-prettier-config": "catalog:lint",
+    "@trivago/prettier-plugin-sort-imports": "catalog:lint",
+    "@types/inquirer": "catalog:cli",
+    "@types/node": "catalog:core",
+    "eslint": "catalog:lint",
+    "husky": "catalog:ci",
+    "lint-staged": "catalog:ci",
+    "prettier": "catalog:lint",
+    "tsup": "catalog:build",
+    "typescript": "catalog:build"
   },
-  "packageManager": "pnpm@10.24.0",
+  "packageManager": "pnpm@10.28.1",
   "engines": {
-    "node": "24.11.1"
+    "node": "25"
   },
   "publishConfig": {
     "access": "public"
   },
   "lint-staged": {
-    "**/*.ts": [
-      "prettier --write"
+    "**": [
+      "prettier --ignore-unknown --write"
     ],
     "src/**/*.ts": [
       "eslint --fix"

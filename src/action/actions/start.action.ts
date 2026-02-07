@@ -2,8 +2,13 @@ import * as ansis from "ansis";
 import * as console from "node:console";
 import { join } from "path";
 
-import { Input, getDirectoryInput, getStringInputWithDefault, getWatchInput } from "@lib/input";
-import { PackageManager, PackageManagerFactory } from "@lib/package-manager";
+import {
+  type Input,
+  getDirectoryInput,
+  getStringInputWithDefault,
+  getWatchInput,
+} from "@lib/input";
+import { PackageManagerFactory } from "@lib/package-manager";
 import { Messages } from "@lib/ui";
 
 import { getCwd, getModulePath } from "@utils/path";
@@ -85,10 +90,8 @@ const runPart = async (
   env?: Record<string, string>,
   flags?: string[],
 ) => {
-  const packageManagerName = PackageManager.BUN;
-
   try {
-    const packageManager = PackageManagerFactory.create(packageManagerName);
+    const packageManager = await PackageManagerFactory.find(directory);
     await packageManager.run(part, directory, "start", env, flags, true);
   } catch (error: any) {
     if (error && error.message) {

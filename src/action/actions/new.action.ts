@@ -1,4 +1,7 @@
-import { Input, getDirectoryInput } from "@lib/input";
+import * as ansis from "ansis";
+import console from "node:console";
+
+import { type Input, getDirectoryInput } from "@lib/input";
 import { getNewInitFunctionsWithDefault } from "@lib/input/inputs/new/init-functions.input";
 import { getNewLanguageInputOrAsk } from "@lib/input/inputs/new/language.input";
 import { getNewNameInputOrAsk } from "@lib/input/inputs/new/name.input";
@@ -7,7 +10,8 @@ import { getNewPathInput } from "@lib/input/inputs/new/path.input";
 import { getNewServerOrAsk } from "@lib/input/inputs/new/server.input";
 import { getNewSkipInstallOrAsk } from "@lib/input/inputs/new/skip-install.input";
 import { getNewStrictOrAsk } from "@lib/input/inputs/new/strict.input";
-import { AbstractCollection, Collection, CollectionFactory } from "@lib/schematics";
+import { PackageManagerFactory } from "@lib/package-manager";
+import { type AbstractCollection, Collection, CollectionFactory } from "@lib/schematics";
 import { Messages } from "@lib/ui";
 
 import { AbstractAction } from "../abstract.action";
@@ -34,6 +38,8 @@ export class NewAction extends AbstractAction {
       const values = await getSchemaValues(options);
 
       await generateApplicationFiles(values, directory);
+
+      if (!values.skipInstall) await runInstall(directory, values.packageManager);
 
       console.info();
       console.info(Messages.NEW_SUCCESS);
@@ -109,5 +115,16 @@ const generateApplicationFiles = async (values: NewOptions, directory: string) =
       language: values.language,
       initFunctions: values.initFunctions,
     });
+  }
+};
+
+const runInstall = async (directory: string, pkgManagerName: string) => {
+  try {
+    const packageManager = PackageManagerFactory.create(pkgManagerName);
+    await packageManager.install(directory);
+  } catch (error: any) {
+    if (error && error.message) {
+      console.error(ansis.red(error.message));
+    }
   }
 };

@@ -1,5 +1,5 @@
 import { red } from "ansis";
-import { Command } from "commander";
+import { type Command } from "commander";
 
 import { Prefixes } from "@lib/ui";
 

@@ -1,7 +1,7 @@
 import * as ansis from "ansis";
 
-import { Input, getDevGenerateInput, getDirectoryInput } from "@lib/input";
-import { PackageManager, PackageManagerFactory } from "@lib/package-manager";
+import { type Input, getDevGenerateInput, getDirectoryInput } from "@lib/input";
+import { PackageManagerFactory } from "@lib/package-manager";
 import { Messages } from "@lib/ui";
 
 import { AbstractAction } from "../abstract.action";
@@ -37,10 +37,8 @@ const runAction = async (
   directory: string,
   stdout: boolean = false,
 ) => {
-  const packageManagerName = PackageManager.BUN;
-
   try {
-    const packageManager = PackageManagerFactory.create(packageManagerName);
+    const packageManager = await PackageManagerFactory.find(directory);
     await packageManager.runDev(directory, "nf", {}, [command, ...params, "--watch"], !stdout);
   } catch (error: any) {
     if (error && error.message) {

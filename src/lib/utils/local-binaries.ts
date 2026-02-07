@@ -1,7 +1,7 @@
 import { existsSync } from "fs";
 import { join, posix } from "path";
 
-import { CommandLoader } from "~/command";
+import { type CommandLoader } from "~/command";
 
 const localBinPathSegments = [process.cwd(), "node_modules", "@nanoforge-dev", "cli", "dist"];
 

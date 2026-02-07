@@ -3,7 +3,7 @@ import { Messages } from "@lib/ui";
 
 import { getInputOrAsk } from "../../ask-inputs";
 import { getArrayInput } from "../../base-inputs";
-import { Input } from "../../input.type";
+import { type Input } from "../../input.type";
 
 const getNamesInput = (inputs: Input) => {
   return getArrayInput(inputs, "names");
