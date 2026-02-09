@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+# [1.2.0](https://github.com/NanoForge-dev/cli/compare/1.0.0...1.2.0) - (2026-02-09)
+
+## Documentation
+
+- Fix documentation (#45) ([11490ca](https://github.com/NanoForge-dev/cli/commit/11490caa23fc3cf7f0f09e0dd3be1d6db559338e)) by @Exeloo
+
+## Features
+
+- Add docker release and local bun (#49) ([f3e2ad6](https://github.com/NanoForge-dev/cli/commit/f3e2ad6096d2c12ca17e191290d460fc74cc5839)) by @Exeloo
+- Add watch and `dev` command (#46) ([7b8413c](https://github.com/NanoForge-dev/cli/commit/7b8413c8125bd1763bd94dd8710fa6130e560cbc)) by @Exeloo
 # [1.0.0](https://github.com/NanoForge-dev/cli/tree/1.0.0) - (2026-01-06)
 
 ## Bug Fixes
