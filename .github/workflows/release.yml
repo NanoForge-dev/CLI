@@ -20,18 +20,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Install Node.js v25
-        uses: actions/setup-node@v6
-        with:
-          node-version: 25
-          package-manager-cache: false
-          registry-url: https://registry.npmjs.org/
-
-      - name: Install dependencies
-        uses: ./.github/actions/pnpm-install
-
-      - name: Build dependencies
-        run: pnpm run build
+      - name: Prepare
+        uses: ./.github/actions/prepare
 
       - name: Release packages
         uses: ./node_modules/@nanoforge-dev/actions/dist/release-packages

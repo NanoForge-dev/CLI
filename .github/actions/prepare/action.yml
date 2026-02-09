@@ -14,7 +14,7 @@ runs:
   using: composite
   steps:
     - if: inputs.node-install == 'true'
-      name: Install Node.js v25
+      name: Install Node.js
       uses: actions/setup-node@v6
       with:
         node-version: 25
