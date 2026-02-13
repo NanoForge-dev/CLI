@@ -1,9 +1,8 @@
 name: Release Docker
 
 on:
-  release:
-    types:
-      - published
+  workflow_call:
+  workflow_dispatch:
 
 permissions:
   contents: write
