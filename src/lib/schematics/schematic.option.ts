@@ -22,7 +22,7 @@ export class SchematicOption {
       }
     } else if (typeof this.value === "boolean") {
       const str = normalizedName;
-      return this.value ? [`--${str}`] : [`--no-${str}`];
+      return this.value ? [`--${str}=true`] : [`--${str}=false`];
     } else if (Array.isArray(this.value)) {
       return this.value.reduce(
         (old: string[], option: SchematicOption) => [
