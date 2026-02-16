@@ -1,4 +1,5 @@
-import { resolve } from "path";
+import fs from "fs";
+import { join, resolve } from "path";
 
 export const getCwd = (directory: string) => {
   return resolve(directory);
@@ -10,6 +11,16 @@ export const getModulePath = (name: string, removeLast = false) => {
   return path;
 };
 
-export const getNodeBinaryPath = (name: string) => {
-  return resolve("node_modules", ".bin", name);
+export const resolveCLINodeBinaryPath = (name: string) => {
+  let base = join(getModulePath(".", true), "..");
+  while (base.length >= 1) {
+    const path = join(base, "node_modules", ".bin", name);
+    try {
+      fs.accessSync(path);
+      return path;
+    } catch {
+      base = join(base, "..");
+    }
+  }
+  throw new Error("Could not find module path");
 };

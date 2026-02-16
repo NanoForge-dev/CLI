@@ -1,9 +1,9 @@
-import { getNodeBinaryPath } from "@utils/path";
+import { resolveCLINodeBinaryPath } from "@utils/path";
 
 import { AbstractRunner } from "../abstract.runner";
 
 export class LocalBunRunner extends AbstractRunner {
   constructor() {
-    super(getNodeBinaryPath("bun"));
+    super(resolveCLINodeBinaryPath("bun"));
   }
 }
