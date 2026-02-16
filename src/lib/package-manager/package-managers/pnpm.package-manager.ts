@@ -19,6 +19,7 @@ export class PnpmPackageManager extends AbstractPackageManager {
       add: "add",
       update: "update",
       remove: "remove",
+      exec: "exec",
       run: "run",
       saveFlag: "-P",
       saveDevFlag: "-D",

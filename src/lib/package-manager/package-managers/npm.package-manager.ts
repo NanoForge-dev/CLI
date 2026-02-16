@@ -19,6 +19,7 @@ export class NpmPackageManager extends AbstractPackageManager {
       add: "install",
       update: "update",
       remove: "uninstall",
+      exec: "exec",
       run: "run",
       saveFlag: "--save",
       saveDevFlag: "--save-dev",

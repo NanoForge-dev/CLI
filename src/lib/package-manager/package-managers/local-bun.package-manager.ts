@@ -19,6 +19,7 @@ export class LocalBunPackageManager extends AbstractPackageManager {
       add: "add",
       update: "update",
       remove: "remove",
+      exec: "exec",
       run: "run",
       build: "build",
       runFile: "run",
