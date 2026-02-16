@@ -20,4 +20,7 @@ jobs:
         uses: ./.github/actions/prepare
 
       - name: Run linter
-        run: pnpm lint
+        run: pnpm run lint
+
+      - name: Run tests
+        run: pnpm run test

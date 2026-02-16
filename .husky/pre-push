@@ -1,2 +1,3 @@
-pnpm lint
-pnpm build
+pnpm run build
+pnpm run lint
+pnpm run test
