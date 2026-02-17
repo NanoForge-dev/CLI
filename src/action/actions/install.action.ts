@@ -29,10 +29,12 @@ export class InstallAction extends AbstractAction {
 const installPackages = async (names: string[], directory: string) => {
   try {
     const packageManager = await PackageManagerFactory.find(directory);
-    await packageManager.addProduction(directory, names);
+    const res = await packageManager.addProduction(directory, names);
+    if (!res) process.exit(1);
   } catch (error: any) {
     if (error && error.message) {
       console.error(ansis.red(error.message));
     }
+    process.exit(1);
   }
 };

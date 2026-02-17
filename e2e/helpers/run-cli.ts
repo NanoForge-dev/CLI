@@ -7,14 +7,31 @@ interface CliResult {
   stdout: string;
   stderr: string;
   exitCode: number | null;
+  killed: boolean;
 }
 
-export const runCli = (args: string[], options?: SpawnOptions): Promise<CliResult> => {
+interface RunCliOptions extends SpawnOptions {
+  timeout?: number;
+}
+
+export const runCli = (args: string[], options?: RunCliOptions): Promise<CliResult> => {
   return new Promise((resolve) => {
+    const { timeout, ...spawnOptions } = options ?? {};
+
     const child = spawn("node", [CLI_PATH, ...args], {
       stdio: "pipe",
-      ...options,
+      ...spawnOptions,
     });
+
+    let killed = false;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+
+    if (timeout) {
+      timer = setTimeout(() => {
+        killed = true;
+        child.kill("SIGTERM");
+      }, timeout);
+    }
 
     const stdout: string[] = [];
     const stderr: string[] = [];
@@ -23,10 +40,12 @@ export const runCli = (args: string[], options?: SpawnOptions): Promise<CliResul
     child.stderr?.on("data", (data) => stderr.push(data.toString()));
 
     child.on("close", (code) => {
+      if (timer) clearTimeout(timer);
       resolve({
         stdout: stdout.join(""),
         stderr: stderr.join(""),
         exitCode: code,
+        killed,
       });
     });
   });
