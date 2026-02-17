@@ -1,5 +1,6 @@
 import * as ansis from "ansis";
 import * as console from "node:console";
+import * as process from "node:process";
 import { join } from "path";
 
 import {

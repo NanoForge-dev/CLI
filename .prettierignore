@@ -1,7 +1,6 @@
 .idea/
 .vscode/
 
-.svelte-kit/
 dist/
 node_modules/
 
@@ -11,3 +10,5 @@ pnpm-workspace.yaml
 CHANGELOG.md
 
 coverage/
+
+.tmp-e2e-*/

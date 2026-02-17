@@ -55,8 +55,11 @@ export class BuildAction extends AbstractAction {
         return;
       }
 
-      if (!res) console.info(Messages.BUILD_FAILED);
-      else console.info(Messages.BUILD_SUCCESS);
+      if (!res) {
+        console.info(Messages.BUILD_FAILED);
+        process.exit(1);
+      }
+      console.info(Messages.BUILD_SUCCESS);
       process.exit(0);
     } catch (e) {
       console.error(e);

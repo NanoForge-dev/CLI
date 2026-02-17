@@ -1,5 +1,6 @@
 import * as ansis from "ansis";
 import console from "node:console";
+import * as process from "node:process";
 
 import { type Input, getDirectoryInput } from "@lib/input";
 import { getNewInitFunctionsWithDefault } from "@lib/input/inputs/new/init-functions.input";
@@ -126,5 +127,6 @@ const runInstall = async (directory: string, pkgManagerName: string) => {
     if (error && error.message) {
       console.error(ansis.red(error.message));
     }
+    process.exit(1);
   }
 };

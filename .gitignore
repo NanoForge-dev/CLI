@@ -226,3 +226,5 @@ dist
 # build
 src/**/*.js
 src/**/*.d.ts
+
+.tmp-e2e-*/

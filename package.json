@@ -40,6 +40,12 @@
     "prepack": "pnpm run build && pnpm run lint",
     "changelog": "git cliff --prepend ./CHANGELOG.md -u -c ./cliff.toml -r . --include-path '.'",
     "release": "cliff-jumper",
+    "test": "pnpm run test:unit && pnpm run test:e2e",
+    "test:unit": "vitest run -c vitest.config.ts",
+    "test:unit:watch": "vitest -c vitest.config.ts",
+    "test:e2e": "vitest run -c vitest.config.e2e.ts",
+    "test:e2e:watch": "vitest -c vitest.config.e2e.ts",
+    "test:coverage": "pnpm run test:unit --coverage && pnpm run test:e2e",
     "prepare": "husky"
   },
   "dependencies": {
@@ -69,12 +75,14 @@
     "@trivago/prettier-plugin-sort-imports": "catalog:lint",
     "@types/inquirer": "catalog:cli",
     "@types/node": "catalog:core",
+    "@vitest/coverage-v8": "catalog:tests",
     "eslint": "catalog:lint",
     "husky": "catalog:ci",
     "lint-staged": "catalog:ci",
     "prettier": "catalog:lint",
     "tsup": "catalog:build",
-    "typescript": "catalog:build"
+    "typescript": "catalog:build",
+    "vitest": "catalog:tests"
   },
   "packageManager": "pnpm@10.28.1",
   "engines": {
