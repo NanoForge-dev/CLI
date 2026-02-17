@@ -33,7 +33,7 @@ describe("nf new (TypeScript, no server)", () => {
       "--strict",
       "--no-server",
       "--no-init-functions",
-      "--skip-install",
+      "--no-skip-install",
       "-d",
       projectDir,
     ]);
@@ -102,7 +102,7 @@ describe("nf new (JavaScript, with server)", () => {
       "--no-strict",
       "--server",
       "--init-functions",
-      "--skip-install",
+      "--no-skip-install",
       "-d",
       projectDir,
     ]);
