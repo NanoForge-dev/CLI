@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file.
 
+# [1.1.1](https://github.com/NanoForge-dev/cli/compare/1.0.0...1.1.1) - (2026-02-18)
+
+## Bug Fixes
+
+- Change exec command (#66) ([5fe368c](https://github.com/NanoForge-dev/cli/commit/5fe368cc92ac1a12cdbe3f05248f8f3ae4dc38b1)) by @Exeloo
+- Resolve boolean issue on schematics (#65) ([2acb95d](https://github.com/NanoForge-dev/cli/commit/2acb95d8c2388ec121d68a039f96a8d04108cb23)) by @Exeloo
+- Add binary resolution for bun (#63) ([b874e5e](https://github.com/NanoForge-dev/cli/commit/b874e5e2d6107a3fa8f939749dc486dded1f3adf)) by @Exeloo
+
+## Documentation
+
+- Fix documentation (#45) ([11490ca](https://github.com/NanoForge-dev/cli/commit/11490caa23fc3cf7f0f09e0dd3be1d6db559338e)) by @Exeloo
+
+## Features
+
+- **https:** Setup certificate passing (#75) ([fc00b02](https://github.com/NanoForge-dev/cli/commit/fc00b02b2ae96523bf01e675e50b751b576b3e58)) by @MartinFillon
+- Add docker release and local bun (#49) ([f3e2ad6](https://github.com/NanoForge-dev/cli/commit/f3e2ad6096d2c12ca17e191290d460fc74cc5839)) by @Exeloo
+- Add watch and `dev` command (#46) ([7b8413c](https://github.com/NanoForge-dev/cli/commit/7b8413c8125bd1763bd94dd8710fa6130e560cbc)) by @Exeloo
+
+## Testing
+
+- Add unit and e2e tests (#67) ([2ef8f9d](https://github.com/NanoForge-dev/cli/commit/2ef8f9d47db96d8a468564dd0b36e3d30121f646)) by @Exeloo
+
+### New Contributors
+
+- @github-actions[bot] made their first contribution in #59
+
 # [1.1.0](https://github.com/NanoForge-dev/cli/compare/1.0.0...1.1.0) - (2026-02-09)
 
 ## Documentation
