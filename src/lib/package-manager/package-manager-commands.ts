@@ -3,6 +3,7 @@ export interface PackageManagerCommands {
   add: string;
   update: string;
   remove: string;
+  exec: string;
   run: string;
   build?: string;
   runFile?: string;

@@ -19,6 +19,7 @@ export class BunPackageManager extends AbstractPackageManager {
       add: "add",
       update: "update",
       remove: "remove",
+      exec: "exec",
       run: "run",
       saveFlag: "--save",
       saveDevFlag: "--dev",

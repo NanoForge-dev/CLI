@@ -127,7 +127,7 @@ export abstract class AbstractPackageManager {
     collect = true,
   ): Promise<boolean> {
     try {
-      const commandArgs = [this.cli.run, command, ...flags];
+      const commandArgs = [this.cli.exec, command, ...flags];
       await this.runner.run(commandArgs, collect, getCwd(directory), env);
       return true;
     } catch {
