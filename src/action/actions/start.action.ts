@@ -6,6 +6,7 @@ import { join } from "path";
 import {
   type Input,
   getDirectoryInput,
+  getStringInput,
   getStringInputWithDefault,
   getWatchInput,
 } from "@lib/input";
@@ -31,15 +32,24 @@ export class StartAction extends AbstractAction {
       const serverDir = config.server.runtime.dir;
 
       const clientPort = getStringInputWithDefault(options, "clientPort", config.client.port);
+      const cert = getStringInput(options, "cert");
+      const key = getStringInput(options, "key");
 
       const watch = getWatchInput(options);
 
       await Promise.all([
         config.server.enable ? this.startServer(directory, serverDir, watch) : undefined,
-        this.startClient(clientPort, directory, clientDir, {
-          watch,
-          serverGameDir: config.server.enable ? serverDir : undefined,
-        }),
+        this.startClient(
+          clientPort,
+          directory,
+          clientDir,
+          {
+            watch,
+            serverGameDir: config.server.enable ? serverDir : undefined,
+          },
+          cert,
+          key,
+        ),
       ]);
       process.exit(0);
     } catch (e) {
@@ -56,12 +66,16 @@ export class StartAction extends AbstractAction {
       watch?: boolean;
       serverGameDir?: string;
     },
+    cert?: string,
+    key?: string,
   ): Promise<void> {
     const path = getModulePath("@nanoforge-dev/loader-client/package.json", true);
 
     const params: any = {
       PORT: port,
       GAME_DIR: getCwd(join(directory, gameDir)),
+      CERT: cert ? join(getCwd(directory), cert) : undefined,
+      KEY: key ? join(getCwd(directory), key) : undefined,
     };
     if (options?.watch) {
       params["WATCH"] = "true";

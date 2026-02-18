@@ -11,6 +11,8 @@ interface StartOptions {
   gameExposurePort?: string;
   serverPort?: string;
   watch?: boolean;
+  cert?: string;
+  key?: string;
 }
 
 export class StartCommand extends AbstractCommand {
@@ -27,6 +29,8 @@ export class StartCommand extends AbstractCommand {
       .option("--game-exposure-port [gameExposurePort]", "specify the port of the game exposure")
       .option("--server-port [serverPort]", "specify the port of the server")
       .option("--watch", "run app in watching mode", false)
+      .option("--cert [cert]", "path to the SSL certificate for HTTPS")
+      .option("--key [key]", "path to the SSL key for HTTPS")
       .action(async (rawOptions: StartOptions) => {
         const options: Input = new Map();
         options.set("directory", { value: rawOptions.directory });
@@ -37,6 +41,8 @@ export class StartCommand extends AbstractCommand {
         });
         options.set("serverPort", { value: rawOptions.serverPort });
         options.set("watch", { value: rawOptions.watch });
+        options.set("cert", { value: rawOptions.cert });
+        options.set("key", { value: rawOptions.key });
 
         const args: Input = new Map();
 

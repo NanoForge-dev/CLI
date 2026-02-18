@@ -31,7 +31,7 @@ catalogs:
     eslint: ^10.0.0
     prettier: ^3.8.1
   loader:
-    '@nanoforge-dev/loader-client': ^1.1.0
+    '@nanoforge-dev/loader-client': ^1.2.0
     '@nanoforge-dev/loader-server': ^1.1.0
   schematics:
     '@angular-devkit/schematics': ^21.1.4
