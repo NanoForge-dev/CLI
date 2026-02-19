@@ -17,7 +17,7 @@ catalogs:
     node-emoji: ^2.2.0
     ora: ^9.3.0
   core:
-    '@types/node': ^25.2.3
+    '@types/node': ^25.3.0
     bun: ^1.3.9
   libs:
     chokidar: ^5.0.0
@@ -36,7 +36,7 @@ catalogs:
   schematics:
     '@angular-devkit/schematics': ^21.1.4
     '@angular-devkit/schematics-cli': ^21.1.4
-    '@nanoforge-dev/schematics': ^1.0.2
+    '@nanoforge-dev/schematics': ^1.1.0
   tests:
     '@vitest/coverage-v8': ^4.0.18
     vitest: ^4.0.18
