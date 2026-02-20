@@ -1,120 +1,134 @@
-import * as ansis from "ansis";
 import { watch } from "chokidar";
-import * as console from "node:console";
-import { dirname, join } from "path";
+import { dirname, join } from "node:path";
 
-import { type BuildConfig } from "@lib/config";
-import { type Input, getDirectoryInput } from "@lib/input";
-import { getWatchInput } from "@lib/input";
-import { PackageManager, PackageManagerFactory } from "@lib/package-manager";
+import { type BuildConfig, type Config } from "@lib/config";
+import { type Input, getDirectoryInput, getStringInput, getWatchInput } from "@lib/input";
+import { PackageManagerFactory, PackageManagerName } from "@lib/package-manager";
 import { Messages } from "@lib/ui";
 
 import { getCwd } from "@utils/path";
+import { runSafe } from "@utils/run-safe";
 
 import { getConfig } from "~/action/common/config";
 
-import { AbstractAction } from "../abstract.action";
+import { AbstractAction, type HandleResult } from "../abstract.action";
 
-interface BuildPart {
+interface BuildTarget {
+  name: string;
   entry: string;
   output: string;
-  target: "client" | "server";
+  platform: "browser" | "node";
 }
 
 export class BuildAction extends AbstractAction {
-  public async handle(_args: Input, options: Input) {
-    console.info(Messages.BUILD_START);
-    console.info();
+  protected startMessage = Messages.BUILD_START;
+  protected successMessage = Messages.BUILD_SUCCESS;
+  protected failureMessage = Messages.BUILD_FAILED;
 
-    try {
-      const directory = getDirectoryInput(options);
-      const config = await getConfig(options, directory);
-      const watch = getWatchInput(options);
+  public async handle(_args: Input, options: Input): Promise<HandleResult> {
+    const directory = getDirectoryInput(options);
+    const config = await getConfig(options, directory);
+    const isWatch = getWatchInput(options);
 
-      const client = getPart(
-        config.client.build,
-        options.get("clientDirectory")?.value as string | undefined,
-        "client",
-      );
-      let res = await buildPart("Client", client, directory, { watch });
+    const targets = this.resolveTargets(config, options);
+    const results = await this.buildAll(targets, directory, isWatch);
 
-      if (config.server.enable) {
-        const server = getPart(
-          config.server.build,
-          options.get("serverDirectory")?.value as string | undefined,
-          "server",
-        );
-        res = (await buildPart("Server", server, directory, { watch })) ? res : false;
-      }
-
-      console.info();
-
-      if (watch) {
-        console.info(Messages.BUILD_WATCH_START);
-        console.info();
-        return;
-      }
-
-      if (!res) {
-        console.info(Messages.BUILD_FAILED);
-        process.exit(1);
-      }
-      console.info(Messages.BUILD_SUCCESS);
-      process.exit(0);
-    } catch (e) {
-      console.error(e);
-      process.exit(1);
+    if (isWatch) {
+      return this.enterWatchMode();
     }
+
+    return { success: results.every(Boolean) };
+  }
+
+  private resolveTargets(config: Config, options: Input): BuildTarget[] {
+    const targets: BuildTarget[] = [
+      this.createTarget(
+        "Client",
+        config.client.build,
+        "browser",
+        getStringInput(options, "clientDirectory"),
+      ),
+    ];
+
+    if (config.server.enable) {
+      targets.push(
+        this.createTarget(
+          "Server",
+          config.server.build,
+          "node",
+          getStringInput(options, "serverDirectory"),
+        ),
+      );
+    }
+
+    return targets;
+  }
+
+  private createTarget(
+    name: string,
+    config: BuildConfig,
+    platform: "browser" | "node",
+    outDirOverride?: string,
+  ): BuildTarget {
+    return {
+      name,
+      entry: config.entryFile,
+      output: outDirOverride || config.outDir,
+      platform,
+    };
+  }
+
+  private async buildAll(
+    targets: BuildTarget[],
+    directory: string,
+    isWatch: boolean,
+  ): Promise<boolean[]> {
+    const results: boolean[] = [];
+    for (const target of targets) {
+      const result = await this.buildTarget(target, directory, isWatch);
+      results.push(result);
+    }
+    return results;
+  }
+
+  private async buildTarget(
+    target: BuildTarget,
+    directory: string,
+    isWatch: boolean,
+  ): Promise<boolean> {
+    const packageManager = PackageManagerFactory.create(PackageManagerName.LOCAL_BUN);
+
+    const executeBuild = (rebuild = false) =>
+      runSafe(
+        () =>
+          packageManager.build(
+            target.name,
+            directory,
+            target.entry,
+            target.output,
+            ["--asset-naming", "[name].[ext]", "--target", target.platform],
+            rebuild,
+          ),
+        false,
+      );
+
+    if (isWatch) {
+      this.watchDirectory(directory, target.entry, () => executeBuild(true));
+    }
+
+    const result = await executeBuild();
+    return result !== false;
+  }
+
+  private watchDirectory(directory: string, entry: string, onChange: () => void): void {
+    const watchPath = dirname(join(getCwd(directory), entry));
+    watch(watchPath).on("change", onChange);
+  }
+
+  private enterWatchMode(): HandleResult {
+    console.info();
+    console.info(Messages.BUILD_WATCH_START);
+    console.info();
+    return { keepAlive: true };
   }
 }
-
-const getPart = (
-  config: BuildConfig,
-  directoryOption: string | undefined,
-  target: "client" | "server",
-): BuildPart => {
-  return {
-    entry: config.entryFile,
-    output: directoryOption || config.outDir,
-    target: target,
-  };
-};
-
-const buildPart = async (
-  name: string,
-  part: BuildPart,
-  directory: string,
-  options?: { watch?: boolean },
-) => {
-  const packageManagerName = PackageManager.LOCAL_BUN;
-
-  const packageManager = PackageManagerFactory.create(packageManagerName);
-
-  const build = async (watch = false) => {
-    try {
-      return await packageManager.build(
-        name,
-        directory,
-        part.entry,
-        part.output,
-        [
-          "--asset-naming",
-          "[name].[ext]",
-          "--target",
-          part.target === "client" ? "browser" : "node",
-        ],
-        watch,
-      );
-    } catch (error: any) {
-      if (error && error.message) {
-        console.error(ansis.red(error.message));
-      }
-      return false;
-    }
-  };
-
-  if (options?.watch)
-    watch(dirname(join(getCwd(directory), part.entry))).on("change", () => build(true));
-
-  return await build();
-};

@@ -1,57 +1,51 @@
 import fs from "fs";
 import { resolve } from "path";
 
-import { type AbstractPackageManager } from "./abstract.package-manager";
+import { RunnerFactory } from "@lib/runner";
+
 import { PackageManager } from "./package-manager";
-import { BunPackageManager } from "./package-managers/bun.package-manager";
-import { LocalBunPackageManager } from "./package-managers/local-bun.package-manager";
-import { NpmPackageManager } from "./package-managers/npm.package-manager";
-import { PnpmPackageManager } from "./package-managers/pnpm.package-manager";
-import { YarnPackageManager } from "./package-managers/yarn.package-manager";
+import { PM_CONFIGS } from "./package-manager-configs";
+import { PackageManagerName } from "./package-manager-name";
+
+const LOCK_FILE_MAP: Record<string, PackageManagerName> = {
+  "bun.lock": PackageManagerName.BUN,
+  "package-lock.json": PackageManagerName.NPM,
+  "pnpm-lock.yaml": PackageManagerName.PNPM,
+  "yarn.lock": PackageManagerName.YARN,
+};
 
 export class PackageManagerFactory {
-  public static create(name: PackageManager | string): AbstractPackageManager {
-    switch (name) {
-      case PackageManager.BUN:
-        return new BunPackageManager();
-      case PackageManager.LOCAL_BUN:
-        return new LocalBunPackageManager();
-      case PackageManager.NPM:
-        return new NpmPackageManager();
-      case PackageManager.PNPM:
-        return new PnpmPackageManager();
-      case PackageManager.YARN:
-        return new YarnPackageManager();
-      default:
-        throw new Error(`Package manager ${name} is not managed.`);
+  public static create(name: PackageManagerName | string): PackageManager {
+    const config = PM_CONFIGS[name as PackageManagerName];
+    if (!config) {
+      throw new Error(`Package manager ${name} is not managed.`);
     }
+
+    const runner = this.createRunner(name as PackageManagerName, config.binary);
+    return new PackageManager(name, config.commands, runner);
   }
 
-  public static async find(directory: string = "."): Promise<AbstractPackageManager> {
-    const DEFAULT_PACKAGE_MANAGER = PackageManager.NPM;
+  public static async find(directory = "."): Promise<PackageManager> {
+    const detected = await this.detectFromLockFile(directory);
+    return this.create(detected);
+  }
 
+  private static createRunner(name: PackageManagerName, binary: string) {
+    if (name === PackageManagerName.LOCAL_BUN) {
+      return RunnerFactory.createLocal("bun");
+    }
+    return RunnerFactory.create(binary);
+  }
+
+  private static async detectFromLockFile(directory: string): Promise<PackageManagerName> {
     try {
       const files = await fs.promises.readdir(resolve(directory));
-
-      if (files.includes("bun.lock")) {
-        return this.create(PackageManager.BUN);
+      for (const [lockFile, pmName] of Object.entries(LOCK_FILE_MAP)) {
+        if (files.includes(lockFile)) return pmName;
       }
-
-      if (files.includes("package-lock.json")) {
-        return this.create(PackageManager.NPM);
-      }
-
-      if (files.includes("pnpm-lock.yaml")) {
-        return this.create(PackageManager.PNPM);
-      }
-
-      if (files.includes("yarn.lock")) {
-        return this.create(PackageManager.YARN);
-      }
-
-      return this.create(DEFAULT_PACKAGE_MANAGER);
     } catch {
-      return this.create(DEFAULT_PACKAGE_MANAGER);
+      // directory unreadable, fall through to default
     }
+    return PackageManagerName.NPM;
   }
 }

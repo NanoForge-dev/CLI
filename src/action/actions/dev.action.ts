@@ -1,48 +1,47 @@
-import * as ansis from "ansis";
-
 import { type Input, getDevGenerateInput, getDirectoryInput } from "@lib/input";
 import { PackageManagerFactory } from "@lib/package-manager";
 import { Messages } from "@lib/ui";
 
-import { AbstractAction } from "../abstract.action";
+import { runSafe } from "@utils/run-safe";
+
+import { AbstractAction, type HandleResult } from "../abstract.action";
 
 export class DevAction extends AbstractAction {
-  public async handle(_args: Input, options: Input) {
-    console.info(Messages.DEV_START);
-    console.info();
+  protected startMessage = Messages.DEV_START;
+  protected successMessage = Messages.DEV_SUCCESS;
+  protected failureMessage = Messages.DEV_FAILED;
 
-    try {
-      const directory = getDirectoryInput(options);
-      const generate = getDevGenerateInput(options);
+  public async handle(_args: Input, options: Input): Promise<HandleResult> {
+    const directory = getDirectoryInput(options);
+    const generate = getDevGenerateInput(options);
 
-      await Promise.all([
-        generate ? runAction("generate", [], directory, false) : undefined,
-        runAction("build", [], directory, false),
-        runAction("start", [], directory, true),
-      ]);
+    const tasks = this.buildTaskList(directory, generate);
+    await Promise.all(tasks);
 
-      console.info(Messages.DEV_SUCCESS);
-      process.exit(0);
-    } catch (e) {
-      console.error(Messages.DEV_FAILED);
-      console.error(e);
-      process.exit(1);
+    return { keepAlive: true };
+  }
+
+  private buildTaskList(directory: string, generate: boolean): Promise<void>[] {
+    const tasks: Promise<void>[] = [];
+
+    if (generate) {
+      tasks.push(this.runSubCommand("generate", directory, { silent: true }));
     }
+
+    tasks.push(this.runSubCommand("build", directory, { silent: true }));
+    tasks.push(this.runSubCommand("start", directory, { silent: false }));
+
+    return tasks;
+  }
+
+  private async runSubCommand(
+    command: string,
+    directory: string,
+    options: { silent: boolean },
+  ): Promise<void> {
+    await runSafe(async () => {
+      const packageManager = await PackageManagerFactory.find(directory);
+      await packageManager.runDev(directory, "nf", {}, [command, "--watch"], options.silent);
+    });
   }
 }
-
-const runAction = async (
-  command: string,
-  params: string[],
-  directory: string,
-  stdout: boolean = false,
-) => {
-  try {
-    const packageManager = await PackageManagerFactory.find(directory);
-    await packageManager.runDev(directory, "nf", {}, [command, ...params, "--watch"], !stdout);
-  } catch (error: any) {
-    if (error && error.message) {
-      console.error(ansis.red(error.message));
-    }
-  }
-};

@@ -1,19 +1,19 @@
-import * as console from "node:console";
-import { join } from "path";
+import { join } from "node:path";
 
 import { type Config } from "@lib/config";
+import { NANOFORGE_DIR } from "@lib/constants";
 import { type Input, getDirectoryInput, getWatchInput } from "@lib/input";
-import { type AbstractCollection, Collection, CollectionFactory } from "@lib/schematics";
+import { Collection, CollectionFactory } from "@lib/schematics";
 import { Messages } from "@lib/ui";
 
 import { getCwd } from "@utils/path";
 
 import { getConfig } from "~/action/common/config";
 
-import { AbstractAction } from "../abstract.action";
+import { AbstractAction, type HandleResult } from "../abstract.action";
 import { executeSchematic } from "../common/schematics";
 
-interface GenerateOptions {
+interface GenerateValues {
   name: string;
   directory: string;
   language: string;
@@ -22,81 +22,79 @@ interface GenerateOptions {
 }
 
 export class GenerateAction extends AbstractAction {
-  public async handle(_args: Input, options: Input) {
-    console.info(Messages.GENERATE_START);
-    console.info();
+  protected startMessage = Messages.GENERATE_START;
+  protected successMessage = Messages.GENERATE_SUCCESS;
+  protected failureMessage = Messages.GENERATE_FAILED;
 
-    try {
-      const directory = getDirectoryInput(options);
+  public async handle(_args: Input, options: Input): Promise<HandleResult> {
+    const directory = getDirectoryInput(options);
+    const config = await getConfig(options, directory);
+    const isWatch = getWatchInput(options);
 
-      const config = await getConfig(options, directory);
-      const watch = getWatchInput(options);
+    const values = this.extractValues(config);
+    await this.generateParts(values, directory, isWatch);
 
-      const values = await getSchemaValues(config);
+    if (isWatch) {
+      return this.enterWatchMode();
+    }
 
-      await generateFiles(values, directory, watch);
+    return {};
+  }
 
-      console.info();
+  private extractValues(config: Config): GenerateValues {
+    return {
+      name: config.name,
+      directory: ".",
+      language: config.language,
+      server: config.server.enable,
+      initFunctions: config.initFunctions,
+    };
+  }
 
-      if (watch) {
-        console.info(Messages.GENERATE_WATCH_START);
-        console.info();
-        return;
-      }
+  private async generateParts(
+    values: GenerateValues,
+    directory: string,
+    watch: boolean,
+  ): Promise<void> {
+    const collection = CollectionFactory.create(Collection.NANOFORGE, directory);
+    const baseOptions = this.baseSchematicOptions(values);
 
-      console.info(Messages.GENERATE_SUCCESS);
-      process.exit(0);
-    } catch (e) {
-      console.error(Messages.GENERATE_FAILED);
-      console.error(e);
-      process.exit(1);
+    await executeSchematic(
+      "Client main file",
+      collection,
+      "part-main",
+      { ...baseOptions, part: "client" },
+      watch ? this.watchPath(directory, values.directory, "client") : undefined,
+    );
+
+    if (values.server) {
+      await executeSchematic(
+        "Server main file",
+        collection,
+        "part-main",
+        { ...baseOptions, part: "server" },
+        this.watchPath(directory, values.directory, "server"),
+      );
     }
   }
-}
 
-const getSchemaValues = async (config: Config): Promise<GenerateOptions> => {
-  return {
-    name: config.name,
-    directory: ".",
-    language: config.language,
-    server: config.server.enable,
-    initFunctions: config.initFunctions,
-  };
-};
-
-const generateFiles = async (values: GenerateOptions, directory: string, watch?: boolean) => {
-  const collection: AbstractCollection = CollectionFactory.create(Collection.NANOFORGE, directory);
-
-  console.info(Messages.SCHEMATICS_START);
-  console.info();
-
-  await executeSchematic(
-    "Client main file",
-    collection,
-    "part-main",
-    {
+  private baseSchematicOptions(values: GenerateValues) {
+    return {
       name: values.name,
-      part: "client",
       directory: values.directory,
       language: values.language,
       initFunctions: values.initFunctions,
-    },
-    watch ? join(getCwd(directory), values.directory, ".nanoforge", "client.save.json") : undefined,
-  );
-
-  if (values.server) {
-    await executeSchematic(
-      "Server main file",
-      collection,
-      "part-main",
-      {
-        name: values.name,
-        part: "server",
-        directory: values.directory,
-        language: values.language,
-        initFunctions: values.initFunctions,
-      },
-      join(getCwd(directory), values.directory, ".nanoforge", "server.save.json"),
-    );
+    };
   }
-};
+
+  private watchPath(directory: string, subDir: string, part: string): string {
+    return join(getCwd(directory), subDir, NANOFORGE_DIR, `${part}.save.json`);
+  }
+
+  private enterWatchMode(): HandleResult {
+    console.info();
+    console.info(Messages.GENERATE_WATCH_START);
+    console.info();
+    return { keepAlive: true };
+  }
+}

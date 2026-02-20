@@ -1,7 +1,9 @@
 import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
 import { existsSync, readFileSync } from "node:fs";
-import { join } from "path";
+import { join } from "node:path";
+
+import { CONFIG_FILE_NAME } from "@lib/constants";
 
 import { deepMerge } from "@utils/object";
 
@@ -14,11 +16,11 @@ const getConfigPath = (directory: string, name?: string) => {
   if (name) {
     return join(directory, name);
   } else {
-    for (const n of ["nanoforge.config.json"]) {
+    for (const n of [CONFIG_FILE_NAME]) {
       const path = join(directory, n);
       if (existsSync(path)) return path;
     }
-    throw new Error(`Unsupported config: ${name}`);
+    throw new Error(`No config file found in directory: ${directory}`);
   }
 };
 
@@ -28,7 +30,6 @@ export const loadConfig = async (directory: string, name?: string): Promise<Conf
   let rawData;
 
   const path = getConfigPath(directory, name);
-  if (!path) throw new Error("No config file found");
   try {
     rawData = deepMerge(CONFIG_DEFAULTS, JSON.parse(readFileSync(path, "utf-8")));
   } catch {

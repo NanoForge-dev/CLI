@@ -1,6 +1,6 @@
 import { type Command } from "commander";
 
-import { type Input } from "@lib/input";
+import { CONFIG_FILE_NAME } from "@lib/constants";
 
 import { AbstractCommand } from "../abstract.command";
 
@@ -16,16 +16,16 @@ export class DevCommand extends AbstractCommand {
       .command("dev")
       .description("run your game in dev mode")
       .option("-d, --directory [directory]", "specify the directory of your project")
+      .option("-c, --config [config]", "path to the config file", CONFIG_FILE_NAME)
       .option("--generate", "generate app from config", false)
       .action(async (rawOptions: DevOptions) => {
-        const options: Input = new Map();
-        options.set("directory", { value: rawOptions.directory });
-        options.set("config", { value: rawOptions.config });
-        options.set("generate", { value: rawOptions.generate });
+        const options = AbstractCommand.mapToInput({
+          directory: rawOptions.directory,
+          config: rawOptions.config,
+          generate: rawOptions.generate,
+        });
 
-        const args: Input = new Map();
-
-        await this.action.handle(args, options);
+        await this.action.run(new Map(), options);
       });
   }
 }

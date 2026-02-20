@@ -1,6 +1,6 @@
 import { type Command } from "commander";
 
-import { type Input } from "@lib/input";
+import { CONFIG_FILE_NAME } from "@lib/constants";
 
 import { AbstractCommand } from "../abstract.command";
 
@@ -16,17 +16,16 @@ export class GenerateCommand extends AbstractCommand {
       .command("generate")
       .description("generate nanoforge files from config")
       .option("-d, --directory [directory]", "specify the directory of your project")
-      .option("-c, --config [config]", "path to the config file", "nanoforge.config.json")
+      .option("-c, --config [config]", "path to the config file", CONFIG_FILE_NAME)
       .option("--watch", "generate app in watching mode", false)
       .action(async (rawOptions: GenerateOptions) => {
-        const options: Input = new Map();
-        options.set("directory", { value: rawOptions.directory });
-        options.set("config", { value: rawOptions.config });
-        options.set("watch", { value: rawOptions.watch });
+        const options = AbstractCommand.mapToInput({
+          directory: rawOptions.directory,
+          config: rawOptions.config,
+          watch: rawOptions.watch,
+        });
 
-        const args: Input = new Map();
-
-        await this.action.handle(args, options);
+        await this.action.run(new Map(), options);
       });
   }
 }

@@ -1,13 +1,14 @@
+import { type Runner } from "@lib/runner/runner";
+
 import { getCwd } from "@utils/path";
 
-import { type AbstractRunner } from "../runner/abstract.runner";
 import { type Schematic } from "./nanoforge.collection";
 import { type SchematicOption } from "./schematic.option";
 
 export abstract class AbstractCollection {
   protected constructor(
     protected collection: string,
-    protected runner: AbstractRunner,
+    protected runner: Runner,
     protected cwd?: string,
   ) {}
 
@@ -15,17 +16,14 @@ export abstract class AbstractCollection {
     name: string,
     options: SchematicOption[],
     flags?: string[],
-    failSpinner?: () => void,
-  ) {
+    onFail?: () => void,
+  ): Promise<void> {
     const command = this.buildCommandLine(name, options, flags);
-    await this.runner.run(
-      command,
-      true,
-      this.cwd ? getCwd(this.cwd) : undefined,
-      undefined,
-      undefined,
-      failSpinner,
-    );
+    await this.runner.run(command, {
+      collect: true,
+      cwd: this.cwd ? getCwd(this.cwd) : undefined,
+      onFail,
+    });
   }
 
   public abstract getSchematics(): Schematic[];
@@ -35,13 +33,10 @@ export abstract class AbstractCollection {
     options: SchematicOption[],
     flags: string[] = [],
   ): string[] {
-    return [`${this.collection}:${name}`, ...flags, ...this.buildOptions(options)];
+    return [`${this.collection}:${name}`, ...flags, ...this.serializeOptions(options)];
   }
 
-  private buildOptions(options: SchematicOption[]): string[] {
-    return options.reduce(
-      (old: string[], option: SchematicOption) => [...old, ...option.toCommandString()],
-      [],
-    );
+  private serializeOptions(options: SchematicOption[]): string[] {
+    return options.flatMap((option) => option.toCommandString());
   }
 }

@@ -1,6 +1,1 @@
-import ora from "ora";
-
-export const getSpinner = (message: string) =>
-  ora({
-    text: message,
-  });
+export { getSpinner } from "@lib/ui/spinner";

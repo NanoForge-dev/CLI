@@ -1,40 +1,21 @@
-import * as ansis from "ansis";
-import * as process from "node:process";
-
 import { type Input, getDirectoryInput, getInstallNamesInputOrAsk } from "@lib/input";
 import { PackageManagerFactory } from "@lib/package-manager";
 import { Messages } from "@lib/ui";
 
-import { AbstractAction } from "../abstract.action";
+import { AbstractAction, type HandleResult } from "../abstract.action";
 
 export class InstallAction extends AbstractAction {
-  public async handle(args: Input, options: Input) {
-    console.info(Messages.INSTALL_START);
-    console.info();
+  protected startMessage = Messages.INSTALL_START;
+  protected successMessage = Messages.INSTALL_SUCCESS;
+  protected failureMessage = Messages.INSTALL_FAILED;
 
-    try {
-      const names = await getInstallNamesInputOrAsk(args);
-      const directory = getDirectoryInput(options);
+  public async handle(args: Input, options: Input): Promise<HandleResult> {
+    const names = await getInstallNamesInputOrAsk(args);
+    const directory = getDirectoryInput(options);
 
-      await installPackages(names, directory);
+    const packageManager = await PackageManagerFactory.find(directory);
+    const success = await packageManager.addProduction(directory, names);
 
-      process.exit(0);
-    } catch (e) {
-      console.error(e);
-      process.exit(1);
-    }
+    return { success };
   }
 }
-
-const installPackages = async (names: string[], directory: string) => {
-  try {
-    const packageManager = await PackageManagerFactory.find(directory);
-    const res = await packageManager.addProduction(directory, names);
-    if (!res) process.exit(1);
-  } catch (error: any) {
-    if (error && error.message) {
-      console.error(ansis.red(error.message));
-    }
-    process.exit(1);
-  }
-};

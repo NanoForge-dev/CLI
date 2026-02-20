@@ -1,7 +1,4 @@
-import * as ansis from "ansis";
-import console from "node:console";
 import { join } from "node:path";
-import * as process from "node:process";
 
 import { type Input, getDirectoryInput } from "@lib/input";
 import { getNewInitFunctionsWithDefault } from "@lib/input/inputs/new/init-functions.input";
@@ -13,13 +10,13 @@ import { getNewServerOrAsk } from "@lib/input/inputs/new/server.input";
 import { getNewSkipInstallOrAsk } from "@lib/input/inputs/new/skip-install.input";
 import { getNewStrictOrAsk } from "@lib/input/inputs/new/strict.input";
 import { PackageManagerFactory } from "@lib/package-manager";
-import { type AbstractCollection, Collection, CollectionFactory } from "@lib/schematics";
+import { Collection, CollectionFactory } from "@lib/schematics";
 import { Messages } from "@lib/ui";
 
-import { AbstractAction } from "../abstract.action";
+import { AbstractAction, type HandleResult } from "../abstract.action";
 import { executeSchematic } from "../common/schematics";
 
-interface NewOptions {
+interface NewValues {
   name: string;
   directory?: string;
   packageManager: string;
@@ -31,106 +28,119 @@ interface NewOptions {
 }
 
 export class NewAction extends AbstractAction {
-  public async handle(_args: Input, options: Input) {
-    console.info(Messages.NEW_START);
+  protected startMessage = Messages.NEW_START;
+  protected successMessage = Messages.NEW_SUCCESS;
+  protected failureMessage = Messages.NEW_FAILED;
 
-    try {
-      const directory = getDirectoryInput(options);
+  public async handle(_args: Input, options: Input): Promise<HandleResult> {
+    const directory = getDirectoryInput(options);
+    const values = await this.collectValues(options);
 
-      const values = await getSchemaValues(options);
+    await this.scaffold(values, directory);
 
-      await generateApplicationFiles(values, directory);
+    let res = true;
 
-      if (!values.skipInstall)
-        await runInstall(join(directory, values.name), values.packageManager);
+    if (!values.skipInstall) {
+      res = await this.installDependencies(values.packageManager, join(directory, values.name));
+    }
 
-      console.info();
-      console.info(Messages.NEW_SUCCESS);
-      process.exit(0);
-    } catch {
-      console.error(Messages.NEW_FAILED);
-      process.exit(1);
+    return { success: res };
+  }
+
+  private async collectValues(inputs: Input): Promise<NewValues> {
+    return {
+      name: await getNewNameInputOrAsk(inputs),
+      directory: getNewPathInput(inputs),
+      packageManager: await getNewPackageManagerInputOrAsk(inputs),
+      language: await getNewLanguageInputOrAsk(inputs),
+      strict: await getNewStrictOrAsk(inputs),
+      server: await getNewServerOrAsk(inputs),
+      initFunctions: getNewInitFunctionsWithDefault(inputs),
+      skipInstall: await getNewSkipInstallOrAsk(inputs),
+    };
+  }
+
+  private async scaffold(values: NewValues, directory: string): Promise<void> {
+    const collection = CollectionFactory.create(Collection.NANOFORGE, directory);
+
+    console.info(Messages.SCHEMATICS_START);
+    console.info();
+
+    await this.generateApplication(collection, values);
+    await this.generateConfiguration(collection, values);
+    await this.generateClientParts(collection, values);
+
+    if (values.server) {
+      await this.generateServerParts(collection, values);
     }
   }
-}
 
-const getSchemaValues = async (inputs: Input): Promise<NewOptions> => {
-  return {
-    name: await getNewNameInputOrAsk(inputs),
-    directory: getNewPathInput(inputs),
-    packageManager: await getNewPackageManagerInputOrAsk(inputs),
-    language: await getNewLanguageInputOrAsk(inputs),
-    strict: await getNewStrictOrAsk(inputs),
-    server: await getNewServerOrAsk(inputs),
-    initFunctions: getNewInitFunctionsWithDefault(inputs),
-    skipInstall: await getNewSkipInstallOrAsk(inputs),
-  };
-};
-
-const generateApplicationFiles = async (values: NewOptions, directory: string) => {
-  console.info();
-  const collection: AbstractCollection = CollectionFactory.create(Collection.NANOFORGE, directory);
-
-  console.info();
-  console.info(Messages.SCHEMATICS_START);
-  console.info();
-
-  await executeSchematic("Application", collection, "application", {
-    name: values.name,
-    directory: values.directory,
-    packageManager: values.packageManager,
-    language: values.language,
-    strict: values.strict,
-    server: values.server,
-  });
-  await executeSchematic("Configuration", collection, "configuration", {
-    name: values.name,
-    directory: values.directory,
-    server: values.server,
-  });
-  await executeSchematic("Base Client", collection, "part-base", {
-    name: values.name,
-    part: "client",
-    directory: values.directory,
-    language: values.language,
-    initFunctions: values.initFunctions,
-    server: values.server,
-  });
-  await executeSchematic("Client main file", collection, "part-main", {
-    name: values.name,
-    part: "client",
-    directory: values.directory,
-    language: values.language,
-    initFunctions: values.initFunctions,
-  });
-
-  if (values.server) {
-    await executeSchematic("Base server", collection, "part-base", {
+  private generateApplication(
+    collection: ReturnType<typeof CollectionFactory.create>,
+    values: NewValues,
+  ) {
+    return executeSchematic("Application", collection, "application", {
       name: values.name,
-      part: "server",
       directory: values.directory,
+      packageManager: values.packageManager,
       language: values.language,
-      initFunctions: values.initFunctions,
+      strict: values.strict,
       server: values.server,
     });
-    await executeSchematic("Server main file", collection, "part-main", {
+  }
+
+  private generateConfiguration(
+    collection: ReturnType<typeof CollectionFactory.create>,
+    values: NewValues,
+  ) {
+    return executeSchematic("Configuration", collection, "configuration", {
       name: values.name,
-      part: "server",
+      directory: values.directory,
+      server: values.server,
+    });
+  }
+
+  private async generateClientParts(
+    collection: ReturnType<typeof CollectionFactory.create>,
+    values: NewValues,
+  ) {
+    const partOptions = this.partOptions(values, "client");
+
+    await executeSchematic("Client base", collection, "part-base", {
+      ...partOptions,
+      server: values.server,
+    });
+    await executeSchematic("Client main file", collection, "part-main", partOptions);
+  }
+
+  private async generateServerParts(
+    collection: ReturnType<typeof CollectionFactory.create>,
+    values: NewValues,
+  ) {
+    const partOptions = this.partOptions(values, "server");
+
+    await executeSchematic("Server base", collection, "part-base", {
+      ...partOptions,
+      server: values.server,
+    });
+    await executeSchematic("Server main file", collection, "part-main", partOptions);
+  }
+
+  private partOptions(values: NewValues, part: "client" | "server") {
+    return {
+      name: values.name,
+      part,
       directory: values.directory,
       language: values.language,
       initFunctions: values.initFunctions,
-    });
+    };
   }
-};
 
-const runInstall = async (directory: string, pkgManagerName: string) => {
-  try {
-    const packageManager = PackageManagerFactory.create(pkgManagerName);
-    await packageManager.install(directory);
-  } catch (error: any) {
-    if (error && error.message) {
-      console.error(ansis.red(error.message));
-    }
-    process.exit(1);
+  private async installDependencies(
+    packageManagerName: string,
+    directory: string,
+  ): Promise<boolean> {
+    const packageManager = PackageManagerFactory.create(packageManagerName);
+    return await packageManager.install(directory);
   }
-};
+}

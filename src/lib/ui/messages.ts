@@ -2,52 +2,73 @@ import { green } from "ansis";
 
 import { Emojis } from "./emojis";
 
+const success = (text: string) => `${Emojis.ROCKET}  ${text}`;
+const failure = (text: string) => `${Emojis.SCREAM}  ${text}`;
+
 export const Messages = {
+  // --- Build ---
   BUILD_START: "NanoForge Build",
-  BUILD_WATCH_START: "Start watching mode",
+  BUILD_SUCCESS: success("Build succeeded!"),
+  BUILD_FAILED: failure("Build failed!"),
+  BUILD_WATCH_START: "Watching for changes...",
   BUILD_PART_IN_PROGRESS: (part: string) => `Building ${part}`,
-  BUILD_PART_WATCH_IN_PROGRESS: (part: string) => `${part} updated. Rebuilding`,
-  BUILD_NOTHING: "Nothing to build, terminated.",
-  BUILD_SUCCESS: `${Emojis.ROCKET}  Build succeeded !`,
-  BUILD_PART_FAILED: (part: string, commandToRunManually: string) =>
-    `${Emojis.SCREAM}  Build of ${part} failed !\nIn case you don't see any errors above, consider manually running the failed command ${commandToRunManually} to see more details on why it errored out.`,
-  BUILD_FAILED: `${Emojis.SCREAM}  Build failed !`,
+  BUILD_PART_WATCH_IN_PROGRESS: (part: string) => `${part} updated, rebuilding`,
+  BUILD_PART_FAILED: (part: string, command: string) =>
+    failure(`Build of ${part} failed!\nTry running manually: ${command}`),
+
+  // --- Install ---
   INSTALL_START: "NanoForge Installation",
-  INSTALL_NAMES_QUESTION: "Witch libraries do you want to install ?",
+  INSTALL_SUCCESS: success("Installation completed!"),
+  INSTALL_FAILED: failure("Installation failed!"),
+  INSTALL_NAMES_QUESTION: "Which libraries do you want to install?",
+
+  // --- New Project ---
   NEW_START: "NanoForge Project Creation",
-  NEW_SUCCESS: `${Emojis.ROCKET}  Project successfully created !`,
-  NEW_FAILED: `${Emojis.SCREAM}  Project creation failed !`,
-  NEW_NAME_QUESTION: "What is the name of your project ?",
-  NEW_PACKAGE_MANAGER_QUESTION: "Which package manager do you want to use ?",
-  NEW_LANGUAGE_QUESTION: "Which language do you want to use ?",
-  NEW_STRICT_QUESTION: "Do you want to use types strict mode ?",
-  NEW_SERVER_QUESTION: "Do you want generate a server to create a multiplayer game ?",
-  NEW_SKIP_INSTALL_QUESTION: "Do you want to skip installation ?",
+  NEW_SUCCESS: success("Project successfully created!"),
+  NEW_FAILED: failure("Project creation failed!"),
+  NEW_NAME_QUESTION: "What is the name of your project?",
+  NEW_PACKAGE_MANAGER_QUESTION: "Which package manager do you want to use?",
+  NEW_LANGUAGE_QUESTION: "Which language do you want to use?",
+  NEW_STRICT_QUESTION: "Do you want to use strict type checking?",
+  NEW_SERVER_QUESTION: "Do you want to generate a server for multiplayer?",
+  NEW_SKIP_INSTALL_QUESTION: "Do you want to skip dependency installation?",
+
+  // --- Generate ---
   GENERATE_START: "NanoForge Generate",
-  GENERATE_WATCH_START: "Start watching mode",
-  GENERATE_SUCCESS: `${Emojis.ROCKET}  Generate succeeded !`,
-  GENERATE_FAILED: `${Emojis.SCREAM}  Generate failed !`,
-  DEV_START: "NanoForge Dev mode",
+  GENERATE_SUCCESS: success("Generation succeeded!"),
+  GENERATE_FAILED: failure("Generation failed!"),
+  GENERATE_WATCH_START: "Watching for changes...",
+
+  // --- Dev ---
+  DEV_START: "NanoForge Dev Mode",
   DEV_SUCCESS: "Dev mode ended",
-  DEV_FAILED: `${Emojis.SCREAM}  Dev failed !`,
-  SCHEMATICS_START: "Schematics execution",
-  SCHEMATIC_IN_PROGRESS: (name: string) => `Executing schematic ${name}...`,
-  SCHEMATIC_WATCH_IN_PROGRESS: (name: string) => `Update watched. Executing schematic ${name}...`,
-  SCHEMATIC_SUCCESS: (name: string) =>
-    `${Emojis.ROCKET}  Schematic ${name} executed successfully !`,
-  SCHEMATIC_FAILED: (name: string) =>
-    `${Emojis.SCREAM}  Schematic ${name} execution failed. See error below for more details.`,
-  PACKAGE_MANAGER_INSTALLATION_IN_PROGRESS: `Installation in progress... ${Emojis.COFFEE}`,
-  PACKAGE_MANAGER_INSTALLATION_NOTHING: "Nothing to install, terminated.",
+  DEV_FAILED: failure("Dev mode failed!"),
+
+  // --- Start ---
+  START_START: "NanoForge Start",
+  START_SUCCESS: success("Start completed!"),
+  START_FAILED: failure("Start failed!"),
+  START_PART_IN_PROGRESS: (part: string) => `Starting ${part}...`,
+  START_PART_SUCCESS: (part: string) => success(`${part} terminated.`),
+  START_PART_FAILED: (part: string) => failure(`${part} failed!`),
+
+  // --- Schematics ---
+  SCHEMATICS_START: "Running schematics",
+  SCHEMATIC_IN_PROGRESS: (name: string) => `Generating ${name}...`,
+  SCHEMATIC_WATCH_IN_PROGRESS: (name: string) => `Change detected, regenerating ${name}...`,
+  SCHEMATIC_SUCCESS: (name: string) => success(`${name} generated successfully!`),
+  SCHEMATIC_FAILED: (name: string) => failure(`${name} generation failed.`),
+
+  // --- Package Manager ---
+  PACKAGE_MANAGER_INSTALLATION_IN_PROGRESS: `Installing dependencies... ${Emojis.COFFEE}`,
+  PACKAGE_MANAGER_INSTALLATION_NOTHING: "Nothing to install.",
   PACKAGE_MANAGER_INSTALLATION_SUCCEED: (names?: string[]) =>
     names
-      ? `${Emojis.ROCKET}  Packages successfully installed : ${names.map((name) => green(name)).join(", ")} !`
-      : `${Emojis.ROCKET}  Packages successfully installed !`,
-  PACKAGE_MANAGER_INSTALLATION_FAILED: (commandToRunManually: string) =>
-    `${Emojis.SCREAM}  Packages installation failed !\nIn case you don't see any errors above, consider manually running the failed command ${commandToRunManually} to see more details on why it errored out.`,
-  RUN_START: "NanoForge Run",
-  RUN_PART_IN_PROGRESS: (part: string) => `Running ${part}...`,
-  RUN_PART_SUCCESS: (part: string) => `${Emojis.ROCKET}  Run of ${part} terminated.`,
-  RUN_PART_FAILED: (part: string) => `${Emojis.SCREAM}  Run of ${part} failed !`,
+      ? success(`Packages installed: ${names.map((n) => green(n)).join(", ")}`)
+      : success("Packages installed!"),
+  PACKAGE_MANAGER_INSTALLATION_FAILED: (command: string) =>
+    failure(`Package installation failed!\nTry running manually: ${command}`),
+
+  // --- Runner ---
   RUNNER_EXECUTION_ERROR: (command: string) => `\nFailed to execute command: ${command}`,
 };

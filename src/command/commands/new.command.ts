@@ -1,7 +1,5 @@
 import { type Command } from "commander";
 
-import { type Input } from "@lib/input";
-
 import { AbstractCommand } from "../abstract.command";
 
 interface NewOptions {
@@ -35,20 +33,19 @@ export class NewCommand extends AbstractCommand {
       .option("--skip-install", "skip installing dependencies")
       .option("--no-skip-install", "do not skip installing dependencies")
       .action(async (rawOptions: NewOptions) => {
-        const options: Input = new Map();
-        options.set("directory", { value: rawOptions.directory });
-        options.set("name", { value: rawOptions.name });
-        options.set("path", { value: rawOptions.path });
-        options.set("packageManager", { value: rawOptions.packageManager });
-        options.set("language", { value: rawOptions.language });
-        options.set("strict", { value: rawOptions.strict });
-        options.set("server", { value: rawOptions.server });
-        options.set("initFunctions", { value: rawOptions.initFunctions });
-        options.set("skipInstall", { value: rawOptions.skipInstall });
+        const options = AbstractCommand.mapToInput({
+          directory: rawOptions.directory,
+          name: rawOptions.name,
+          path: rawOptions.path,
+          packageManager: rawOptions.packageManager,
+          language: rawOptions.language,
+          strict: rawOptions.strict,
+          server: rawOptions.server,
+          initFunctions: rawOptions.initFunctions,
+          skipInstall: rawOptions.skipInstall,
+        });
 
-        const args: Input = new Map();
-
-        await this.action.handle(args, options);
+        await this.action.run(new Map(), options);
       });
   }
 }

@@ -62,7 +62,9 @@ describe("loadConfig", () => {
 
     const { loadConfig: freshLoad } = await import("./config-loader");
 
-    await expect(freshLoad("/project")).rejects.toThrow("Unsupported config");
+    await expect(freshLoad("/project")).rejects.toThrow(
+      "No config file found in directory: /project",
+    );
   });
 
   it("should throw when config file cannot be parsed", async () => {
