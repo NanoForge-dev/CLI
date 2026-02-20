@@ -1,6 +1,6 @@
 import { type Command } from "commander";
 
-import { type Input } from "@lib/input";
+import { CONFIG_FILE_NAME } from "@lib/constants";
 
 import { AbstractCommand } from "../abstract.command";
 
@@ -18,21 +18,20 @@ export class BuildCommand extends AbstractCommand {
       .command("build")
       .description("build your game")
       .option("-d, --directory [directory]", "specify the directory of your project")
-      .option("-c, --config [config]", "path to the config file", "nanoforge.config.json")
+      .option("-c, --config [config]", "path to the config file", CONFIG_FILE_NAME)
       .option("--client-outDir [clientDirectory]", "specify the output directory of the client")
       .option("--server-outDir [serverDirectory]", "specify the output directory of the server")
       .option("--watch", "build app in watching mode", false)
       .action(async (rawOptions: BuildOptions) => {
-        const options: Input = new Map();
-        options.set("directory", { value: rawOptions.directory });
-        options.set("config", { value: rawOptions.config });
-        options.set("clientDirectory", { value: rawOptions.clientOutDir });
-        options.set("serverDirectory", { value: rawOptions.serverOutDir });
-        options.set("watch", { value: rawOptions.watch });
+        const options = AbstractCommand.mapToInput({
+          directory: rawOptions.directory,
+          config: rawOptions.config,
+          clientDirectory: rawOptions.clientOutDir,
+          serverDirectory: rawOptions.serverOutDir,
+          watch: rawOptions.watch,
+        });
 
-        const args: Input = new Map();
-
-        await this.action.handle(args, options);
+        await this.action.run(new Map(), options);
       });
   }
 }

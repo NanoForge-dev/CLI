@@ -1,32 +1,26 @@
-import { yellow } from "ansis";
+import { getModulePath, resolveCLINodeBinaryPath } from "@utils/path";
 
 import { Runner } from "./runner";
-import { BunRunner } from "./runners/bun.runner";
-import { LocalBunRunner } from "./runners/local-bun.runner";
-import { NpmRunner } from "./runners/npm.runner";
-import { PnpmRunner } from "./runners/pnpm.runner";
-import { SchematicRunner } from "./runners/schematic.runner";
-import { YarnRunner } from "./runners/yarn.runner";
 
 export class RunnerFactory {
-  public static create(runner: Runner) {
-    switch (runner) {
-      case Runner.BUN:
-        return new BunRunner();
-      case Runner.LOCAL_BUN:
-        return new LocalBunRunner();
-      case Runner.NPM:
-        return new NpmRunner();
-      case Runner.PNPM:
-        return new PnpmRunner();
-      case Runner.SCHEMATIC:
-        return new SchematicRunner();
-      case Runner.YARN:
-        return new YarnRunner();
+  public static create(binary: string, args?: string[]): Runner {
+    return new Runner(binary, args);
+  }
 
-      default:
-        console.info(yellow`[WARN] Unsupported runner: ${runner}`);
-        throw Error(`Unsupported runner: ${runner}`);
+  public static createLocal(binary: string, args?: string[]): Runner {
+    return new Runner(resolveCLINodeBinaryPath(binary), args);
+  }
+
+  public static createSchematic(): Runner {
+    const binaryPath = this.resolveSchematicBinary();
+    return new Runner("node", [`"${binaryPath}"`]);
+  }
+
+  private static resolveSchematicBinary(): string {
+    try {
+      return getModulePath("@angular-devkit/schematics-cli/bin/schematics.js");
+    } catch {
+      throw new Error("'schematics' binary path could not be found!");
     }
   }
 }

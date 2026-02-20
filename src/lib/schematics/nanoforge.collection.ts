@@ -1,4 +1,5 @@
-import { type AbstractRunner } from "../runner/abstract.runner";
+import { type Runner } from "@lib/runner/runner";
+
 import { AbstractCollection } from "./abstract.collection";
 import { type SchematicOption } from "./schematic.option";
 
@@ -32,7 +33,7 @@ export class NanoforgeCollection extends AbstractCollection {
     },
   ];
 
-  constructor(runner: AbstractRunner, cwd?: string) {
+  constructor(runner: Runner, cwd?: string) {
     super("@nanoforge-dev/schematics", runner, cwd);
   }
 

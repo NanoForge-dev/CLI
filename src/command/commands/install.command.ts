@@ -1,7 +1,5 @@
 import { type Command } from "commander";
 
-import { type Input } from "@lib/input";
-
 import { AbstractCommand } from "../abstract.command";
 
 interface InstallOptions {
@@ -16,13 +14,14 @@ export class InstallCommand extends AbstractCommand {
       .description("add NanoForge library to your project")
       .option("-d, --directory [directory]", "specify the directory of your project")
       .action(async (names: string[], rawOptions: InstallOptions) => {
-        const options: Input = new Map();
-        options.set("directory", { value: rawOptions.directory });
+        const options = AbstractCommand.mapToInput({
+          directory: rawOptions.directory,
+        });
+        const args = AbstractCommand.mapToInput({
+          names: names.length ? names : undefined,
+        });
 
-        const args: Input = new Map();
-        args.set("names", { value: names.length ? names : undefined });
-
-        await this.action.handle(args, options);
+        await this.action.run(args, options);
       });
   }
 }
