@@ -1,5 +1,6 @@
 import * as ansis from "ansis";
 import console from "node:console";
+import { join } from "node:path";
 import * as process from "node:process";
 
 import { type Input, getDirectoryInput } from "@lib/input";
@@ -40,7 +41,8 @@ export class NewAction extends AbstractAction {
 
       await generateApplicationFiles(values, directory);
 
-      if (!values.skipInstall) await runInstall(directory, values.packageManager);
+      if (!values.skipInstall)
+        await runInstall(join(directory, values.name), values.packageManager);
 
       console.info();
       console.info(Messages.NEW_SUCCESS);
@@ -92,6 +94,7 @@ const generateApplicationFiles = async (values: NewOptions, directory: string) =
     directory: values.directory,
     language: values.language,
     initFunctions: values.initFunctions,
+    server: values.server,
   });
   await executeSchematic("Client main file", collection, "part-main", {
     name: values.name,
@@ -108,6 +111,7 @@ const generateApplicationFiles = async (values: NewOptions, directory: string) =
       directory: values.directory,
       language: values.language,
       initFunctions: values.initFunctions,
+      server: values.server,
     });
     await executeSchematic("Server main file", collection, "part-main", {
       name: values.name,
