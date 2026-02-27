@@ -1,6 +1,7 @@
 import { join } from "node:path";
 
 import { type Input, getDirectoryInput } from "@lib/input";
+import { getDockerOrAsk } from "@lib/input/inputs/new/docker.input";
 import { getNewInitFunctionsWithDefault } from "@lib/input/inputs/new/init-functions.input";
 import { getNewLanguageInputOrAsk } from "@lib/input/inputs/new/language.input";
 import { getNewNameInputOrAsk } from "@lib/input/inputs/new/name.input";
@@ -25,6 +26,7 @@ interface NewValues {
   server: boolean;
   initFunctions: boolean;
   skipInstall: boolean;
+  docker: boolean;
 }
 
 export class NewAction extends AbstractAction {
@@ -57,6 +59,7 @@ export class NewAction extends AbstractAction {
       server: await getNewServerOrAsk(inputs),
       initFunctions: getNewInitFunctionsWithDefault(inputs),
       skipInstall: await getNewSkipInstallOrAsk(inputs),
+      docker: await getDockerOrAsk(inputs),
     };
   }
 
@@ -69,6 +72,7 @@ export class NewAction extends AbstractAction {
     await this.generateApplication(collection, values);
     await this.generateConfiguration(collection, values);
     await this.generateClientParts(collection, values);
+    await this.generateDocker(collection, values);
 
     if (values.server) {
       await this.generateServerParts(collection, values);
@@ -124,6 +128,17 @@ export class NewAction extends AbstractAction {
       server: values.server,
     });
     await executeSchematic("Server main file", collection, "part-main", partOptions);
+  }
+
+  private async generateDocker(
+    collection: ReturnType<typeof CollectionFactory.create>,
+    values: NewValues,
+  ) {
+    await executeSchematic("Docker", collection, "docker", {
+      name: values.name,
+      directory: values.directory,
+      packageManager: values.packageManager,
+    });
   }
 
   private partOptions(values: NewValues, part: "client" | "server") {

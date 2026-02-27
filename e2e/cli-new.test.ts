@@ -34,6 +34,7 @@ describe("nf new (TypeScript, no server)", () => {
       "--no-server",
       "--no-init-functions",
       "--no-skip-install",
+      "--no-docker",
       "-d",
       projectDir,
     ]);
@@ -103,6 +104,7 @@ describe("nf new (JavaScript, with server)", () => {
       "--server",
       "--init-functions",
       "--no-skip-install",
+      "--no-docker",
       "-d",
       projectDir,
     ]);
@@ -172,6 +174,7 @@ describe("nf new (with --path option)", () => {
       "--no-server",
       "--no-init-functions",
       "--skip-install",
+      "--no-docker",
       "-d",
       projectDir,
     ]);
@@ -182,5 +185,83 @@ describe("nf new (with --path option)", () => {
 
   it("should create the project in the custom path", () => {
     expect(existsSync(resolve(projectDir, "custom/subdir"))).toBe(true);
+  });
+});
+
+describe("nf new (with typescript with docker option)", () => {
+  const projectDir = resolve(tmpDir, "ts-with-docker");
+
+  beforeAll(async () => {
+    mkdirSync(projectDir, { recursive: true });
+  });
+
+  it("should create a project successfully", async () => {
+    const { stdout, exitCode } = await runCli([
+      "new",
+      "--name",
+      "ts-app",
+      "--language",
+      "ts",
+      "--package-manager",
+      "npm",
+      "--strict",
+      "--no-server",
+      "--no-init-functions",
+      "--no-skip-install",
+      "--docker",
+      "-d",
+      projectDir,
+    ]);
+
+    expect(exitCode).toBe(0);
+    expect(stdout).toContain("NanoForge Project Creation");
+    expect(stdout).toContain("Project successfully created");
+  });
+
+  it("should create the project directory", () => {
+    expect(existsSync(resolve(projectDir, "ts-app"))).toBe(true);
+  });
+
+  it("should generate nanoforge.config.json", () => {
+    const configPath = resolve(projectDir, "ts-app/nanoforge.config.json");
+    expect(existsSync(configPath)).toBe(true);
+
+    const config = JSON.parse(readFileSync(configPath, "utf-8"));
+    expect(config.client).toBeDefined();
+    expect(config.client.build.entryFile).toBe("client/main.ts");
+  });
+
+  it("should generate package.json", () => {
+    expect(existsSync(resolve(projectDir, "ts-app/package.json"))).toBe(true);
+  });
+
+  it("should generate tsconfig.json for TypeScript", () => {
+    expect(existsSync(resolve(projectDir, "ts-app/tsconfig.json"))).toBe(true);
+  });
+
+  it("should generate client directory", () => {
+    expect(existsSync(resolve(projectDir, "ts-app/client"))).toBe(true);
+  });
+
+  it("should generate client main file", () => {
+    expect(existsSync(resolve(projectDir, "ts-app/client/main.ts"))).toBe(true);
+  });
+
+  it("should not generate server directory", () => {
+    expect(existsSync(resolve(projectDir, "ts-app/server"))).toBe(false);
+  });
+
+  it("should not have server enabled in config", () => {
+    const configPath = resolve(projectDir, "ts-app/nanoforge.config.json");
+    const config = JSON.parse(readFileSync(configPath, "utf-8"));
+    expect(config.server?.enable).not.toBe(true);
+  });
+
+  it("should generate Dockerfile", () => {
+    expect(existsSync(resolve(projectDir, "ts-app/Dockerfile"))).toBe(true);
+  });
+
+  it("should generate .dockerignore", () => {
+    expect(existsSync(resolve(projectDir, "ts-app/.dockerignore"))).toBe(true);
   });
 });

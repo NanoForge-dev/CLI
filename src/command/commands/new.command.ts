@@ -12,6 +12,7 @@ interface NewOptions {
   server?: boolean;
   initFunctions?: boolean;
   skipInstall?: boolean;
+  docker?: boolean;
 }
 
 export class NewCommand extends AbstractCommand {
@@ -32,6 +33,8 @@ export class NewCommand extends AbstractCommand {
       .option("--no-init-functions", "do not initialize functions")
       .option("--skip-install", "skip installing dependencies")
       .option("--no-skip-install", "do not skip installing dependencies")
+      .option("--docker", "generate docker files")
+      .option("--no-docker", "do not generate docker files")
       .action(async (rawOptions: NewOptions) => {
         const options = AbstractCommand.mapToInput({
           directory: rawOptions.directory,
@@ -43,6 +46,7 @@ export class NewCommand extends AbstractCommand {
           server: rawOptions.server,
           initFunctions: rawOptions.initFunctions,
           skipInstall: rawOptions.skipInstall,
+          docker: rawOptions.docker,
         });
 
         await this.action.run(new Map(), options);

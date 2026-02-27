@@ -31,6 +31,11 @@ export class NanoforgeCollection extends AbstractCollection {
       alias: "main",
       description: "Generate a NanoForge Part Main file",
     },
+    {
+      name: "docker",
+      alias: "docker",
+      description: "Generate a Dockerfile for the application",
+    },
   ];
 
   constructor(runner: Runner, cwd?: string) {

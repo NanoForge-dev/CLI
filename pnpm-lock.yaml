@@ -101,8 +101,8 @@ catalogs:
       specifier: ^21.1.4
       version: 21.1.4
     '@nanoforge-dev/schematics':
-      specifier: ^1.1.0
-      version: 1.1.0
+      specifier: ^1.2.0
+      version: 1.2.0
   tests:
     '@vitest/coverage-v8':
       specifier: ^4.0.18
@@ -132,7 +132,7 @@ importers:
         version: 1.1.0
       '@nanoforge-dev/schematics':
         specifier: catalog:schematics
-        version: 1.1.0(chokidar@5.0.0)
+        version: 1.2.0(chokidar@5.0.0)
       ansis:
         specifier: catalog:cli
         version: 4.2.0
@@ -895,8 +895,8 @@ packages:
     resolution: {integrity: sha512-6taExH65vAfUpIVrWSzPzLsGkdXcdREjOjvgY4vOwXet3JXRtA6+yHjqp2kVg9Yrp+OA3iUPNXOsLRXOrfNVJw==}
     engines: {node: 24.11.0}
 
-  '@nanoforge-dev/schematics@1.1.0':
-    resolution: {integrity: sha512-A1ei/V6NK8DURzM/KdQI3ue0wrryRHoL4PnOJlo8Sr/CIQE17H5n7kJUQtSWblqNkohToE3w5c4A8dGDFoUtMg==}
+  '@nanoforge-dev/schematics@1.2.0':
+    resolution: {integrity: sha512-ObxdyAi8D0Waj3gfuyzGuwEv7M9DTsYe81kv+2rduR6go/Wxbbt3FWykEZ7pWxXX9VgxmMxlptYRMrNEk7bLaA==}
     engines: {node: '25'}
 
   '@nanoforge-dev/utils-eslint-config@1.0.2':
@@ -3354,7 +3354,7 @@ snapshots:
 
   '@nanoforge-dev/loader-website@1.1.0': {}
 
-  '@nanoforge-dev/schematics@1.1.0(chokidar@5.0.0)':
+  '@nanoforge-dev/schematics@1.2.0(chokidar@5.0.0)':
     dependencies:
       '@angular-devkit/core': 21.1.4(chokidar@5.0.0)
       '@angular-devkit/schematics': 21.1.4(chokidar@5.0.0)
