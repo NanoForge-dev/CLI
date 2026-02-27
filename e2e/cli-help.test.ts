@@ -45,6 +45,7 @@ describe("nf new --help", () => {
     expect(stdout).toContain("--init-functions");
     expect(stdout).toContain("--skip-install");
     expect(stdout).toContain("--directory");
+    expect(stdout).toContain("--docker");
   });
 });
 

@@ -32,6 +32,7 @@ export const Messages = {
   NEW_STRICT_QUESTION: "Do you want to use strict type checking?",
   NEW_SERVER_QUESTION: "Do you want to generate a server for multiplayer?",
   NEW_SKIP_INSTALL_QUESTION: "Do you want to skip dependency installation?",
+  NEW_DOCKER_QUESTION: "Do you want to add a Dockerfile for containerization?",
 
   // --- Generate ---
   GENERATE_START: "NanoForge Generate",
