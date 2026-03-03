@@ -1,3 +1,5 @@
+import dotenv from "dotenv";
+import { resolve } from "path";
 import { type Options, defineConfig } from "tsup";
 
 function createTsupConfig({
@@ -24,6 +26,12 @@ function createTsupConfig({
   esbuildPlugins = [],
   treeshake = false,
   outDir = "dist",
+  env = dotenv.config({
+    path: resolve(
+      process.cwd(),
+      process.env.NODE_ENV === "development" ? ".env.build.local" : ".env.build",
+    ),
+  }).parsed,
 }: Options = {}) {
   return defineConfig({
     entry,
@@ -45,6 +53,7 @@ function createTsupConfig({
     esbuildPlugins,
     treeshake,
     outDir,
+    env,
   });
 }
 

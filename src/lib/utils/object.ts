@@ -19,3 +19,5 @@ export const deepMerge = (target: any, ...sources: [any, ...any[]]): any => {
 
   return deepMerge(target, ...sources);
 };
+
+export const isEmpty = (target: any) => Object.keys(target).length === 0;

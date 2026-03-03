@@ -4,3 +4,4 @@ export * from "./watch.input";
 
 export * from "./dev";
 export * from "./install";
+export * from "./login-out";

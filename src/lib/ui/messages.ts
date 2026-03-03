@@ -22,6 +22,17 @@ export const Messages = {
   INSTALL_FAILED: failure("Installation failed!"),
   INSTALL_NAMES_QUESTION: "Which libraries do you want to install?",
 
+  // --- Login ---
+  LOGIN_START: "NanoForge Login",
+  LOGIN_SUCCESS: success("Login completed!"),
+  LOGIN_FAILED: failure("Login failed!"),
+  LOGIN_API_KEY_QUESTION: "What is your registry api key?",
+
+  // --- Logout ---
+  LOGOUT_START: "NanoForge Logout",
+  LOGOUT_SUCCESS: success("Logout completed!"),
+  LOGOUT_FAILED: failure("Logout failed!"),
+
   // --- New Project ---
   NEW_START: "NanoForge Project Creation",
   NEW_SUCCESS: success("Project successfully created!"),
