@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+# [@nanoforge-dev/cli@1.2.0](https://github.com/NanoForge-dev/cli/compare/@nanoforge-dev/cli@1.1.1...@nanoforge-dev/cli@1.2.0) - (2026-03-04)
+
+## Bug Fixes
+
+- Add name to cwd to install packages in new (#69) ([1e17868](https://github.com/NanoForge-dev/cli/commit/1e17868398e6ec0f639e83f23db6d0af8a8673af)) by @Exeloo
+
+## Features
+
+- **docker:** Setup new docker option to generete docker file (#82) ([99244b1](https://github.com/NanoForge-dev/cli/commit/99244b1ffc225ffb55d85f85a9a1eeddb87de628)) by @MartinFillon
+
+## Refactor
+
+- Beautify all code base and add tests (#77) ([67c297c](https://github.com/NanoForge-dev/cli/commit/67c297c191c1251a2776d2c3caf0cbd8ff36f906)) by @Exeloo
+
+### New Contributors
+
+- @dependabot[bot] made their first contribution in #71
+
 # [1.1.1](https://github.com/NanoForge-dev/cli/compare/1.0.0...1.1.1) - (2026-02-18)
 
 ## Bug Fixes
