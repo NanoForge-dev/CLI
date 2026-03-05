@@ -46,6 +46,10 @@
   description: "Related to build command"
   color: "aaa3dc"
 
+- name: "command:dev"
+  description: "Related to dev command"
+  color: "aaa3dc"
+
 - name: "command:generate"
   description: "Related to generate command"
   color: "aaa3dc"
@@ -56,6 +60,14 @@
 
 - name: "command:install"
   description: "Related to install command"
+  color: "aaa3dc"
+
+- name: "command:login"
+  description: "Related to login command"
+  color: "aaa3dc"
+
+- name: "command:logout"
+  description: "Related to logout command"
   color: "aaa3dc"
 
 - name: "command:new"

@@ -12,16 +12,22 @@ interface CliResult {
 
 interface RunCliOptions extends SpawnOptions {
   timeout?: number;
+  stdinData?: string;
 }
 
 export const runCli = (args: string[], options?: RunCliOptions): Promise<CliResult> => {
   return new Promise((resolve) => {
-    const { timeout, ...spawnOptions } = options ?? {};
+    const { timeout, stdinData, ...spawnOptions } = options ?? {};
 
     const child = spawn("node", [CLI_PATH, ...args], {
       stdio: "pipe",
       ...spawnOptions,
     });
+
+    if (stdinData !== undefined) {
+      child.stdin?.write(stdinData);
+      child.stdin?.end();
+    }
 
     let killed = false;
     let timer: ReturnType<typeof setTimeout> | undefined;

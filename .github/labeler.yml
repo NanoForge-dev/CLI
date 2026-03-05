@@ -1,32 +1,50 @@
 command:build:
   - changed-files:
       - any-glob-to-any-file:
-          - src/command/commands/build.ts
-          - src/action/actions/build.ts
+          - src/command/commands/build.command.ts
+          - src/action/actions/build.action.ts
+
+command:dev:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/command/commands/dev.command.ts
+          - src/action/actions/dev.action.ts
 
 command:generate:
   - changed-files:
       - any-glob-to-any-file:
-          - src/command/commands/generate.ts
-          - src/action/actions/generate.ts
+          - src/command/commands/generate.command.ts
+          - src/action/actions/generate.action.ts
 
 command:install:
   - changed-files:
       - any-glob-to-any-file:
-          - src/command/commands/install.ts
-          - src/action/actions/install.ts
+          - src/command/commands/install.command.ts
+          - src/action/actions/install.action.ts
+
+command:login:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/command/commands/login.command.ts
+          - src/action/actions/login.action.ts
+
+command:logout:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/command/commands/logout.command.ts
+          - src/action/actions/logout.action.ts
 
 command:new:
   - changed-files:
       - any-glob-to-any-file:
-          - src/command/commands/new.ts
-          - src/action/actions/new.ts
+          - src/command/commands/new.command.ts
+          - src/action/actions/new.action.ts
 
 command:start:
   - changed-files:
       - any-glob-to-any-file:
-          - src/command/commands/start.ts
-          - src/action/actions/start.ts
+          - src/command/commands/start.command.ts
+          - src/action/actions/start.action.ts
 
 documentation:
   - changed-files:

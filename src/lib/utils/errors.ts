@@ -1,7 +1,7 @@
 import { red } from "ansis";
 
 export const getErrorMessage = (error: unknown): string | undefined => {
-  if (error instanceof Error) return error.message;
+  if (error instanceof Error) return error.cause as string;
   if (typeof error === "string") return error;
   return undefined;
 };
