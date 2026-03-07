@@ -1,4 +1,5 @@
-import { join } from "path";
+import dotenv from "dotenv";
+import { join, resolve } from "path";
 
 import { type Config } from "@lib/config";
 import {
@@ -18,15 +19,14 @@ import { getConfig } from "~/action/common/config";
 
 import { AbstractAction, type HandleResult } from "../abstract.action";
 
-interface PortOptions {
-  clientPort: string;
-  gameExposurePort?: string;
-  serverPort?: string;
-}
-
 interface SSLOptions {
   cert: string;
   key: string;
+}
+
+interface FullEnv {
+  client: Record<string, string>;
+  server: Record<string, string>;
 }
 
 export class StartAction extends AbstractAction {
@@ -38,21 +38,13 @@ export class StartAction extends AbstractAction {
     const directory = getDirectoryInput(options);
     const config = await getConfig(options, directory);
     const watch = getWatchInput(options);
-    const ports = this.resolvePorts(options, config);
+    const port = getStringInputWithDefault(options, "port", config.client.port);
     const ssl = this.resolveSSL(options);
 
-    const tasks = this.buildStartTasks(config, directory, watch, ports, ssl);
+    const tasks = this.buildStartTasks(config, directory, watch, port, ssl);
     await Promise.all(tasks);
 
     return { keepAlive: true };
-  }
-
-  private resolvePorts(options: Input, config: Config): PortOptions {
-    return {
-      clientPort: getStringInputWithDefault(options, "clientPort", config.client.port),
-      gameExposurePort: getStringInput(options, "gameExposurePort"),
-      serverPort: getStringInput(options, "serverPort"),
-    };
   }
 
   private resolveSSL(options: Input): SSLOptions | undefined {
@@ -74,16 +66,17 @@ export class StartAction extends AbstractAction {
     config: Config,
     directory: string,
     watch: boolean,
-    ports: PortOptions,
+    port: string,
     ssl?: SSLOptions,
   ): Promise<void>[] {
+    const env = this.parseEnv(directory);
     const tasks: Promise<void>[] = [];
 
     if (config.server.enable) {
-      tasks.push(this.startServer(directory, config.server.runtime.dir, watch, ports.serverPort));
+      tasks.push(this.startServer(directory, config, { watch }, env));
     }
 
-    tasks.push(this.startClient(directory, config, watch, ports, ssl));
+    tasks.push(this.startClient(directory, config, { watch, port, ssl }, env));
 
     return tasks;
   }
@@ -91,74 +84,111 @@ export class StartAction extends AbstractAction {
   private async startClient(
     directory: string,
     config: Config,
-    watch: boolean,
-    ports: PortOptions,
-    ssl?: SSLOptions,
+    options: { watch: boolean; port: string; ssl?: SSLOptions },
+    env: FullEnv,
   ): Promise<void> {
     const loaderPath = getModulePath("@nanoforge-dev/loader-client/package.json", true);
-    const gameDir = config.client.runtime.dir;
 
-    const env = this.buildClientEnv(directory, gameDir, watch, config, ports, ssl);
-    await this.runLoader("Client", loaderPath, env);
-  }
-
-  private buildClientEnv(
-    directory: string,
-    gameDir: string,
-    watch: boolean,
-    config: Config,
-    ports: PortOptions,
-    ssl?: SSLOptions,
-  ): Record<string, string> {
-    const env: Record<string, string> = {
-      PORT: ports.clientPort,
-      GAME_DIR: getCwd(join(directory, gameDir)),
-    };
-
-    if (ports.gameExposurePort) {
-      env["GAME_EXPOSURE_PORT"] = ports.gameExposurePort;
-    }
-
-    if (watch) {
-      env["WATCH"] = "true";
-      if (config.server.enable) {
-        env["WATCH_SERVER_GAME_DIR"] = getCwd(join(directory, config.server.runtime.dir));
-      }
-    }
-
-    if (ssl) {
-      env["CERT"] = ssl.cert;
-      env["KEY"] = ssl.key;
-    }
-
-    return env;
+    const params = this.buildClientParams(directory, config, options);
+    await this.runLoader("Client", loaderPath, params, env.client);
   }
 
   private async startServer(
     directory: string,
-    gameDir: string,
-    watch: boolean,
-    port?: string,
+    config: Config,
+    options: { watch: boolean },
+    env: FullEnv,
   ): Promise<void> {
     const loaderPath = getModulePath("@nanoforge-dev/loader-server/package.json", true);
 
-    const env: Record<string, string> = {
-      GAME_DIR: getCwd(join(directory, gameDir)),
-    };
-    if (port) env["PORT"] = port;
-    if (watch) env["WATCH"] = "true";
+    const params = this.buildServerParams(directory, config, options);
+    await this.runLoader("Server", loaderPath, params, env.server);
+  }
 
-    await this.runLoader("Server", loaderPath, env);
+  private buildClientParams(
+    directory: string,
+    config: Config,
+    options: { watch: boolean; port: string; ssl?: SSLOptions },
+  ): string[] {
+    const params: Record<string, string | boolean> = {
+      "-d": getCwd(join(directory, config.client.runtime.dir)),
+      "-p": options.port,
+    };
+    if (options.watch) params["--watch"] = true;
+
+    if (options.watch) {
+      params["--watch"] = true;
+      if (config.server.enable) {
+        params["--watch-server-dir"] = getCwd(join(directory, config.server.runtime.dir));
+      }
+    }
+
+    if (options.ssl) {
+      params["--cert"] = options.ssl.cert;
+      params["--key"] = options.ssl.key;
+    }
+
+    return this.buildParams(params);
+  }
+
+  private buildServerParams(
+    directory: string,
+    config: Config,
+    options: { watch: boolean },
+  ): string[] {
+    const params: Record<string, string | boolean> = {
+      "-d": getCwd(join(directory, config.server.runtime.dir)),
+    };
+    if (options.watch) params["--watch"] = true;
+
+    return this.buildParams(params);
+  }
+
+  private buildParams(params: Record<string, string | boolean>): string[] {
+    return Object.entries(params)
+      .map(([key, value]) => (typeof value === "string" ? [key, value] : [key]))
+      .flat();
+  }
+
+  private parseEnv(dir: string): FullEnv {
+    const prefix = "NANOFORGE_";
+    const clientPrefix = `${prefix}CLIENT_`;
+    const serverPrefix = `${prefix}SERVER_`;
+
+    const rawEnv = {
+      ...process.env,
+    };
+    dotenv.config({
+      path: resolve(getCwd(join(dir, ".env"))),
+      processEnv: rawEnv,
+    });
+    const baseEnv = Object.entries(rawEnv).filter(
+      ([key, value]) => key.startsWith(prefix) && !!value,
+    ) as [string, string][];
+
+    return {
+      client: Object.fromEntries(
+        baseEnv
+          .filter(([key]) => !key.startsWith(serverPrefix))
+          .map(([key, value]) => [key.replace(clientPrefix, prefix), value]),
+      ),
+      server: Object.fromEntries(
+        baseEnv
+          .filter(([key]) => !key.startsWith(clientPrefix))
+          .map(([key, value]) => [key.replace(serverPrefix, prefix), value]),
+      ),
+    };
   }
 
   private async runLoader(
     name: string,
     directory: string,
+    params: string[],
     env: Record<string, string>,
   ): Promise<void> {
     await runSafe(async () => {
       const packageManager = await PackageManagerFactory.find(directory);
-      await packageManager.run(name, directory, "start", env, [], true);
+      await packageManager.run(name, directory, "start", params, env, [], true);
     });
   }
 }

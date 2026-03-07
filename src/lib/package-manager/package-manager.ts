@@ -84,6 +84,7 @@ export class PackageManager {
     name: string,
     directory: string,
     script: string,
+    params: string[],
     env: Record<string, string> = {},
     flags: string[] = [],
     silent = false,
@@ -91,7 +92,7 @@ export class PackageManager {
     console.info(Messages.START_PART_IN_PROGRESS(name));
 
     try {
-      const args = this.buildRunArgs(script, flags, silent);
+      const args = this.buildRunArgs(script, params, flags, silent);
       await this.exec(args, directory, {
         env,
         listeners: {
@@ -171,11 +172,16 @@ export class PackageManager {
     }
   }
 
-  private buildRunArgs(script: string, flags: string[], silent: boolean): string[] {
+  private buildRunArgs(
+    script: string,
+    params: string[],
+    flags: string[],
+    silent: boolean,
+  ): string[] {
     const args = [...flags, this.commands.run];
     if (silent) args.push(this.commands.silentFlag);
     args.push(script);
-    return args;
+    return args.concat(params);
   }
 
   private exec(
