@@ -181,6 +181,8 @@ export class PackageManager {
     const args = [...flags, this.commands.run];
     if (silent) args.push(this.commands.silentFlag);
     args.push(script);
+    if (params.length === 0) return args;
+    if (this.commands.runArgsFlag) args.push(this.commands.runArgsFlag);
     return args.concat(params);
   }
 

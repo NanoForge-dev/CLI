@@ -44,6 +44,7 @@ export const PM_CONFIGS: Record<
       remove: "uninstall",
       exec: "exec",
       run: "run",
+      runArgsFlag: "--",
       saveFlag: "--save",
       saveDevFlag: "--save-dev",
       silentFlag: "--silent",

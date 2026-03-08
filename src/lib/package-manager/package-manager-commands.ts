@@ -5,6 +5,7 @@ export interface PackageManagerCommands {
   remove: string;
   exec: string;
   run: string;
+  runArgsFlag?: string;
   build?: string;
   runFile?: string;
   saveFlag: string;
