@@ -26,10 +26,6 @@ export class ClientConfig {
   port!: string;
 
   @Expose()
-  @IsPort()
-  gameExposurePort!: string;
-
-  @Expose()
   @Type(() => BuildConfig)
   @ValidateNested()
   build!: BuildConfig;
@@ -44,10 +40,6 @@ export class ServerConfig {
   @Expose()
   @IsBoolean()
   enable!: boolean;
-
-  @Expose()
-  @IsPort()
-  port!: string;
 
   @Expose()
   @Type(() => BuildConfig)

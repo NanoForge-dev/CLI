@@ -93,9 +93,7 @@ describe("nf start --help", () => {
     expect(stdout).toContain("start your game");
     expect(stdout).toContain("--directory");
     expect(stdout).toContain("--config");
-    expect(stdout).toContain("--client-port");
-    expect(stdout).toContain("--game-exposure-port");
-    expect(stdout).toContain("--server-port");
+    expect(stdout).toContain("--port");
     expect(stdout).toContain("--watch");
   });
 });
