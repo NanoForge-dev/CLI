@@ -5,4 +5,6 @@ export * from "./actions/install.action";
 export * from "./actions/login.action";
 export * from "./actions/logout.action";
 export * from "./actions/new.action";
+export * from "./actions/publish.action";
 export * from "./actions/start.action";
+export * from "./actions/unpublish.action";

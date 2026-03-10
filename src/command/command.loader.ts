@@ -11,7 +11,9 @@ import {
   LoginAction,
   LogoutAction,
   NewAction,
+  PublishAction,
   StartAction,
+  UnpublishAction,
 } from "~/action";
 
 import { BuildCommand } from "./commands/build.command";
@@ -21,18 +23,22 @@ import { InstallCommand } from "./commands/install.command";
 import { LoginCommand } from "./commands/login.command";
 import { LogoutCommand } from "./commands/logout.command";
 import { NewCommand } from "./commands/new.command";
+import { PublishCommand } from "./commands/publish.command";
 import { StartCommand } from "./commands/start.command";
+import { UnpublishCommand } from "./commands/unpublish.command";
 
 export class CommandLoader {
   public static async load(program: Command): Promise<void> {
+    new NewCommand(new NewAction()).load(program);
+    new InstallCommand(new InstallAction()).load(program);
     new BuildCommand(new BuildAction()).load(program);
+    new StartCommand(new StartAction()).load(program);
     new DevCommand(new DevAction()).load(program);
     new GenerateCommand(new GenerateAction()).load(program);
-    new InstallCommand(new InstallAction()).load(program);
     new LoginCommand(new LoginAction()).load(program);
     new LogoutCommand(new LogoutAction()).load(program);
-    new NewCommand(new NewAction()).load(program);
-    new StartCommand(new StartAction()).load(program);
+    new PublishCommand(new PublishAction()).load(program);
+    new UnpublishCommand(new UnpublishAction()).load(program);
     this.handleInvalidCommand(program);
   }
 

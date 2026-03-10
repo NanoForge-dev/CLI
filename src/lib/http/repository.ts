@@ -13,7 +13,7 @@ export class Repository {
 
   post<R extends object = object, I extends object = object>(
     path: string,
-    body?: I,
+    body?: I | FormData,
     options?: RequestOptions,
   ): Promise<R> {
     return this.runRequestBody("post", path, body ?? {}, options);
@@ -21,7 +21,7 @@ export class Repository {
 
   put<R extends object = object, I extends object = object>(
     path: string,
-    body?: I,
+    body?: I | FormData,
     options?: RequestOptions,
   ): Promise<R> {
     return this.runRequestBody("put", path, body ?? {}, options);
@@ -29,7 +29,7 @@ export class Repository {
 
   patch<R extends object = object, I extends object = object>(
     path: string,
-    body?: I,
+    body?: I | FormData,
     options?: RequestOptions,
   ): Promise<R> {
     return this.runRequestBody("patch", path, body ?? {}, options);
@@ -45,28 +45,29 @@ export class Repository {
     options?: RequestOptions,
   ): Promise<R> {
     const res = await this._client[request](path, options);
+    const data = (await res.json()) as R;
     if (!res.ok)
       throw new Error(`Request failed with status code ${res.status}`, {
-        cause: res,
+        cause: data["error" as keyof R],
       });
-    return (await res.json()) as R;
+    return data;
   }
 
   private async runRequestBody<R, I>(
     request: "post" | "put" | "patch",
     path: string,
-    body?: I,
+    body?: I | FormData,
     options?: RequestOptions,
   ): Promise<R> {
     const res = await this._client[request](
       path,
-      body === undefined ? undefined : JSON.stringify(body),
+      body === undefined ? undefined : body instanceof FormData ? body : JSON.stringify(body),
       options,
     );
     const data = (await res.json()) as R;
     if (!res.ok)
       throw new Error(`Request failed with status code ${res.status}`, {
-        cause: data,
+        cause: data["error" as keyof R],
       });
     return data;
   }

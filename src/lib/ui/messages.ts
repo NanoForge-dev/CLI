@@ -64,6 +64,18 @@ export const Messages = {
   START_PART_SUCCESS: (part: string) => success(`${part} terminated.`),
   START_PART_FAILED: (part: string) => failure(`${part} failed!`),
 
+  // --- Publish ---
+  PUBLISH_START: "NanoForge Publish",
+  PUBLISH_SUCCESS: success("Publish completed!"),
+  PUBLISH_FAILED: failure("Publish failed!"),
+  PUBLISH_IN_PROGRESS: (name: string) => `Publishing ${name}...`,
+
+  // --- Unpublish ---
+  UNPUBLISH_START: "NanoForge Unpublish",
+  UNPUBLISH_SUCCESS: success("Unpublish completed!"),
+  UNPUBLISH_FAILED: failure("Unpublish failed!"),
+  UNPUBLISH_IN_PROGRESS: (name: string) => `Unpublishing ${name}...`,
+
   // --- Schematics ---
   SCHEMATICS_START: "Running schematics",
   SCHEMATIC_IN_PROGRESS: (name: string) => `Generating ${name}...`,
