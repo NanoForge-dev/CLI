@@ -1,8 +1,0 @@
-{
-  "name": "test/test4",
-  "type": "component",
-  "npmDependencies": {
-    "truc": "^1.0.1"
-  },
-  "dependencies": ["test/test3", "test/test2"]
-}
