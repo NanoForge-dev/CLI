@@ -40,12 +40,18 @@ describe("nf install (with existing project)", () => {
   });
 
   it("should run the install command with a library name", async () => {
-    const { exitCode } = await runCli(["install", "@nanoforge-dev/network-client", "-d", appDir]);
+    const { exitCode } = await runCli([
+      "install",
+      "-l",
+      "@nanoforge-dev/network-client",
+      "-d",
+      appDir,
+    ]);
 
     expect(exitCode).toBe(0);
 
     const pkgJson = JSON.parse(readFileSync(resolve(appDir, "package.json"), "utf-8"));
-    expect(pkgJson.dependencies).toHaveProperty("@nanoforge-dev/network-client");
+    expect(pkgJson.devDependencies).toHaveProperty("@nanoforge-dev/network-client");
     expect(existsSync(resolve(appDir, "node_modules", "@nanoforge-dev", "network-client"))).toBe(
       true,
     );
@@ -54,6 +60,7 @@ describe("nf install (with existing project)", () => {
   it("should run the install command with multiple library names", async () => {
     const { exitCode } = await runCli([
       "install",
+      "-l",
       "@nanoforge-dev/network-client",
       "@nanoforge-dev/network-server",
       "-d",
@@ -63,8 +70,8 @@ describe("nf install (with existing project)", () => {
     expect(exitCode).toBe(0);
 
     const pkgJson = JSON.parse(readFileSync(resolve(appDir, "package.json"), "utf-8"));
-    expect(pkgJson.dependencies).toHaveProperty("@nanoforge-dev/network-client");
-    expect(pkgJson.dependencies).toHaveProperty("@nanoforge-dev/network-server");
+    expect(pkgJson.devDependencies).toHaveProperty("@nanoforge-dev/network-client");
+    expect(pkgJson.devDependencies).toHaveProperty("@nanoforge-dev/network-server");
     expect(existsSync(resolve(appDir, "node_modules", "@nanoforge-dev", "network-client"))).toBe(
       true,
     );
@@ -74,12 +81,12 @@ describe("nf install (with existing project)", () => {
   });
 
   it("should work with the add alias", async () => {
-    const { exitCode } = await runCli(["add", "@nanoforge-dev/network-client", "-d", appDir]);
+    const { exitCode } = await runCli(["add", "-l", "@nanoforge-dev/network-client", "-d", appDir]);
 
     expect(exitCode).toBe(0);
 
     const pkgJson = JSON.parse(readFileSync(resolve(appDir, "package.json"), "utf-8"));
-    expect(pkgJson.dependencies).toHaveProperty("@nanoforge-dev/network-client");
+    expect(pkgJson.devDependencies).toHaveProperty("@nanoforge-dev/network-client");
     expect(existsSync(resolve(appDir, "node_modules", "@nanoforge-dev", "network-client"))).toBe(
       true,
     );
