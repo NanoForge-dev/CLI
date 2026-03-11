@@ -41,7 +41,7 @@ export class HttpClient {
     });
   }
 
-  post(path: string, body?: string, options?: RequestOptions): Promise<FullResponse> {
+  post(path: string, body?: string | FormData, options?: RequestOptions): Promise<FullResponse> {
     return this._applyMiddlewares(path, options, (newPath, newOptions) => {
       return this._request(newPath, {
         ...newOptions,
@@ -51,7 +51,7 @@ export class HttpClient {
     });
   }
 
-  put(path: string, body?: string, options?: RequestOptions): Promise<FullResponse> {
+  put(path: string, body?: string | FormData, options?: RequestOptions): Promise<FullResponse> {
     return this._applyMiddlewares(path, options, (newPath, newOptions) => {
       return this._request(newPath, {
         ...newOptions,
@@ -61,7 +61,7 @@ export class HttpClient {
     });
   }
 
-  patch(path: string, body?: string, options?: RequestOptions): Promise<FullResponse> {
+  patch(path: string, body?: string | FormData, options?: RequestOptions): Promise<FullResponse> {
     return this._applyMiddlewares(path, options, async (newPath, newOptions) => {
       return this._request(newPath, {
         ...newOptions,
@@ -103,6 +103,10 @@ export class HttpClient {
       options: {
         ...this._baseOptions,
         ...options,
+        headers: {
+          ...this._baseOptions.headers,
+          ...options?.headers,
+        },
       },
     };
     const middlewares = this._middlewares.slice();

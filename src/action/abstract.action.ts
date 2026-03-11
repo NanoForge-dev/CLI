@@ -6,6 +6,7 @@ import { handleActionError } from "@utils/errors";
 export interface HandleResult {
   success?: boolean;
   keepAlive?: boolean;
+  error?: unknown;
 }
 
 export abstract class AbstractAction {
@@ -45,7 +46,7 @@ export abstract class AbstractAction {
     console.info();
 
     if (!success) {
-      if (this.failureMessage) console.error(this.failureMessage);
+      handleActionError(this.failureMessage, result.error);
       process.exit(1);
     }
 

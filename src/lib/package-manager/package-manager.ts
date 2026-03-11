@@ -1,19 +1,13 @@
 import { bold, red } from "ansis";
-import { type Ora } from "ora";
 
 import { createStderrLogger, createStdoutLogger } from "@lib/runner/process-logger";
 import { type RunOptions, type Runner } from "@lib/runner/runner";
 import { Messages } from "@lib/ui";
-import { getSpinner } from "@lib/ui/spinner";
 
 import { getCwd } from "@utils/path";
+import { withSpinner } from "@utils/spinner";
 
 import { type PackageManagerCommands } from "./package-manager-commands";
-
-interface SpinnerTaskResult<T> {
-  success: boolean;
-  value?: T;
-}
 
 export class PackageManager {
   constructor(
@@ -25,7 +19,7 @@ export class PackageManager {
   public async install(directory: string): Promise<boolean> {
     const args = [this.commands.install, this.commands.silentFlag];
 
-    const result = await this.withSpinner(
+    const result = await withSpinner(
       Messages.PACKAGE_MANAGER_INSTALLATION_IN_PROGRESS,
       async (spinner) => {
         await this.exec(args, directory, { onFail: () => spinner.fail() });
@@ -69,7 +63,7 @@ export class PackageManager {
       ...flags,
     ];
 
-    const result = await this.withSpinner(
+    const result = await withSpinner(
       message,
       async (spinner) => {
         await this.exec(args, directory, { onFail: () => spinner.fail() });
@@ -123,25 +117,6 @@ export class PackageManager {
     }
   }
 
-  private async withSpinner<T>(
-    message: string,
-    task: (spinner: Ora) => Promise<T>,
-    onError?: () => void,
-  ): Promise<SpinnerTaskResult<T>> {
-    const spinner = getSpinner(message);
-    spinner.start();
-
-    try {
-      const value = await task(spinner);
-      spinner.succeed();
-      return { success: true, value };
-    } catch {
-      spinner.fail();
-      if (onError) onError();
-      return { success: false };
-    }
-  }
-
   private async addDependencies(
     saveFlag: string,
     directory: string,
@@ -154,7 +129,7 @@ export class PackageManager {
 
     const args = [this.commands.add, saveFlag, ...dependencies];
 
-    const result = await this.withSpinner(
+    const result = await withSpinner(
       Messages.PACKAGE_MANAGER_INSTALLATION_IN_PROGRESS,
       async (spinner) => {
         await this.exec(args, directory, { onFail: () => spinner.fail() });
