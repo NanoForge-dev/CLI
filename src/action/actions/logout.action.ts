@@ -15,7 +15,7 @@ export class LogoutAction extends AbstractAction {
 
     GlobalConfigHandler.write(
       {
-        apiKey: null,
+        apiKey: undefined,
       },
       isLocal,
       directory,

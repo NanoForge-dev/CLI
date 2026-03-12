@@ -21,6 +21,7 @@ export const Messages = {
   INSTALL_SUCCESS: success("Installation completed!"),
   INSTALL_FAILED: failure("Installation failed!"),
   INSTALL_NAMES_QUESTION: "Which libraries do you want to install?",
+  INSTALL_PACKAGES_IN_PROGRESS: "Install Nanoforge Packages",
 
   // --- Login ---
   LOGIN_START: "NanoForge Login",

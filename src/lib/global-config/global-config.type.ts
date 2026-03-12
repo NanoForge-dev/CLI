@@ -1,3 +1,3 @@
 export interface GlobalConfig {
-  apiKey?: string | null;
+  apiKey?: string;
 }

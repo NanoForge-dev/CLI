@@ -11,6 +11,10 @@ export class Repository {
     return this.runRequest("get", path, options);
   }
 
+  getFile(path: string, options?: RequestOptions): Promise<Blob> {
+    return this.runFileRequest("get", path, options);
+  }
+
   post<R extends object = object, I extends object = object>(
     path: string,
     body?: I | FormData,
@@ -51,6 +55,19 @@ export class Repository {
         cause: data["error" as keyof R],
       });
     return data;
+  }
+
+  private async runFileRequest(
+    request: "get",
+    path: string,
+    options?: RequestOptions,
+  ): Promise<Blob> {
+    const res = await this._client[request](path, options);
+    if (!res.ok)
+      throw new Error(`Request failed with status code ${res.status}`, {
+        cause: ((await res.json()) as { error: any })["error"],
+      });
+    return await res.blob();
   }
 
   private async runRequestBody<R, I>(

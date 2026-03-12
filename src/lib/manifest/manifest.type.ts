@@ -74,7 +74,7 @@ export interface FullManifest {
   npmDependencies?: Record<string, string>;
   publish?: {
     paths?: {
-      components?: string;
+      package?: string;
     };
   };
   _file: string;
