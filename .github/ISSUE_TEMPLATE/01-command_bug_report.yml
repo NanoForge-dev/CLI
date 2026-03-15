@@ -14,11 +14,16 @@ body:
       label: Which command is this bug report for?
       options:
         - build
+        - dev
         - generate
         - help
         - install
+        - login
+        - logout
         - new
+        - publish
         - start
+        - unpublish
         - other
     validations:
       required: true

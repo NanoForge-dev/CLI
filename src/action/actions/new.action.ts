@@ -1,15 +1,19 @@
 import { join } from "node:path";
 
-import { type Input, getDirectoryInput } from "@lib/input";
-import { getDockerOrAsk } from "@lib/input/inputs/new/docker.input";
-import { getNewInitFunctionsWithDefault } from "@lib/input/inputs/new/init-functions.input";
-import { getNewLanguageInputOrAsk } from "@lib/input/inputs/new/language.input";
-import { getNewNameInputOrAsk } from "@lib/input/inputs/new/name.input";
-import { getNewPackageManagerInputOrAsk } from "@lib/input/inputs/new/package-manager.input";
-import { getNewPathInput } from "@lib/input/inputs/new/path.input";
-import { getNewServerOrAsk } from "@lib/input/inputs/new/server.input";
-import { getNewSkipInstallOrAsk } from "@lib/input/inputs/new/skip-install.input";
-import { getNewStrictOrAsk } from "@lib/input/inputs/new/strict.input";
+import {
+  type Input,
+  getDirectoryInput,
+  getNewDockerOrAsk,
+  getNewInitFunctionsWithDefault,
+  getNewLanguageInputOrAsk,
+  getNewLintInput,
+  getNewNameInputOrAsk,
+  getNewPackageManagerInputOrAsk,
+  getNewPathInput,
+  getNewServerOrAsk,
+  getNewSkipInstallOrAsk,
+  getNewStrictOrAsk,
+} from "@lib/input";
 import { PackageManagerFactory } from "@lib/package-manager";
 import { Collection, CollectionFactory } from "@lib/schematics";
 import { Messages } from "@lib/ui";
@@ -27,6 +31,7 @@ interface NewValues {
   initFunctions: boolean;
   skipInstall: boolean;
   docker: boolean;
+  lint: boolean;
 }
 
 export class NewAction extends AbstractAction {
@@ -35,15 +40,18 @@ export class NewAction extends AbstractAction {
   protected failureMessage = Messages.NEW_FAILED;
 
   public async handle(_args: Input, options: Input): Promise<HandleResult> {
-    const directory = getDirectoryInput(options);
+    const cwdDirectory = getDirectoryInput(options);
     const values = await this.collectValues(options);
 
-    await this.scaffold(values, directory);
+    await this.scaffold(values, cwdDirectory);
 
     let res = true;
 
     if (!values.skipInstall) {
-      res = await this.installDependencies(values.packageManager, join(directory, values.name));
+      res = await this.installDependencies(
+        values.packageManager,
+        join(cwdDirectory, values.directory ?? values.name),
+      );
     }
 
     return { success: res };
@@ -59,7 +67,8 @@ export class NewAction extends AbstractAction {
       server: await getNewServerOrAsk(inputs),
       initFunctions: getNewInitFunctionsWithDefault(inputs),
       skipInstall: await getNewSkipInstallOrAsk(inputs),
-      docker: await getDockerOrAsk(inputs),
+      docker: await getNewDockerOrAsk(inputs),
+      lint: getNewLintInput(inputs),
     };
   }
 
@@ -90,6 +99,7 @@ export class NewAction extends AbstractAction {
       language: values.language,
       strict: values.strict,
       server: values.server,
+      lint: values.lint,
     });
   }
 

@@ -110,7 +110,9 @@ export class PackageManager {
     collect = true,
   ): Promise<boolean> {
     try {
-      await this.exec([this.commands.run, command, ...flags], directory, { collect, env });
+      const base = [this.commands.exec, command];
+      if (this.commands.runArgsFlag) base.push(this.commands.runArgsFlag);
+      await this.exec([...base, ...flags], directory, { collect, env });
       return true;
     } catch {
       return false;

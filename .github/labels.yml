@@ -74,8 +74,16 @@
   description: "Related to new command"
   color: "aaa3dc"
 
+- name: "command:publish"
+  description: "Related to publish command"
+  color: "aaa3dc"
+
 - name: "command:start"
   description: "Related to start command"
+  color: "aaa3dc"
+
+- name: "command:unpublish"
+  description: "Related to unpublish command"
   color: "aaa3dc"
 
 - name: "question"

@@ -17,7 +17,7 @@ export class BuildCommand extends AbstractCommand {
     program
       .command("build")
       .description("build your game")
-      .option("-d, --directory [directory]", "specify the directory of your project")
+      .option("-d, --directory [directory]", "specify the working directory of the command")
       .option("-c, --config [config]", "path to the config file", CONFIG_FILE_NAME)
       .option("--client-outDir [clientDirectory]", "specify the output directory of the client")
       .option("--server-outDir [serverDirectory]", "specify the output directory of the server")

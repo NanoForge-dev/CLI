@@ -40,11 +40,23 @@ command:new:
           - src/command/commands/new.command.ts
           - src/action/actions/new.action.ts
 
+command:publish:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/command/commands/publish.command.ts
+          - src/action/actions/publish.action.ts
+
 command:start:
   - changed-files:
       - any-glob-to-any-file:
           - src/command/commands/start.command.ts
           - src/action/actions/start.action.ts
+
+command:unpublish:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/command/commands/unpublish.command.ts
+          - src/action/actions/unpublish.action.ts
 
 documentation:
   - changed-files:

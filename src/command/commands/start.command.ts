@@ -18,7 +18,7 @@ export class StartCommand extends AbstractCommand {
     program
       .command("start")
       .description("start your game")
-      .option("-d, --directory [directory]", "specify the directory of your project")
+      .option("-d, --directory [directory]", "specify the working directory of the command")
       .option("-c, --config [config]", "path to the config file", CONFIG_FILE_NAME)
       .option("-p, --port [port]", "specify the port of the loader (the website to load the game)")
       .option("--watch", "run app in watching mode", false)
