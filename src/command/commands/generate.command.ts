@@ -15,7 +15,7 @@ export class GenerateCommand extends AbstractCommand {
     program
       .command("generate")
       .description("generate nanoforge files from config")
-      .option("-d, --directory [directory]", "specify the directory of your project")
+      .option("-d, --directory [directory]", "specify the working directory of the command")
       .option("-c, --config [config]", "path to the config file", CONFIG_FILE_NAME)
       .option("--watch", "generate app in watching mode", false)
       .action(async (rawOptions: GenerateOptions) => {

@@ -12,11 +12,16 @@ body:
       label: Which command is this feature request for?
       options:
         - build
+        - dev
         - generate
         - help
         - install
+        - login
+        - logout
         - new
+        - publish
         - start
+        - unpublish
         - other
     validations:
       required: true

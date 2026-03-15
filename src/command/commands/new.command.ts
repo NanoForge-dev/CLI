@@ -13,6 +13,7 @@ interface NewOptions {
   initFunctions?: boolean;
   skipInstall?: boolean;
   docker?: boolean;
+  lint?: boolean;
 }
 
 export class NewCommand extends AbstractCommand {
@@ -20,9 +21,12 @@ export class NewCommand extends AbstractCommand {
     program
       .command("new")
       .description("create a new nanoforge project")
-      .option("-d, --directory [directory]", "specify the directory of your project")
+      .option("-d, --directory [directory]", "specify the working directory of the command")
       .option("--name [name]", "specify the name of your project")
-      .option("--path [path]", "specify the path of your project")
+      .option(
+        "--path [path]",
+        "specify the relative path where your project will be created (default: name of the project)",
+      )
       .option("--package-manager [packageManager]", "specify the package manager of your project")
       .option("--language [language]", "specify the language of your project")
       .option("--strict", "use strict mode")
@@ -35,6 +39,7 @@ export class NewCommand extends AbstractCommand {
       .option("--no-skip-install", "do not skip installing dependencies")
       .option("--docker", "generate docker files")
       .option("--no-docker", "do not generate docker files")
+      .option("--no-lint", "do not generate lint files")
       .action(async (rawOptions: NewOptions) => {
         const options = AbstractCommand.mapToInput({
           directory: rawOptions.directory,
@@ -47,6 +52,7 @@ export class NewCommand extends AbstractCommand {
           initFunctions: rawOptions.initFunctions,
           skipInstall: rawOptions.skipInstall,
           docker: rawOptions.docker,
+          lint: rawOptions.lint,
         });
 
         await this.action.run(new Map(), options);

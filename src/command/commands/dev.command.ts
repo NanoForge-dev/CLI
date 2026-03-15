@@ -15,7 +15,7 @@ export class DevCommand extends AbstractCommand {
     program
       .command("dev")
       .description("run your game in dev mode")
-      .option("-d, --directory [directory]", "specify the directory of your project")
+      .option("-d, --directory [directory]", "specify the working directory of the command")
       .option("-c, --config [config]", "path to the config file", CONFIG_FILE_NAME)
       .option("--generate", "generate app from config", false)
       .action(async (rawOptions: DevOptions) => {
