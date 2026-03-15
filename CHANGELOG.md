@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+# [@nanoforge-dev/cli@1.3.0](https://github.com/NanoForge-dev/cli/compare/@nanoforge-dev/cli@1.2.0...@nanoforge-dev/cli@1.3.0) - (2026-03-15)
+
+## Bug Fixes
+
+- Npm exec issues and add lint param to new command (#101) ([a1ed759](https://github.com/NanoForge-dev/cli/commit/a1ed75977348cac78f1adb825acea465d9ebe69a)) by @Exeloo
+
+## Features
+
+- Add components and systems installation (#98) ([5fca64a](https://github.com/NanoForge-dev/cli/commit/5fca64a86219beec9b4b5b72c576d973dc012937)) by @Exeloo
+- Add publish and unpublish commands (#97) ([e49d00d](https://github.com/NanoForge-dev/cli/commit/e49d00d50584e0170d3e0793dd6d6e265939b519)) by @Exeloo
+- Add env handling in start command (#96) ([c61f8f0](https://github.com/NanoForge-dev/cli/commit/c61f8f0151b8bfd8be74d44f426d9b9e2978ac4b)) by @Exeloo
+- Add login and logout commands with apiKey handling (#88) ([5be790a](https://github.com/NanoForge-dev/cli/commit/5be790a0441cf1cebe60c6cd919a964a82a4e0a6)) by @Exeloo
+
 # [@nanoforge-dev/cli@1.2.0](https://github.com/NanoForge-dev/cli/compare/@nanoforge-dev/cli@1.1.1...@nanoforge-dev/cli@1.2.0) - (2026-03-04)
 
 ## Bug Fixes
