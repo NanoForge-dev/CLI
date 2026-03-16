@@ -172,6 +172,9 @@ importers:
       reflect-metadata:
         specifier: catalog:libs
         version: 0.2.2
+      tree-kill:
+        specifier: ^1.2.2
+        version: 1.2.2
     devDependencies:
       '@commitlint/cli':
         specifier: catalog:ci

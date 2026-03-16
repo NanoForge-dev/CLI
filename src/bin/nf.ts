@@ -1,10 +1,22 @@
 #!/usr/bin/env node
 import { program } from "commander";
 import "reflect-metadata";
+import treeKill from "tree-kill";
 
 import { loadLocalBinCommandLoader, localBinExists } from "@utils/local-binaries";
 
 import { CommandLoader } from "~/command";
+
+const signals: NodeJS.Signals[] = ["SIGINT", "SIGTERM", "SIGHUP", "SIGQUIT", "SIGBREAK"];
+
+let shuttingDown = false;
+signals.forEach((signal) => {
+  process.on(signal, async () => {
+    if (shuttingDown) return;
+    shuttingDown = true;
+    treeKill(process.pid, signal);
+  });
+});
 
 const bootstrap = async () => {
   program
