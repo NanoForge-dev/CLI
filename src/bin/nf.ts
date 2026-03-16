@@ -9,13 +9,13 @@ import { CommandLoader } from "~/command";
 
 const signals: NodeJS.Signals[] = ["SIGINT", "SIGTERM", "SIGHUP", "SIGQUIT", "SIGBREAK"];
 
-let shuttingDown = false;
 signals.forEach((signal) => {
-  process.on(signal, async () => {
-    if (shuttingDown) return;
-    shuttingDown = true;
+  const listener = async () => {
+    process.off(signal, listener);
     treeKill(process.pid, signal);
-  });
+  };
+
+  process.on(signal, listener);
 });
 
 const bootstrap = async () => {
