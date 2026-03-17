@@ -1,5 +1,6 @@
 export * from "./directory.input";
 export * from "./config.input";
+export * from "./editor.input";
 export * from "./watch.input";
 
 export * from "./dev";

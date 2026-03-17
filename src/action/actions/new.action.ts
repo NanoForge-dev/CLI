@@ -3,6 +3,7 @@ import { join } from "node:path";
 import {
   type Input,
   getDirectoryInput,
+  getEditorInput,
   getNewDockerOrAsk,
   getNewInitFunctionsWithDefault,
   getNewLanguageInputOrAsk,
@@ -32,6 +33,7 @@ interface NewValues {
   skipInstall: boolean;
   docker: boolean;
   lint: boolean;
+  editor: boolean;
 }
 
 export class NewAction extends AbstractAction {
@@ -69,6 +71,7 @@ export class NewAction extends AbstractAction {
       skipInstall: await getNewSkipInstallOrAsk(inputs),
       docker: await getNewDockerOrAsk(inputs),
       lint: getNewLintInput(inputs),
+      editor: getEditorInput(inputs),
     };
   }
 
@@ -100,6 +103,7 @@ export class NewAction extends AbstractAction {
       strict: values.strict,
       server: values.server,
       lint: values.lint,
+      editor: values.editor,
     });
   }
 

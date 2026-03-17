@@ -5,6 +5,7 @@ import { type Config } from "@lib/config";
 import {
   type Input,
   getDirectoryInput,
+  getEditorInput,
   getStringInputWithDefault,
   getWatchInput,
 } from "@lib/input";
@@ -33,9 +34,10 @@ export class BuildAction extends AbstractAction {
   public async handle(_args: Input, options: Input): Promise<HandleResult> {
     const directory = getDirectoryInput(options);
     const config = await getConfig(options, directory);
+    const isEditor = getEditorInput(options);
     const isWatch = getWatchInput(options);
 
-    const targets = this.resolveTargets(config, options);
+    const targets = this.resolveTargets(config, options, isEditor);
     const results = await this.buildAll(targets, directory, isWatch);
 
     if (isWatch) {
@@ -45,7 +47,7 @@ export class BuildAction extends AbstractAction {
     return { success: results.every(Boolean) };
   }
 
-  private resolveTargets(config: Config, options: Input): BuildTarget[] {
+  private resolveTargets(config: Config, options: Input, isEditor: boolean): BuildTarget[] {
     const targets: BuildTarget[] = [];
 
     if (config.client.enable)
@@ -54,7 +56,11 @@ export class BuildAction extends AbstractAction {
           "Client",
 
           "browser",
-          getStringInputWithDefault(options, "clientEntry", config.client.build.entry),
+          getStringInputWithDefault(
+            options,
+            "clientEntry",
+            !isEditor ? config.client.build.entry : config.client.editor.entry,
+          ),
           getStringInputWithDefault(options, "clientOutDir", config.client.outDir),
         ),
       );
@@ -63,7 +69,11 @@ export class BuildAction extends AbstractAction {
         this.createTarget(
           "Server",
           "node",
-          getStringInputWithDefault(options, "serverEntry", config.server.build.entry),
+          getStringInputWithDefault(
+            options,
+            "serverEntry",
+            !isEditor ? config.server.build.entry : config.server.editor.entry,
+          ),
           getStringInputWithDefault(options, "serverOutDir", config.server.outDir),
         ),
       );

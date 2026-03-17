@@ -1,7 +1,7 @@
 import { join } from "node:path";
 
 import { type Config } from "@lib/config";
-import { type Input, getDirectoryInput, getWatchInput } from "@lib/input";
+import { type Input, getDirectoryInput, getEditorInput, getWatchInput } from "@lib/input";
 import { Collection, CollectionFactory } from "@lib/schematics";
 import { Messages } from "@lib/ui";
 
@@ -25,9 +25,10 @@ export class GenerateAction extends AbstractAction {
   public async handle(_args: Input, options: Input): Promise<HandleResult> {
     const directory = getDirectoryInput(options);
     const config = await getConfig(options, directory);
+    const isEditor = getEditorInput(options);
     const isWatch = getWatchInput(options);
 
-    await this.generateParts(config, directory, isWatch);
+    await this.generateParts(config, directory, isEditor, isWatch);
 
     if (isWatch) {
       return this.enterWatchMode();
@@ -44,7 +45,12 @@ export class GenerateAction extends AbstractAction {
     };
   }
 
-  private async generateParts(config: Config, directory: string, watch: boolean): Promise<void> {
+  private async generateParts(
+    config: Config,
+    directory: string,
+    isEditor: boolean,
+    watch: boolean,
+  ): Promise<void> {
     const collection = CollectionFactory.create(Collection.NANOFORGE, directory);
     const values = this.extractValues(config);
 
@@ -56,8 +62,9 @@ export class GenerateAction extends AbstractAction {
         {
           ...values,
           part: "client",
-          outFile: config.client.build.entry,
+          outFile: !isEditor ? config.client.build.entry : config.client.editor.entry,
           saveFile: config.client.editor.save,
+          editor: isEditor,
         },
         watch ? this.watchPath(directory, values.directory, config.client.editor.save) : undefined,
       );
@@ -70,8 +77,9 @@ export class GenerateAction extends AbstractAction {
         {
           ...values,
           part: "server",
-          outFile: config.server.build.entry,
+          outFile: !isEditor ? config.server.build.entry : config.server.editor.entry,
           saveFile: config.server.editor.save,
+          editor: isEditor,
         },
         this.watchPath(directory, values.directory, config.server.editor.save),
       );

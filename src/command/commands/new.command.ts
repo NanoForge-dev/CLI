@@ -14,6 +14,7 @@ interface NewOptions {
   skipInstall?: boolean;
   docker?: boolean;
   lint?: boolean;
+  editor?: boolean;
 }
 
 export class NewCommand extends AbstractCommand {
@@ -40,6 +41,7 @@ export class NewCommand extends AbstractCommand {
       .option("--docker", "generate docker files")
       .option("--no-docker", "do not generate docker files")
       .option("--no-lint", "do not generate lint files")
+      .option("--editor", "do add editor dependencies")
       .action(async (rawOptions: NewOptions) => {
         const options = AbstractCommand.mapToInput({
           directory: rawOptions.directory,
@@ -53,6 +55,7 @@ export class NewCommand extends AbstractCommand {
           skipInstall: rawOptions.skipInstall,
           docker: rawOptions.docker,
           lint: rawOptions.lint,
+          editor: rawOptions.editor,
         });
 
         await this.action.run(new Map(), options);

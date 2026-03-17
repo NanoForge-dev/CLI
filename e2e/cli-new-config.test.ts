@@ -110,6 +110,7 @@ describe("nf new package.json output", () => {
       "--no-init-functions",
       "--skip-install",
       "--no-docker",
+      "--editor",
       "-d",
       projectDir,
     ]);
@@ -124,5 +125,6 @@ describe("nf new package.json output", () => {
   it("should have nanoforge dependencies", () => {
     const allDeps = { ...pkg.dependencies, ...pkg.devDependencies };
     expect(allDeps).toHaveProperty("@nanoforge-dev/core");
+    expect(allDeps).toHaveProperty("@nanoforge-dev/core-editor");
   });
 });

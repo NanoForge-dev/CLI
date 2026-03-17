@@ -11,6 +11,7 @@ interface BuildOptions {
   serverEntry?: string;
   clientOutDir?: string;
   serverOutDir?: string;
+  editor?: boolean;
   watch?: boolean;
 }
 
@@ -25,6 +26,7 @@ export class BuildCommand extends AbstractCommand {
       .option("--server-entry [serverEntry]", "specify the entry file of the server")
       .option("--client-outDir [clientOutDir]", "specify the output directory of the client")
       .option("--server-outDir [serverOutDir]", "specify the output directory of the server")
+      .option("--editor", "specify if the project must build with editor config")
       .option("--watch", "build app in watching mode", false)
       .action(async (rawOptions: BuildOptions) => {
         const options = AbstractCommand.mapToInput({
@@ -34,6 +36,7 @@ export class BuildCommand extends AbstractCommand {
           serverEntry: rawOptions.serverEntry,
           clientOutDir: rawOptions.clientOutDir,
           serverOutDir: rawOptions.serverOutDir,
+          editor: rawOptions.editor,
           watch: rawOptions.watch,
         });
 

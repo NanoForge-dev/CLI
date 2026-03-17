@@ -208,6 +208,16 @@ describe("nf generate (TypeScript, no server)", () => {
   it("should not generate server directory", async () => {
     expect(existsSync(resolve(appDir, "server"))).toBe(false);
   });
+
+  it("should generate client editor main.ts", async () => {
+    await runCli(["generate", "-d", appDir, "--editor"]);
+
+    const content = readFileSync(resolve(appDir, ".nanoforge/editor/client/main.ts"), "utf-8");
+
+    expect(content).toContain("NanoforgeFactory.createClient()");
+    expect(content).toContain('import { ECSClientLibrary } from "@nanoforge-dev/ecs-client"');
+    expect(content).toContain('from "@nanoforge-dev/core-editor"');
+  });
 });
 
 describe("nf generate (TypeScript, with server)", () => {
