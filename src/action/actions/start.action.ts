@@ -37,11 +37,19 @@ export class StartAction extends AbstractAction {
   public async handle(_args: Input, options: Input): Promise<HandleResult> {
     const directory = getDirectoryInput(options);
     const config = await getConfig(options, directory);
+    const clientDir = getStringInputWithDefault(options, "clientDir", config.client.outDir);
+    const serverDir = getStringInputWithDefault(options, "serverDir", config.server.outDir);
     const watch = getWatchInput(options);
     const port = getStringInputWithDefault(options, "port", config.client.port);
     const ssl = this.resolveSSL(options);
 
-    const tasks = this.buildStartTasks(config, directory, watch, port, ssl);
+    const tasks = this.buildStartTasks(config, directory, {
+      clientDir,
+      serverDir,
+      watch,
+      port,
+      ssl,
+    });
     await Promise.all(tasks);
 
     return { keepAlive: true };
@@ -65,18 +73,25 @@ export class StartAction extends AbstractAction {
   private buildStartTasks(
     config: Config,
     directory: string,
-    watch: boolean,
-    port: string,
-    ssl?: SSLOptions,
+    options: {
+      clientDir: string;
+      serverDir: string;
+      watch: boolean;
+      port: string;
+      ssl?: SSLOptions;
+    },
   ): Promise<void>[] {
     const env = this.parseEnv(directory);
     const tasks: Promise<void>[] = [];
+    const { clientDir, serverDir, watch, port, ssl } = options;
 
-    if (config.server.enable) {
-      tasks.push(this.startServer(directory, config, { watch }, env));
-    }
+    if (config.server.enable)
+      tasks.push(this.startServer(directory, config, { serverDir, watch }, env));
 
-    tasks.push(this.startClient(directory, config, { watch, port, ssl }, env));
+    if (config.client.enable)
+      tasks.push(
+        this.startClient(directory, config, { clientDir, serverDir, watch, port, ssl }, env),
+      );
 
     return tasks;
   }
@@ -84,7 +99,13 @@ export class StartAction extends AbstractAction {
   private async startClient(
     directory: string,
     config: Config,
-    options: { watch: boolean; port: string; ssl?: SSLOptions },
+    options: {
+      clientDir: string;
+      serverDir: string;
+      watch: boolean;
+      port: string;
+      ssl?: SSLOptions;
+    },
     env: FullEnv,
   ): Promise<void> {
     const loaderPath = getModulePath("@nanoforge-dev/loader-client/package.json", true);
@@ -96,7 +117,7 @@ export class StartAction extends AbstractAction {
   private async startServer(
     directory: string,
     config: Config,
-    options: { watch: boolean },
+    options: { serverDir: string; watch: boolean },
     env: FullEnv,
   ): Promise<void> {
     const loaderPath = getModulePath("@nanoforge-dev/loader-server/package.json", true);
@@ -108,10 +129,16 @@ export class StartAction extends AbstractAction {
   private buildClientParams(
     directory: string,
     config: Config,
-    options: { watch: boolean; port: string; ssl?: SSLOptions },
+    options: {
+      clientDir: string;
+      serverDir: string;
+      watch: boolean;
+      port: string;
+      ssl?: SSLOptions;
+    },
   ): string[] {
     const params: Record<string, string | boolean> = {
-      "-d": getCwd(join(directory, config.client.runtime.dir)),
+      "-d": getCwd(join(directory, options.clientDir)),
       "-p": options.port,
     };
     if (options.watch) params["--watch"] = true;
@@ -119,7 +146,7 @@ export class StartAction extends AbstractAction {
     if (options.watch) {
       params["--watch"] = true;
       if (config.server.enable) {
-        params["--watch-server-dir"] = getCwd(join(directory, config.server.runtime.dir));
+        params["--watch-server-dir"] = getCwd(join(directory, options.serverDir));
       }
     }
 
@@ -133,11 +160,14 @@ export class StartAction extends AbstractAction {
 
   private buildServerParams(
     directory: string,
-    config: Config,
-    options: { watch: boolean },
+    _config: Config,
+    options: {
+      serverDir: string;
+      watch: boolean;
+    },
   ): string[] {
     const params: Record<string, string | boolean> = {
-      "-d": getCwd(join(directory, config.server.runtime.dir)),
+      "-d": getCwd(join(directory, options.serverDir)),
     };
     if (options.watch) params["--watch"] = true;
 

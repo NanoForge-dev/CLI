@@ -5,23 +5,26 @@ export const CONFIG_DEFAULTS: Config = {
   language: "ts",
   initFunctions: true,
   client: {
+    enable: true,
     port: "3000",
+    outDir: ".nanoforge/client",
     build: {
-      entryFile: "client/main.ts",
-      outDir: ".nanoforge/client",
+      entry: "client/main.ts",
     },
-    runtime: {
-      dir: ".nanoforge/client",
+    editor: {
+      entry: ".nanoforge/editor/client/main.ts",
+      save: ".nanoforge/client.save.json",
     },
   },
   server: {
     enable: false,
+    outDir: ".nanoforge/server",
     build: {
-      entryFile: "server/main.ts",
-      outDir: ".nanoforge/server",
+      entry: "server/main.ts",
     },
-    runtime: {
-      dir: ".nanoforge/server",
+    editor: {
+      entry: ".nanoforge/editor/server/main.ts",
+      save: ".nanoforge/server.save.json",
     },
   },
 };

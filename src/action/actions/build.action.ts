@@ -1,8 +1,13 @@
 import { watch } from "chokidar";
 import { dirname, join } from "node:path";
 
-import { type BuildConfig, type Config } from "@lib/config";
-import { type Input, getDirectoryInput, getStringInput, getWatchInput } from "@lib/input";
+import { type Config } from "@lib/config";
+import {
+  type Input,
+  getDirectoryInput,
+  getStringInputWithDefault,
+  getWatchInput,
+} from "@lib/input";
 import { PackageManagerFactory, PackageManagerName } from "@lib/package-manager";
 import { Messages } from "@lib/ui";
 
@@ -41,39 +46,41 @@ export class BuildAction extends AbstractAction {
   }
 
   private resolveTargets(config: Config, options: Input): BuildTarget[] {
-    const targets: BuildTarget[] = [
-      this.createTarget(
-        "Client",
-        config.client.build,
-        "browser",
-        getStringInput(options, "clientDirectory"),
-      ),
-    ];
+    const targets: BuildTarget[] = [];
 
-    if (config.server.enable) {
+    if (config.client.enable)
+      targets.push(
+        this.createTarget(
+          "Client",
+
+          "browser",
+          getStringInputWithDefault(options, "clientEntry", config.client.build.entry),
+          getStringInputWithDefault(options, "clientOutDir", config.client.outDir),
+        ),
+      );
+    if (config.server.enable)
       targets.push(
         this.createTarget(
           "Server",
-          config.server.build,
           "node",
-          getStringInput(options, "serverDirectory"),
+          getStringInputWithDefault(options, "serverEntry", config.server.build.entry),
+          getStringInputWithDefault(options, "serverOutDir", config.server.outDir),
         ),
       );
-    }
 
     return targets;
   }
 
   private createTarget(
     name: string,
-    config: BuildConfig,
     platform: "browser" | "node",
-    outDirOverride?: string,
+    entryFile: string,
+    outDir: string,
   ): BuildTarget {
     return {
       name,
-      entry: config.entryFile,
-      output: outDirOverride || config.outDir,
+      entry: entryFile,
+      output: outDir,
       platform,
     };
   }

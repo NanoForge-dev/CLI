@@ -1,23 +1,19 @@
 import { join } from "node:path";
 
 import { type Config } from "@lib/config";
-import { NANOFORGE_DIR } from "@lib/constants";
 import { type Input, getDirectoryInput, getWatchInput } from "@lib/input";
 import { Collection, CollectionFactory } from "@lib/schematics";
 import { Messages } from "@lib/ui";
 
 import { getCwd } from "@utils/path";
 
-import { getConfig } from "~/action/common/config";
-
 import { AbstractAction, type HandleResult } from "../abstract.action";
+import { getConfig } from "../common/config";
 import { executeSchematic } from "../common/schematics";
 
 interface GenerateValues {
-  name: string;
   directory: string;
   language: string;
-  server: boolean;
   initFunctions: boolean;
 }
 
@@ -31,8 +27,7 @@ export class GenerateAction extends AbstractAction {
     const config = await getConfig(options, directory);
     const isWatch = getWatchInput(options);
 
-    const values = this.extractValues(config);
-    await this.generateParts(values, directory, isWatch);
+    await this.generateParts(config, directory, isWatch);
 
     if (isWatch) {
       return this.enterWatchMode();
@@ -43,52 +38,47 @@ export class GenerateAction extends AbstractAction {
 
   private extractValues(config: Config): GenerateValues {
     return {
-      name: config.name,
       directory: ".",
       language: config.language,
-      server: config.server.enable,
       initFunctions: config.initFunctions,
     };
   }
 
-  private async generateParts(
-    values: GenerateValues,
-    directory: string,
-    watch: boolean,
-  ): Promise<void> {
+  private async generateParts(config: Config, directory: string, watch: boolean): Promise<void> {
     const collection = CollectionFactory.create(Collection.NANOFORGE, directory);
-    const baseOptions = this.baseSchematicOptions(values);
+    const values = this.extractValues(config);
 
-    await executeSchematic(
-      "Client main file",
-      collection,
-      "part-main",
-      { ...baseOptions, part: "client" },
-      watch ? this.watchPath(directory, values.directory, "client") : undefined,
-    );
+    if (config.client.enable)
+      await executeSchematic(
+        "Client main file",
+        collection,
+        "part-main",
+        {
+          ...values,
+          part: "client",
+          outFile: config.client.build.entry,
+          saveFile: config.client.editor.save,
+        },
+        watch ? this.watchPath(directory, values.directory, config.client.editor.save) : undefined,
+      );
 
-    if (values.server) {
+    if (config.server.enable)
       await executeSchematic(
         "Server main file",
         collection,
         "part-main",
-        { ...baseOptions, part: "server" },
-        this.watchPath(directory, values.directory, "server"),
+        {
+          ...values,
+          part: "server",
+          outFile: config.server.build.entry,
+          saveFile: config.server.editor.save,
+        },
+        this.watchPath(directory, values.directory, config.server.editor.save),
       );
-    }
   }
 
-  private baseSchematicOptions(values: GenerateValues) {
-    return {
-      name: values.name,
-      directory: values.directory,
-      language: values.language,
-      initFunctions: values.initFunctions,
-    };
-  }
-
-  private watchPath(directory: string, subDir: string, part: string): string {
-    return join(getCwd(directory), subDir, NANOFORGE_DIR, `${part}.save.json`);
+  private watchPath(directory: string, subDir: string, saveFile: string): string {
+    return join(getCwd(directory), subDir, saveFile);
   }
 
   private enterWatchMode(): HandleResult {
