@@ -66,8 +66,7 @@
     "node-emoji": "catalog:cli",
     "ora": "catalog:cli",
     "rc9": "catalog:libs",
-    "reflect-metadata": "catalog:libs",
-    "tree-kill": "catalog:cli"
+    "reflect-metadata": "catalog:libs"
   },
   "devDependencies": {
     "@commitlint/cli": "catalog:ci",

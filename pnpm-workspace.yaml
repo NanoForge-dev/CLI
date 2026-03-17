@@ -16,7 +16,6 @@ catalogs:
     commander: ^14.0.3
     node-emoji: ^2.2.0
     ora: ^9.3.0
-    tree-kill: ^1.2.2
   core:
     '@types/node': ^25.5.0
     bun: ^1.3.10

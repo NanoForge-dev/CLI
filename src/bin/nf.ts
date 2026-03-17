@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 import { program } from "commander";
 import "reflect-metadata";
-import treeKill from "tree-kill";
+
+import { treeKill } from "@lib/tree-kill";
 
 import { loadLocalBinCommandLoader, localBinExists } from "@utils/local-binaries";
 
@@ -12,7 +13,7 @@ const signals: NodeJS.Signals[] = ["SIGINT", "SIGTERM", "SIGHUP", "SIGQUIT", "SI
 signals.forEach((signal) => {
   const listener = async () => {
     process.off(signal, listener);
-    treeKill(process.pid, signal);
+    await treeKill(process.pid, signal);
   };
 
   process.on(signal, listener);
