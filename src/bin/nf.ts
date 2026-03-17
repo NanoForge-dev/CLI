@@ -8,18 +8,18 @@ import { loadLocalBinCommandLoader, localBinExists } from "@utils/local-binaries
 
 import { CommandLoader } from "~/command";
 
-const signals: NodeJS.Signals[] = ["SIGINT", "SIGTERM", "SIGHUP", "SIGQUIT", "SIGBREAK"];
-
-signals.forEach((signal) => {
-  const listener = async () => {
-    process.off(signal, listener);
-    await treeKill(process.pid, signal);
-  };
-
-  process.on(signal, listener);
-});
-
 const bootstrap = async () => {
+  const signals: NodeJS.Signals[] = ["SIGINT", "SIGTERM", "SIGHUP", "SIGQUIT", "SIGBREAK"];
+
+  signals.forEach((signal) => {
+    const listener = async () => {
+      process.off(signal, listener);
+      await treeKill(process.pid, signal);
+    };
+
+    process.on(signal, listener);
+  });
+
   program
     .version(
       (await import("../../package.json")).version ?? "unknown",
