@@ -38,7 +38,7 @@ catalogs:
   schematics:
     '@angular-devkit/schematics': ^21.2.2
     '@angular-devkit/schematics-cli': ^21.2.2
-    '@nanoforge-dev/schematics': ^1.2.2
+    '@nanoforge-dev/schematics': ^2.0.0
   tests:
     '@vitest/coverage-v8': ^4.1.0
     vitest: ^4.1.0
