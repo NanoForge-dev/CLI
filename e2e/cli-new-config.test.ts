@@ -43,13 +43,8 @@ describe("nf new config output (no server)", () => {
     );
   });
 
-  it("should have client build config", () => {
-    expect(config.client.build.entryFile).toBe("client/main.ts");
-    expect(config.client.build.outDir).toBe(".nanoforge/client");
-  });
-
-  it("should have client runtime config", () => {
-    expect(config.client.runtime.dir).toBe(".nanoforge/client");
+  it("should have client config", () => {
+    expect(config.client.enable).toBe(true);
   });
 
   it("should not have server enabled", () => {
@@ -90,18 +85,8 @@ describe("nf new config output (with server)", () => {
     expect(config.server.enable).toBe(true);
   });
 
-  it("should have server build config", () => {
-    expect(config.server.build.entryFile).toBe("server/main.ts");
-    expect(config.server.build.outDir).toBe(".nanoforge/server");
-  });
-
-  it("should have server runtime config", () => {
-    expect(config.server.runtime.dir).toBe(".nanoforge/server");
-  });
-
   it("should have client build config", () => {
-    expect(config.client.build.entryFile).toBe("client/main.ts");
-    expect(config.client.build.outDir).toBe(".nanoforge/client");
+    expect(config.client.enable).toBe(true);
   });
 });
 
@@ -125,6 +110,7 @@ describe("nf new package.json output", () => {
       "--no-init-functions",
       "--skip-install",
       "--no-docker",
+      "--editor",
       "-d",
       projectDir,
     ]);
@@ -139,5 +125,6 @@ describe("nf new package.json output", () => {
   it("should have nanoforge dependencies", () => {
     const allDeps = { ...pkg.dependencies, ...pkg.devDependencies };
     expect(allDeps).toHaveProperty("@nanoforge-dev/core");
+    expect(allDeps).toHaveProperty("@nanoforge-dev/core-editor");
   });
 });

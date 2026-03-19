@@ -3,6 +3,7 @@ import { join } from "node:path";
 import {
   type Input,
   getDirectoryInput,
+  getEditorInput,
   getNewDockerOrAsk,
   getNewInitFunctionsWithDefault,
   getNewLanguageInputOrAsk,
@@ -32,6 +33,7 @@ interface NewValues {
   skipInstall: boolean;
   docker: boolean;
   lint: boolean;
+  editor: boolean;
 }
 
 export class NewAction extends AbstractAction {
@@ -69,6 +71,7 @@ export class NewAction extends AbstractAction {
       skipInstall: await getNewSkipInstallOrAsk(inputs),
       docker: await getNewDockerOrAsk(inputs),
       lint: getNewLintInput(inputs),
+      editor: getEditorInput(inputs),
     };
   }
 
@@ -100,6 +103,7 @@ export class NewAction extends AbstractAction {
       strict: values.strict,
       server: values.server,
       lint: values.lint,
+      editor: values.editor,
     });
   }
 
@@ -109,8 +113,10 @@ export class NewAction extends AbstractAction {
   ) {
     return executeSchematic("Configuration", collection, "configuration", {
       name: values.name,
-      directory: values.directory,
+      directory: values.directory ?? values.name,
       server: values.server,
+      language: values.language,
+      initFunctions: values.initFunctions,
     });
   }
 
@@ -124,7 +130,9 @@ export class NewAction extends AbstractAction {
       ...partOptions,
       server: values.server,
     });
-    await executeSchematic("Client main file", collection, "part-main", partOptions);
+    await executeSchematic("Client main file", collection, "part-main", {
+      ...partOptions,
+    });
   }
 
   private async generateServerParts(
@@ -137,7 +145,9 @@ export class NewAction extends AbstractAction {
       ...partOptions,
       server: values.server,
     });
-    await executeSchematic("Server main file", collection, "part-main", partOptions);
+    await executeSchematic("Server main file", collection, "part-main", {
+      ...partOptions,
+    });
   }
 
   private async generateDocker(
@@ -145,17 +155,15 @@ export class NewAction extends AbstractAction {
     values: NewValues,
   ) {
     await executeSchematic("Docker", collection, "docker", {
-      name: values.name,
-      directory: values.directory,
+      directory: values.directory ?? values.name,
       packageManager: values.packageManager,
     });
   }
 
   private partOptions(values: NewValues, part: "client" | "server") {
     return {
-      name: values.name,
       part,
-      directory: values.directory,
+      directory: values.directory ?? values.name,
       language: values.language,
       initFunctions: values.initFunctions,
     };

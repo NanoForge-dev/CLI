@@ -3,14 +3,14 @@ catalogs:
     tsup: ^8.5.1
     typescript: ^5.9.3
   ci:
-    '@commitlint/cli': ^20.4.4
-    '@commitlint/config-conventional': ^20.4.4
+    '@commitlint/cli': ^20.5.0
+    '@commitlint/config-conventional': ^20.5.0
     '@favware/cliff-jumper': ^6.0.0
     '@nanoforge-dev/actions': ^1.2.3
     husky: ^9.1.7
     lint-staged: ^16.4.0
   cli:
-    '@inquirer/prompts': ^8.3.0
+    '@inquirer/prompts': ^8.3.2
     '@types/inquirer': ^9.0.9
     ansis: ^4.2.0
     commander: ^14.0.3
@@ -38,7 +38,7 @@ catalogs:
   schematics:
     '@angular-devkit/schematics': ^21.2.2
     '@angular-devkit/schematics-cli': ^21.2.2
-    '@nanoforge-dev/schematics': ^1.2.2
+    '@nanoforge-dev/schematics': ^2.0.0
   tests:
     '@vitest/coverage-v8': ^4.1.0
     vitest: ^4.1.0

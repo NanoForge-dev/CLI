@@ -54,7 +54,7 @@ describe("nf new (TypeScript, no server)", () => {
 
     const config = JSON.parse(readFileSync(configPath, "utf-8"));
     expect(config.client).toBeDefined();
-    expect(config.client.build.entryFile).toBe("client/main.ts");
+    expect(config.client.enable).toBe(true);
   });
 
   it("should generate package.json", () => {
@@ -228,7 +228,7 @@ describe("nf new (with typescript with docker option)", () => {
 
     const config = JSON.parse(readFileSync(configPath, "utf-8"));
     expect(config.client).toBeDefined();
-    expect(config.client.build.entryFile).toBe("client/main.ts");
+    expect(config.client.enable).toBe(true);
   });
 
   it("should generate package.json", () => {

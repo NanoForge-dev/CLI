@@ -5,25 +5,34 @@ export class BuildConfig {
   @Expose()
   @IsString()
   @IsNotEmpty()
-  entryFile!: string;
+  entry!: string;
+}
+
+export class EditorConfig {
+  @Expose()
+  @IsString()
+  @IsNotEmpty()
+  entry!: string;
+
+  @Expose()
+  @IsString()
+  @IsNotEmpty()
+  save!: string;
+}
+
+export class ClientConfig {
+  @Expose()
+  @IsBoolean()
+  enable!: boolean;
+
+  @Expose()
+  @IsPort()
+  port!: string;
 
   @Expose()
   @IsString()
   @IsNotEmpty()
   outDir!: string;
-}
-
-export class RunConfig {
-  @Expose()
-  @IsString()
-  @IsNotEmpty()
-  dir!: string;
-}
-
-export class ClientConfig {
-  @Expose()
-  @IsPort()
-  port!: string;
 
   @Expose()
   @Type(() => BuildConfig)
@@ -31,9 +40,9 @@ export class ClientConfig {
   build!: BuildConfig;
 
   @Expose()
-  @Type(() => RunConfig)
+  @Type(() => EditorConfig)
   @ValidateNested()
-  runtime!: RunConfig;
+  editor!: EditorConfig;
 }
 
 export class ServerConfig {
@@ -42,14 +51,19 @@ export class ServerConfig {
   enable!: boolean;
 
   @Expose()
+  @IsString()
+  @IsNotEmpty()
+  outDir!: string;
+
+  @Expose()
   @Type(() => BuildConfig)
   @ValidateNested()
   build!: BuildConfig;
 
   @Expose()
-  @Type(() => RunConfig)
+  @Type(() => EditorConfig)
   @ValidateNested()
-  runtime!: RunConfig;
+  editor!: EditorConfig;
 }
 
 export class Config {

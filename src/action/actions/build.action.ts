@@ -1,8 +1,14 @@
 import { watch } from "chokidar";
 import { dirname, join } from "node:path";
 
-import { type BuildConfig, type Config } from "@lib/config";
-import { type Input, getDirectoryInput, getStringInput, getWatchInput } from "@lib/input";
+import { type Config } from "@lib/config";
+import {
+  type Input,
+  getDirectoryInput,
+  getEditorInput,
+  getStringInputWithDefault,
+  getWatchInput,
+} from "@lib/input";
 import { PackageManagerFactory, PackageManagerName } from "@lib/package-manager";
 import { Messages } from "@lib/ui";
 
@@ -28,9 +34,10 @@ export class BuildAction extends AbstractAction {
   public async handle(_args: Input, options: Input): Promise<HandleResult> {
     const directory = getDirectoryInput(options);
     const config = await getConfig(options, directory);
+    const isEditor = getEditorInput(options);
     const isWatch = getWatchInput(options);
 
-    const targets = this.resolveTargets(config, options);
+    const targets = this.resolveTargets(config, options, isEditor);
     const results = await this.buildAll(targets, directory, isWatch);
 
     if (isWatch) {
@@ -40,40 +47,50 @@ export class BuildAction extends AbstractAction {
     return { success: results.every(Boolean) };
   }
 
-  private resolveTargets(config: Config, options: Input): BuildTarget[] {
-    const targets: BuildTarget[] = [
-      this.createTarget(
-        "Client",
-        config.client.build,
-        "browser",
-        getStringInput(options, "clientDirectory"),
-      ),
-    ];
+  private resolveTargets(config: Config, options: Input, isEditor: boolean): BuildTarget[] {
+    const targets: BuildTarget[] = [];
 
-    if (config.server.enable) {
+    if (config.client.enable)
+      targets.push(
+        this.createTarget(
+          "Client",
+
+          "browser",
+          getStringInputWithDefault(
+            options,
+            "clientEntry",
+            !isEditor ? config.client.build.entry : config.client.editor.entry,
+          ),
+          getStringInputWithDefault(options, "clientOutDir", config.client.outDir),
+        ),
+      );
+    if (config.server.enable)
       targets.push(
         this.createTarget(
           "Server",
-          config.server.build,
           "node",
-          getStringInput(options, "serverDirectory"),
+          getStringInputWithDefault(
+            options,
+            "serverEntry",
+            !isEditor ? config.server.build.entry : config.server.editor.entry,
+          ),
+          getStringInputWithDefault(options, "serverOutDir", config.server.outDir),
         ),
       );
-    }
 
     return targets;
   }
 
   private createTarget(
     name: string,
-    config: BuildConfig,
     platform: "browser" | "node",
-    outDirOverride?: string,
+    entryFile: string,
+    outDir: string,
   ): BuildTarget {
     return {
       name,
-      entry: config.entryFile,
-      output: outDirOverride || config.outDir,
+      entry: entryFile,
+      output: outDir,
       platform,
     };
   }
