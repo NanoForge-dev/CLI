@@ -1,5 +1,3 @@
-"use strict";
-
 import { type ChildProcessWithoutNullStreams, execSync, spawn } from "node:child_process";
 
 export const treeKill = (pid: number, signal: NodeJS.Signals): Promise<void> => {

@@ -4,6 +4,12 @@ command:build:
           - src/command/commands/build.command.ts
           - src/action/actions/build.action.ts
 
+command:create:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/command/commands/create.command.ts
+          - src/action/actions/create.action.ts
+
 command:dev:
   - changed-files:
       - any-glob-to-any-file:

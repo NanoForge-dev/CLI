@@ -24,7 +24,11 @@ const getConfigPath = (directory: string, name?: string) => {
   }
 };
 
-export const loadConfig = async (directory: string, name?: string): Promise<Config> => {
+export const loadConfig = async (
+  directory: string,
+  name?: string,
+  noThrow: boolean = false,
+): Promise<Config> => {
   if (config) return config;
 
   let rawData;
@@ -33,7 +37,7 @@ export const loadConfig = async (directory: string, name?: string): Promise<Conf
   try {
     rawData = deepMerge(CONFIG_DEFAULTS, JSON.parse(readFileSync(path, "utf-8")));
   } catch {
-    rawData = null;
+    rawData = noThrow ? CONFIG_DEFAULTS : null;
   }
   if (!rawData) throw new Error(`Not able to read config file : ${path}`);
 

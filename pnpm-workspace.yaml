@@ -18,30 +18,30 @@ catalogs:
     ora: ^9.3.0
   core:
     '@types/node': ^25.5.0
-    bun: ^1.3.10
+    bun: ^1.3.11
   libs:
     chokidar: ^5.0.0
     class-transformer: ^0.5.1
     class-validator: ^0.15.1
-    dotenv: ^17.3.1
-    rc9: ^3.0.0
+    dotenv: ^17.4.0
+    rc9: ^3.0.1
     reflect-metadata: ^0.2.2
   lint:
     '@nanoforge-dev/utils-eslint-config': ^1.0.2
     '@nanoforge-dev/utils-prettier-config': ^1.0.2
     '@trivago/prettier-plugin-sort-imports': ^6.0.2
-    eslint: ^10.0.3
+    eslint: ^10.1.0
     prettier: ^3.8.1
   loader:
     '@nanoforge-dev/loader-client': ^1.3.0
     '@nanoforge-dev/loader-server': ^1.2.0
   schematics:
-    '@angular-devkit/schematics': ^21.2.2
-    '@angular-devkit/schematics-cli': ^21.2.2
-    '@nanoforge-dev/schematics': ^2.0.0
+    '@angular-devkit/schematics': ^21.2.6
+    '@angular-devkit/schematics-cli': ^21.2.6
+    '@nanoforge-dev/schematics': ^2.1.1
   tests:
-    '@vitest/coverage-v8': ^4.1.0
-    vitest: ^4.1.0
+    '@vitest/coverage-v8': ^4.1.2
+    vitest: ^4.1.2
 
 onlyBuiltDependencies:
   - bun

@@ -2,6 +2,14 @@ command:build:
   - "### Which command is this (bug
     report|feature request) for\\?\\n\\nbuild\\n"
 
+command:create:
+  - "### Which command is this (bug
+    report|feature request) for\\?\\n\\ncreate\\n"
+
+command:dev:
+  - "### Which command is this (bug
+    report|feature request) for\\?\\n\\ndev\\n"
+
 command:generate:
   - "### Which command is this (bug
     report|feature request) for\\?\\n\\ngenerate\\n"
@@ -14,10 +22,26 @@ command:install:
   - "### Which command is this (bug
     report|feature request) for\\?\\n\\ninstall\\n"
 
+command:login:
+  - "### Which command is this (bug
+    report|feature request) for\\?\\n\\nlogin\\n"
+
+command:logout:
+  - "### Which command is this (bug
+    report|feature request) for\\?\\n\\nlogout\\n"
+
 command:new:
   - "### Which command is this (bug
     report|feature request) for\\?\\n\\nnew\\n"
 
+command:publish:
+  - "### Which command is this (bug
+    report|feature request) for\\?\\n\\npublish\\n"
+
 command:start:
   - "### Which command is this (bug
     report|feature request) for\\?\\n\\nstart\\n"
+
+command:unpublish:
+  - "### Which command is this (bug
+    report|feature request) for\\?\\n\\nunpublish\\n"

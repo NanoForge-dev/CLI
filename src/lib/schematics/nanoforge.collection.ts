@@ -36,6 +36,16 @@ export class NanoforgeCollection extends AbstractCollection {
       alias: "docker",
       description: "Generate a Dockerfile for the application",
     },
+    {
+      name: "component",
+      alias: "component",
+      description: "Generate a Component for an application",
+    },
+    {
+      name: "system",
+      alias: "system",
+      description: "Generate a System for an application",
+    },
   ];
 
   constructor(runner: Runner, cwd?: string) {
