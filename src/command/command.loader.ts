@@ -5,6 +5,7 @@ import { Prefixes } from "@lib/ui";
 
 import {
   BuildAction,
+  CreateAction,
   DevAction,
   GenerateAction,
   InstallAction,
@@ -17,6 +18,7 @@ import {
 } from "~/action";
 
 import { BuildCommand } from "./commands/build.command";
+import { CreateCommand } from "./commands/create.command";
 import { DevCommand } from "./commands/dev.command";
 import { GenerateCommand } from "./commands/generate.command";
 import { InstallCommand } from "./commands/install.command";
@@ -35,6 +37,7 @@ export class CommandLoader {
     new StartCommand(new StartAction()).load(program);
     new DevCommand(new DevAction()).load(program);
     new GenerateCommand(new GenerateAction()).load(program);
+    new CreateCommand(new CreateAction()).load(program);
     new LoginCommand(new LoginAction()).load(program);
     new LogoutCommand(new LogoutAction()).load(program);
     new PublishCommand(new PublishAction()).load(program);

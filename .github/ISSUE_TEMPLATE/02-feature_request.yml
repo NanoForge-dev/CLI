@@ -12,6 +12,7 @@ body:
       label: Which command is this feature request for?
       options:
         - build
+        - create
         - dev
         - generate
         - help

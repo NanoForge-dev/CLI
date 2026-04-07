@@ -15,6 +15,10 @@ export const CONFIG_DEFAULTS: Config = {
       entry: ".nanoforge/editor/client/main.ts",
       save: ".nanoforge/client.save.json",
     },
+    dirs: {
+      components: "client/components",
+      systems: "client/systems",
+    },
   },
   server: {
     enable: false,
@@ -25,6 +29,10 @@ export const CONFIG_DEFAULTS: Config = {
     editor: {
       entry: ".nanoforge/editor/server/main.ts",
       save: ".nanoforge/server.save.json",
+    },
+    dirs: {
+      components: "server/components",
+      systems: "server/systems",
     },
   },
 };

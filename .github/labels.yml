@@ -46,6 +46,10 @@
   description: "Related to build command"
   color: "aaa3dc"
 
+- name: "command:create"
+  description: "Related to create command"
+  color: "aaa3dc"
+
 - name: "command:dev"
   description: "Related to dev command"
   color: "aaa3dc"

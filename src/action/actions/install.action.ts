@@ -5,7 +5,7 @@ import {
   getDirectoryInput,
   getInstallLibInput,
   getInstallNamesInputOrAsk,
-  getInstallServerInput,
+  getServerInput,
 } from "@lib/input";
 import { resolveManifestDependencies } from "@lib/manifest/manifest-resolver";
 import { PackageManagerFactory } from "@lib/package-manager";
@@ -25,7 +25,7 @@ export class InstallAction extends AbstractAction {
     const names = await getInstallNamesInputOrAsk(args);
     const directory = getDirectoryInput(options);
     const isLib = getInstallLibInput(options);
-    const isServer = getInstallServerInput(options);
+    const isServer = getServerInput(options);
 
     return isLib
       ? this._installLibs(directory, names)

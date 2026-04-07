@@ -150,7 +150,7 @@ describe("nf generate (TypeScript, no server)", () => {
     // Entity creation and component attachment
     expect(content).toContain("const exampleEntity = registry.spawnEntity()");
     expect(content).toContain(
-      'registry.addComponent(exampleEntity, new ExampleComponent("example", 10))',
+      'registry.addComponent(exampleEntity, new ExampleComponent("example", 10, undefined))',
     );
 
     // System registration
@@ -164,21 +164,19 @@ describe("nf generate (TypeScript, no server)", () => {
     save.components.push({
       name: "HealthComponent",
       path: "./components/health.component",
+      paramsNames: ["health"],
     });
 
-    save.entities[0].components.push({
-      name: "HealthComponent",
-      params: ["100"],
-    });
+    save.entities[0].components["HealthComponent"] = { health: 100 };
 
     save.entities.push({
       id: "exampleEntity2",
-      components: [
-        {
-          name: "ExampleComponent",
-          params: ['"example2"', "15"],
+      components: {
+        ExampleComponent: {
+          paramA: "example2",
+          paramB: 15,
         },
-      ],
+      },
     });
 
     writeFileSync(savePath, JSON.stringify(save, null, 2));
@@ -193,7 +191,7 @@ describe("nf generate (TypeScript, no server)", () => {
 
     expect(content).toContain("const exampleEntity2 = registry.spawnEntity()");
     expect(content).toContain(
-      'registry.addComponent(exampleEntity2, new ExampleComponent("example2", 15))',
+      'registry.addComponent(exampleEntity2, new ExampleComponent("example2", 15, undefined))',
     );
 
     // Original component should still be present
@@ -201,7 +199,7 @@ describe("nf generate (TypeScript, no server)", () => {
     expect(content).toContain('import { ExampleComponent } from "./components/example.component"');
     expect(content).toContain("const exampleEntity = registry.spawnEntity()");
     expect(content).toContain(
-      'registry.addComponent(exampleEntity, new ExampleComponent("example", 10))',
+      'registry.addComponent(exampleEntity, new ExampleComponent("example", 10, undefined))',
     );
   });
 

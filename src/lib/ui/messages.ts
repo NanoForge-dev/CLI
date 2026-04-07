@@ -46,6 +46,12 @@ export const Messages = {
   NEW_SKIP_INSTALL_QUESTION: "Do you want to skip dependency installation?",
   NEW_DOCKER_QUESTION: "Do you want to add a Dockerfile for containerization?",
 
+  // --- Create ---
+  CREATE_START: "NanoForge Component/System Creation",
+  CREATE_SUCCESS: success("Element successfully created!"),
+  CREATE_FAILED: failure("Creation failed!"),
+  CREATE_NAME_QUESTION: "What is the name of your component/system?",
+
   // --- Generate ---
   GENERATE_START: "NanoForge Generate",
   GENERATE_SUCCESS: success("Generation succeeded!"),

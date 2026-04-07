@@ -20,6 +20,18 @@ export class EditorConfig {
   save!: string;
 }
 
+export class DirsConfig {
+  @Expose()
+  @IsString()
+  @IsNotEmpty()
+  components!: string;
+
+  @Expose()
+  @IsString()
+  @IsNotEmpty()
+  systems!: string;
+}
+
 export class ClientConfig {
   @Expose()
   @IsBoolean()
@@ -43,6 +55,11 @@ export class ClientConfig {
   @Type(() => EditorConfig)
   @ValidateNested()
   editor!: EditorConfig;
+
+  @Expose()
+  @Type(() => DirsConfig)
+  @ValidateNested()
+  dirs!: DirsConfig;
 }
 
 export class ServerConfig {
@@ -64,6 +81,11 @@ export class ServerConfig {
   @Type(() => EditorConfig)
   @ValidateNested()
   editor!: EditorConfig;
+
+  @Expose()
+  @Type(() => DirsConfig)
+  @ValidateNested()
+  dirs!: DirsConfig;
 }
 
 export class Config {

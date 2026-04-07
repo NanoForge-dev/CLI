@@ -14,6 +14,7 @@ body:
       label: Which command is this bug report for?
       options:
         - build
+        - create
         - dev
         - generate
         - help

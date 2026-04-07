@@ -10,10 +10,10 @@ import {
   getNewLintInput,
   getNewNameInputOrAsk,
   getNewPackageManagerInputOrAsk,
-  getNewPathInput,
   getNewServerOrAsk,
   getNewSkipInstallOrAsk,
   getNewStrictOrAsk,
+  getPathInput,
 } from "@lib/input";
 import { PackageManagerFactory } from "@lib/package-manager";
 import { Collection, CollectionFactory } from "@lib/schematics";
@@ -62,7 +62,7 @@ export class NewAction extends AbstractAction {
   private async collectValues(inputs: Input): Promise<NewValues> {
     return {
       name: await getNewNameInputOrAsk(inputs),
-      directory: getNewPathInput(inputs),
+      directory: getPathInput(inputs),
       packageManager: await getNewPackageManagerInputOrAsk(inputs),
       language: await getNewLanguageInputOrAsk(inputs),
       strict: await getNewStrictOrAsk(inputs),
