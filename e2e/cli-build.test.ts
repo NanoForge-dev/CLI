@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, rmSync } from "node:fs";
+import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
@@ -54,12 +54,69 @@ describe("nf build (TypeScript, no server)", () => {
     expect(existsSync(resolve(appDir, ".nanoforge", "client", "main.js"))).toBe(true);
   });
 
-  it("should accept --client-outDir option", async () => {
-    const { exitCode } = await runCli(["build", "-d", appDir, "--client-outDir", "custom-out"]);
+  it("should accept --client-out-dir option", async () => {
+    const { exitCode } = await runCli(["build", "-d", appDir, "--client-out-dir", "custom-out"]);
 
     expect(exitCode).toBe(0);
     expect(existsSync(resolve(appDir, "custom-out"))).toBe(true);
     expect(existsSync(resolve(appDir, "custom-out", "main.js"))).toBe(true);
+  });
+
+  it("should copy static files to output dir", async () => {
+    const staticDir = resolve(appDir, "client", "static");
+    mkdirSync(staticDir, { recursive: true });
+    writeFileSync(resolve(staticDir, "asset.txt"), "hello");
+
+    const { exitCode } = await runCli(["build", "-d", appDir]);
+
+    expect(exitCode).toBe(0);
+    expect(existsSync(resolve(appDir, ".nanoforge", "client", "asset.txt"))).toBe(true);
+  });
+
+  it("should reset output dir before rebuild", async () => {
+    const outDir = resolve(appDir, ".nanoforge", "client");
+    mkdirSync(outDir, { recursive: true });
+    writeFileSync(resolve(outDir, "stale.js"), "// stale");
+
+    const { exitCode } = await runCli(["build", "-d", appDir]);
+
+    expect(exitCode).toBe(0);
+    expect(existsSync(resolve(outDir, "stale.js"))).toBe(false);
+    expect(existsSync(resolve(outDir, "main.js"))).toBe(true);
+  });
+
+  it("should accept --client-static-dir option and copy files from it", async () => {
+    const customStaticDir = resolve(appDir, "custom-static");
+    mkdirSync(customStaticDir, { recursive: true });
+    writeFileSync(resolve(customStaticDir, "custom-asset.txt"), "custom");
+
+    const { exitCode } = await runCli([
+      "build",
+      "-d",
+      appDir,
+      "--client-static-dir",
+      "custom-static",
+    ]);
+
+    expect(exitCode).toBe(0);
+    expect(existsSync(resolve(appDir, ".nanoforge", "client", "custom-asset.txt"))).toBe(true);
+  });
+
+  it("should keep process alive with --watch flag", async () => {
+    const { killed } = await runCli(["build", "-d", appDir, "--watch"], { timeout: 3000 });
+
+    expect(killed).toBe(true);
+  });
+
+  it("should accept --editor flag and use editor entry", async () => {
+    const editorEntryDir = resolve(appDir, ".nanoforge", "editor", "client");
+    mkdirSync(editorEntryDir, { recursive: true });
+    writeFileSync(resolve(editorEntryDir, "main.ts"), 'console.log("editor");');
+
+    const { exitCode } = await runCli(["build", "-d", appDir, "--editor"]);
+
+    expect(exitCode).toBe(0);
+    expect(existsSync(resolve(appDir, ".nanoforge", "client", "main.js"))).toBe(true);
   });
 });
 
@@ -96,18 +153,35 @@ describe("nf build (TypeScript, with server)", () => {
     expect(existsSync(resolve(appDir, ".nanoforge", "server", "main.js"))).toBe(true);
   });
 
-  it("should accept --server-outDir option", async () => {
+  it("should accept --server-out-dir option", async () => {
     const { exitCode } = await runCli([
       "build",
       "-d",
       appDir,
-      "--server-outDir",
+      "--server-out-dir",
       "custom-server-out",
     ]);
 
     expect(exitCode).toBe(0);
     expect(existsSync(resolve(appDir, "custom-server-out"))).toBe(true);
     expect(existsSync(resolve(appDir, "custom-server-out", "main.js"))).toBe(true);
+  });
+
+  it("should accept --server-static-dir option and copy files from it", async () => {
+    const customStaticDir = resolve(appDir, "custom-server-static");
+    mkdirSync(customStaticDir, { recursive: true });
+    writeFileSync(resolve(customStaticDir, "server-asset.txt"), "server");
+
+    const { exitCode } = await runCli([
+      "build",
+      "-d",
+      appDir,
+      "--server-static-dir",
+      "custom-server-static",
+    ]);
+
+    expect(exitCode).toBe(0);
+    expect(existsSync(resolve(appDir, ".nanoforge", "server", "server-asset.txt"))).toBe(true);
   });
 });
 

@@ -57,8 +57,13 @@ describe("nf build --help", () => {
     expect(stdout).toContain("build your game");
     expect(stdout).toContain("--directory");
     expect(stdout).toContain("--config");
-    expect(stdout).toContain("--client-outDir");
-    expect(stdout).toContain("--server-outDir");
+    expect(stdout).toContain("--client-entry");
+    expect(stdout).toContain("--server-entry");
+    expect(stdout).toContain("--client-static-dir");
+    expect(stdout).toContain("--server-static-dir");
+    expect(stdout).toContain("--client-out-dir");
+    expect(stdout).toContain("--server-out-dir");
+    expect(stdout).toContain("--editor");
     expect(stdout).toContain("--watch");
   });
 });

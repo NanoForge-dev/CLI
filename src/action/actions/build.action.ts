@@ -12,6 +12,7 @@ import {
 import { PackageManagerFactory, PackageManagerName } from "@lib/package-manager";
 import { Messages } from "@lib/ui";
 
+import { copyFiles, resetFolder } from "@utils/files";
 import { getCwd } from "@utils/path";
 import { runSafe } from "@utils/run-safe";
 
@@ -22,6 +23,7 @@ import { AbstractAction, type HandleResult } from "../abstract.action";
 interface BuildTarget {
   name: string;
   entry: string;
+  static: string;
   output: string;
   platform: "browser" | "node";
 }
@@ -61,6 +63,7 @@ export class BuildAction extends AbstractAction {
             "clientEntry",
             !isEditor ? config.client.build.entry : config.client.editor.entry,
           ),
+          getStringInputWithDefault(options, "clientStaticDir", config.client.build.staticDir),
           getStringInputWithDefault(options, "clientOutDir", config.client.outDir),
         ),
       );
@@ -74,6 +77,7 @@ export class BuildAction extends AbstractAction {
             "serverEntry",
             !isEditor ? config.server.build.entry : config.server.editor.entry,
           ),
+          getStringInputWithDefault(options, "serverStaticDir", config.server.build.staticDir),
           getStringInputWithDefault(options, "serverOutDir", config.server.outDir),
         ),
       );
@@ -85,11 +89,13 @@ export class BuildAction extends AbstractAction {
     name: string,
     platform: "browser" | "node",
     entryFile: string,
+    staticDir: string,
     outDir: string,
   ): BuildTarget {
     return {
       name,
       entry: entryFile,
+      static: staticDir,
       output: outDir,
       platform,
     };
@@ -116,18 +122,18 @@ export class BuildAction extends AbstractAction {
     const packageManager = PackageManagerFactory.create(PackageManagerName.LOCAL_BUN);
 
     const executeBuild = (rebuild = false) =>
-      runSafe(
-        () =>
-          packageManager.build(
-            target.name,
-            directory,
-            target.entry,
-            target.output,
-            ["--asset-naming", "[name].[ext]", "--target", target.platform],
-            rebuild,
-          ),
-        false,
-      );
+      runSafe(() => {
+        this.resetOut(target.output, directory);
+        this.copyFiles(target, directory);
+        return packageManager.build(
+          target.name,
+          directory,
+          target.entry,
+          target.output,
+          ["--asset-naming", "[name].[ext]", "--target", target.platform],
+          rebuild,
+        );
+      }, false);
 
     if (isWatch) {
       this.watchDirectory(directory, target.entry, () => executeBuild(true));
@@ -147,5 +153,15 @@ export class BuildAction extends AbstractAction {
     console.info(Messages.BUILD_WATCH_START);
     console.info();
     return { keepAlive: true };
+  }
+
+  private resetOut(outDir: string, directory: string): void {
+    resetFolder(getCwd(join(directory, outDir)));
+  }
+
+  private copyFiles(target: BuildTarget, directory: string): void {
+    const from = getCwd(join(directory, target.static));
+    const to = getCwd(join(directory, target.output));
+    copyFiles(from, to);
   }
 }

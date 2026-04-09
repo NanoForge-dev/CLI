@@ -10,6 +10,7 @@ export const CONFIG_DEFAULTS: Config = {
     outDir: ".nanoforge/client",
     build: {
       entry: "client/main.ts",
+      staticDir: "client/static",
     },
     editor: {
       entry: ".nanoforge/editor/client/main.ts",
@@ -25,6 +26,7 @@ export const CONFIG_DEFAULTS: Config = {
     outDir: ".nanoforge/server",
     build: {
       entry: "server/main.ts",
+      staticDir: "server/static",
     },
     editor: {
       entry: ".nanoforge/editor/server/main.ts",
