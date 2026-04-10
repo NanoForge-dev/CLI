@@ -50,6 +50,11 @@ export class Manifest {
 
   @Expose()
   @IsString({ each: true })
+  @IsOptional()
+  tags?: string[];
+
+  @Expose()
+  @IsString({ each: true })
   @IsNotEmpty({ each: true })
   @IsOptional()
   dependencies?: string[];

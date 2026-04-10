@@ -63,7 +63,7 @@ export class Registry {
     const path = join(getCwd(dir ?? "."), filename);
     if (!fs.existsSync(path))
       throw new Error(
-        "Package not found, please specify path in the nanoforge.manifest.json : `publish.paths.components`!",
+        "Package not found, please specify path in the nanoforge.manifest.json : `publish.paths.package`!",
       );
     try {
       fs.accessSync(path, fs.constants.R_OK);

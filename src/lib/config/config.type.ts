@@ -6,6 +6,11 @@ export class BuildConfig {
   @IsString()
   @IsNotEmpty()
   entry!: string;
+
+  @Expose()
+  @IsString()
+  @IsNotEmpty()
+  staticDir!: string;
 }
 
 export class EditorConfig {
