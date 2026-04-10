@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+# [@nanoforge-dev/cli@1.4.0](https://github.com/NanoForge-dev/cli/compare/@nanoforge-dev/cli@1.3.0...@nanoforge-dev/cli@1.4.0) - (2026-04-10)
+
+## Features
+
+- Add static folder to build (#114) ([e6e4e36](https://github.com/NanoForge-dev/cli/commit/e6e4e36f06cc146de76df7f4806d7f33a815382b)) by @Exeloo
+- Add create command (#111) ([3470dc6](https://github.com/NanoForge-dev/cli/commit/3470dc6e235e26b1b3fa0d5fabd6b855c18aed88)) by @Exeloo
+- Add editor flag on code generation (#106) ([bd3ce28](https://github.com/NanoForge-dev/cli/commit/bd3ce28bcaa72c72de34783b19951a181d39cf46)) by @Exeloo
+- **stop:** Catch signals end repeat it to childs (#105) ([812333d](https://github.com/NanoForge-dev/cli/commit/812333d2dff2ad365e780d75f07ee7eb72942174)) by @Tchips46
+
+### New Contributors
+
+- @Tchips46 made their first contribution in #105
+
 # [@nanoforge-dev/cli@1.3.0](https://github.com/NanoForge-dev/cli/compare/@nanoforge-dev/cli@1.2.0...@nanoforge-dev/cli@1.3.0) - (2026-03-15)
 
 ## Bug Fixes
