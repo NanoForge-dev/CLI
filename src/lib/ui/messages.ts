@@ -71,6 +71,10 @@ export const Messages = {
   START_PART_SUCCESS: (part: string) => success(`${part} terminated.`),
   START_PART_FAILED: (part: string) => failure(`${part} failed!`),
 
+  EDITOR_START: "NanoForge Editor",
+  EDITOR_SUCCESS: "Editor ended",
+  EDITOR_FAILED: failure("Editor failed!"),
+
   // --- Publish ---
   PUBLISH_START: "NanoForge Publish",
   PUBLISH_SUCCESS: success("Publish completed!"),

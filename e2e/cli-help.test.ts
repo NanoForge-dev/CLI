@@ -14,6 +14,7 @@ describe("nf --help", () => {
     expect(stdout).toContain("install|add");
     expect(stdout).toContain("new");
     expect(stdout).toContain("start");
+    expect(stdout).toContain("editor");
   });
 
   it("should display version", async () => {
@@ -113,5 +114,17 @@ describe("nf dev --help", () => {
     expect(stdout).toContain("run your game in dev mode");
     expect(stdout).toContain("--directory");
     expect(stdout).toContain("--generate");
+  });
+});
+
+describe("nf editor --help", () => {
+  it("should display editor command options", async () => {
+    const { stdout, exitCode } = await runCli(["editor", "--help"]);
+
+    expect(exitCode).toBe(0);
+    expect(stdout).toContain("start the editor");
+    expect(stdout).toContain("--directory");
+    expect(stdout).toContain("--open");
+    expect(stdout).toContain("--no-open");
   });
 });

@@ -11,5 +11,5 @@ export const copyFiles = (from: string, to: string) => {
 
 export const resetFolder = (folder: string) => {
   if (fs.existsSync(folder)) fs.rmSync(folder, { recursive: true, force: true });
-  fs.mkdirSync(folder);
+  fs.mkdirSync(folder, { recursive: true });
 };
