@@ -52,7 +52,7 @@ export const askSelect = async <T extends string = string>(
   }).catch(promptError)) as T;
 };
 
-export const askMultiSelect = async <T = string>(
+export const askMultiSelect = async <T extends string = string>(
   question: string,
   choices: MultiSelectChoices<T>,
   baseOptions?: Partial<MultiSelectOptions>,
@@ -62,10 +62,10 @@ export const askMultiSelect = async <T = string>(
     required: false,
     ...(baseOptions ?? {}),
   };
-  return await checkbox({
+  return (await checkbox({
     message: question,
     choices,
     loop: options.loop,
     required: options.required,
-  }).catch(promptError);
+  }).catch(promptError)) as T[];
 };

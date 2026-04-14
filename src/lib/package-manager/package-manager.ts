@@ -102,6 +102,34 @@ export class PackageManager {
     }
   }
 
+  public async runFile(
+    name: string,
+    directory: string,
+    script: string,
+    params: string[],
+    env: Record<string, string> = {},
+    flags: string[] = [],
+    silent = false,
+  ): Promise<boolean> {
+    console.info(Messages.START_PART_IN_PROGRESS(name));
+
+    try {
+      const args = this.buildRunFileArgs(script, params, flags, silent);
+      await this.exec(args, directory, {
+        env,
+        listeners: {
+          onStdout: createStdoutLogger(name),
+          onStderr: createStderrLogger(name),
+        },
+      });
+      console.info(Messages.START_PART_SUCCESS(name));
+      return true;
+    } catch {
+      console.error(red(Messages.START_PART_FAILED(name)));
+      return false;
+    }
+  }
+
   public async runDev(
     directory: string,
     command: string,
@@ -156,6 +184,21 @@ export class PackageManager {
     silent: boolean,
   ): string[] {
     const args = [...flags, this.commands.run];
+    if (silent) args.push(this.commands.silentFlag);
+    args.push(script);
+    if (params.length === 0) return args;
+    if (this.commands.runArgsFlag) args.push(this.commands.runArgsFlag);
+    return args.concat(params);
+  }
+
+  private buildRunFileArgs(
+    script: string,
+    params: string[],
+    flags: string[],
+    silent: boolean,
+  ): string[] {
+    if (!this.commands.runFile) throw new Error("Package manager does not support runFile");
+    const args = [...flags, this.commands.runFile];
     if (silent) args.push(this.commands.silentFlag);
     args.push(script);
     if (params.length === 0) return args;

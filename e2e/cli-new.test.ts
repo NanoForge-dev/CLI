@@ -1,5 +1,5 @@
-import { existsSync, mkdirSync, readFileSync, rmSync } from "node:fs";
-import { resolve } from "node:path";
+import { existsSync, mkdirSync, readFileSync, rmSync } from "fs";
+import { resolve } from "path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { runCli } from "./helpers/run-cli";

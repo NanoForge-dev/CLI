@@ -53,6 +53,7 @@
     "@angular-devkit/schematics": "catalog:schematics",
     "@angular-devkit/schematics-cli": "catalog:schematics",
     "@inquirer/prompts": "catalog:cli",
+    "@nanoforge-dev/editor": "file:../editor",
     "@nanoforge-dev/loader-client": "catalog:loader",
     "@nanoforge-dev/loader-server": "catalog:loader",
     "@nanoforge-dev/schematics": "catalog:schematics",
@@ -64,6 +65,7 @@
     "commander": "catalog:cli",
     "dotenv": "catalog:libs",
     "node-emoji": "catalog:cli",
+    "open": "^11.0.0",
     "ora": "catalog:cli",
     "rc9": "catalog:libs",
     "reflect-metadata": "catalog:libs"
@@ -87,7 +89,7 @@
     "typescript": "catalog:build",
     "vitest": "catalog:tests"
   },
-  "packageManager": "pnpm@10.28.1",
+  "packageManager": "pnpm@10.33.0",
   "engines": {
     "node": "25"
   },
