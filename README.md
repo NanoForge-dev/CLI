@@ -173,6 +173,28 @@ Used to unpublish a package from the Nanoforge registry.
 
 - `-d, --directory <directory>` specify the working directory of the command.
 
+## Environment Variables
+
+When running a NanoForge game with `nf start`, environment variables can be passed to the client and server applications via a `.env` file at the root of your project or directly in the environment.
+
+```dotenv
+NANOFORGE_CLIENT_SERVER_TCP_PORT=4445
+NANOFORGE_CLIENT_SERVER_UDP_PORT=4444
+NANOFORGE_CLIENT_SERVER_ADDRESS=127.0.0.1
+```
+
+Variables are scoped by prefix:
+
+| Prefix              | Availability                        |
+| :------------------ | :---------------------------------- |
+| `NANOFORGE_CLIENT_` | Available in the client only        |
+| `NANOFORGE_SERVER_` | Available in the server only        |
+| `NANOFORGE_`        | Available in both client and server |
+
+> **Note:** Prefixes are stripped before the variable is exposed to libraries.
+
+For full documentation on how libraries consume these variables, see [@nanoforge-dev/config](https://github.com/NanoForge-dev/Engine/tree/main/packages/config).
+
 ## Contributing
 
 Please read through our [contribution guidelines][contributing] before starting a pull request. We welcome contributions of all kinds, not just code! If you're stuck for ideas, look for the [good first issue][good-first-issue] label on issues in the repository. If you have any questions about the project, feel free to ask them on [Discussions][discussions]. Before creating your own issue or pull request, always check to see if one already exists! Don't rush contributions, take your time and ensure you're doing it correctly.

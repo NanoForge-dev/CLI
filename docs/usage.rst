@@ -190,3 +190,35 @@ unpublish
 Used to unpublish a package from the Nanoforge registry.
 
 * ``-d, --directory <directory>`` specify the working directory of the command.
+
+Environment Variables
+---------------------
+
+When running a NanoForge game (via ``nf start``), environment variables can be passed to the client and server applications through a ``.env`` file at the root of the project or directly in the environment.
+
+.. code-block:: dotenv
+
+    NANOFORGE_CLIENT_SERVER_TCP_PORT=4445
+    NANOFORGE_CLIENT_SERVER_UDP_PORT=4444
+    NANOFORGE_CLIENT_SERVER_ADDRESS=127.0.0.1
+
+Variables are scoped by prefix:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 30 70
+
+   * - Prefix
+     - Availability
+   * - ``NANOFORGE_CLIENT_``
+     - Available in the client only
+   * - ``NANOFORGE_SERVER_``
+     - Available in the server only
+   * - ``NANOFORGE_``
+     - Available in both client and server
+
+.. note::
+
+    Prefixes are stripped before the variable is exposed to libraries.
+
+For full documentation on how libraries consume these variables, see `@nanoforge-dev/config <https://github.com/NanoForge-dev/Engine/tree/main/packages/config>`__.
