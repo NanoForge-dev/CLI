@@ -27,7 +27,7 @@ import { executeSchematic } from "../common/schematics";
 
 interface NewValues {
   name: string;
-  directory?: string;
+  directory: string;
   packageManager: string;
   language: string;
   strict: boolean;
@@ -54,7 +54,7 @@ export class NewAction extends AbstractAction {
 
     let res = true;
 
-    const distDir = join(cwdDirectory, values.directory ?? values.name);
+    const distDir = join(cwdDirectory, values.directory);
 
     if (!values.skipInstall) {
       res = await this.installDependencies(values.packageManager, distDir);
@@ -66,9 +66,8 @@ export class NewAction extends AbstractAction {
   }
 
   private async collectValues(inputs: Input): Promise<NewValues> {
-    const values: Omit<NewValues, "gitRemote"> = {
+    const values: Omit<NewValues, "directory" | "gitRemote"> = {
       name: await getNewNameInputOrAsk(inputs),
-      directory: getPathInput(inputs),
       packageManager: await getNewPackageManagerInputOrAsk(inputs),
       language: await getNewLanguageInputOrAsk(inputs),
       strict: await getNewStrictOrAsk(inputs),
@@ -83,6 +82,7 @@ export class NewAction extends AbstractAction {
 
     return {
       ...values,
+      directory: getPathInput(inputs) ?? values.name,
       gitRemote: values.git ? (await getNewGitRemoteInputOrAsk(inputs)) || null : null,
     };
   }
@@ -126,7 +126,7 @@ export class NewAction extends AbstractAction {
   ) {
     return executeSchematic("Configuration", collection, "configuration", {
       name: values.name,
-      directory: values.directory ?? values.name,
+      directory: values.directory,
       server: values.server,
       language: values.language,
       initFunctions: values.initFunctions,
@@ -168,7 +168,7 @@ export class NewAction extends AbstractAction {
     values: NewValues,
   ) {
     await executeSchematic("Docker", collection, "docker", {
-      directory: values.directory ?? values.name,
+      directory: values.directory,
       packageManager: values.packageManager,
     });
   }
@@ -176,7 +176,7 @@ export class NewAction extends AbstractAction {
   private partOptions(values: NewValues, part: "client" | "server") {
     return {
       part,
-      directory: values.directory ?? values.name,
+      directory: values.directory,
       language: values.language,
       initFunctions: values.initFunctions,
     };
