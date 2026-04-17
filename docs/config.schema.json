@@ -1,25 +1,147 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://nanoforge-dev.github.io/docs/cli/config.schema.json",
-  "title": "Nanoforge CLI config",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://docs.nanoforge.eu/docs/cli/config.schema.json",
+  "title": "NanoForge Config",
+  "description": "Configuration file for a NanoForge project (nanoforge.config.json)",
   "type": "object",
+  "required": ["name", "language", "initFunctions", "client", "server"],
+  "additionalProperties": false,
   "properties": {
     "name": {
       "type": "string",
-      "description": "the project name"
+      "minLength": 1,
+      "description": "Name of the project",
+      "default": "nanoforge-app"
     },
     "language": {
-      "enum": ["ts", "js"]
+      "type": "string",
+      "enum": ["ts", "js"],
+      "description": "Language of the project",
+      "default": "ts"
     },
     "initFunctions": {
-      "type": "boolean"
+      "type": "boolean",
+      "description": "Whether to initialize functions",
+      "default": true
     },
     "client": {
-      "$ref": "https://nanoforge-dev.github.io/docs/cli/client-config.schema.json"
+      "$ref": "#/$defs/ClientConfig"
     },
     "server": {
-      "$ref": "https://nanoforge-dev.github.io/docs/cli/server-config.schema.json"
+      "$ref": "#/$defs/ServerConfig"
     }
   },
-  "required": ["name", "language", "initFunctions", "client", "server"]
+  "$defs": {
+    "BuildConfig": {
+      "type": "object",
+      "required": ["entry", "staticDir"],
+      "additionalProperties": false,
+      "properties": {
+        "entry": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Entry file path"
+        },
+        "staticDir": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Static assets directory path"
+        }
+      }
+    },
+    "EditorConfig": {
+      "type": "object",
+      "required": ["entry", "save"],
+      "additionalProperties": false,
+      "properties": {
+        "entry": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Editor entry file path"
+        },
+        "save": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Editor save file path"
+        }
+      }
+    },
+    "DirsConfig": {
+      "type": "object",
+      "required": ["components", "systems"],
+      "additionalProperties": false,
+      "properties": {
+        "components": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Components directory path"
+        },
+        "systems": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Systems directory path"
+        }
+      }
+    },
+    "ClientConfig": {
+      "type": "object",
+      "required": ["enable", "port", "outDir", "build", "editor", "dirs"],
+      "additionalProperties": false,
+      "properties": {
+        "enable": {
+          "type": "boolean",
+          "description": "Whether the client is enabled",
+          "default": true
+        },
+        "port": {
+          "type": "string",
+          "pattern": "^([1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$",
+          "description": "Port of the client dev server",
+          "default": "3000"
+        },
+        "outDir": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Output directory for the client build",
+          "default": ".nanoforge/client"
+        },
+        "build": {
+          "$ref": "#/$defs/BuildConfig"
+        },
+        "editor": {
+          "$ref": "#/$defs/EditorConfig"
+        },
+        "dirs": {
+          "$ref": "#/$defs/DirsConfig"
+        }
+      }
+    },
+    "ServerConfig": {
+      "type": "object",
+      "required": ["enable", "outDir", "build", "editor", "dirs"],
+      "additionalProperties": false,
+      "properties": {
+        "enable": {
+          "type": "boolean",
+          "description": "Whether the server is enabled",
+          "default": false
+        },
+        "outDir": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Output directory for the server build",
+          "default": ".nanoforge/server"
+        },
+        "build": {
+          "$ref": "#/$defs/BuildConfig"
+        },
+        "editor": {
+          "$ref": "#/$defs/EditorConfig"
+        },
+        "dirs": {
+          "$ref": "#/$defs/DirsConfig"
+        }
+      }
+    }
+  }
 }

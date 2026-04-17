@@ -13,7 +13,7 @@ export class LoginCommand extends AbstractCommand {
     program
       .command("login")
       .description("login to Nanoforge registry")
-      .option("-d, --directory [directory]", "specify the working directory of the command")
+      .option("-d, --directory <directory>", "specify the working directory of the command")
       .option("-l, --local", "login only for the project", false)
       .option("-k, --api-key <key>", "api key for Nanoforge registry")
       .action(async (rawOptions: LoginOptions) => {

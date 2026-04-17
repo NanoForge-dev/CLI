@@ -1,0 +1,66 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://docs.nanoforge.eu/docs/cli/manifest.schema.json",
+  "title": "NanoForge Manifest",
+  "description": "Manifest file for a NanoForge package (nanoforge.manifest.json)",
+  "type": "object",
+  "required": ["name", "type"],
+  "additionalProperties": false,
+  "properties": {
+    "name": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9-]+\\/[A-Za-z0-9-]+$",
+      "minLength": 1,
+      "description": "Package name in the format <namespace>/<name>"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["component", "system"],
+      "description": "Type of the package"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of the package"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags for the package"
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "NanoForge package dependencies"
+    },
+    "npmDependencies": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "NPM package dependencies as a map of package name to version"
+    },
+    "publish": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Publish configuration",
+      "properties": {
+        "paths": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "package": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Path to the package directory to publish"
+            }
+          }
+        }
+      }
+    }
+  }
+}

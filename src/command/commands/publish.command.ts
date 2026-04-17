@@ -11,7 +11,7 @@ export class PublishCommand extends AbstractCommand {
     program
       .command("publish")
       .description("publish package to Nanoforge registry")
-      .option("-d, --directory [directory]", "specify the working directory of the command")
+      .option("-d, --directory <directory>", "specify the working directory of the command")
       .action(async (rawOptions: PublishOptions) => {
         const options = AbstractCommand.mapToInput({
           directory: rawOptions.directory,

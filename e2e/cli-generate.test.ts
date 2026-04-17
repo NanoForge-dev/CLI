@@ -34,6 +34,7 @@ describe("nf generate (TypeScript, no server)", () => {
       "--init-functions",
       "--skip-install",
       "--no-docker",
+      "--no-git",
       "-d",
       projectDir,
     ]);
@@ -238,6 +239,7 @@ describe("nf generate (TypeScript, with server)", () => {
       "--init-functions",
       "--skip-install",
       "--no-docker",
+      "--no-git",
       "-d",
       projectDir,
     ]);

@@ -15,6 +15,8 @@ interface NewOptions {
   docker?: boolean;
   lint?: boolean;
   editor?: boolean;
+  git?: boolean;
+  gitRemote?: string;
 }
 
 export class NewCommand extends AbstractCommand {
@@ -22,14 +24,14 @@ export class NewCommand extends AbstractCommand {
     program
       .command("new")
       .description("create a new nanoforge project")
-      .option("-d, --directory [directory]", "specify the working directory of the command")
-      .option("--name [name]", "specify the name of your project")
+      .option("-d, --directory <directory>", "specify the working directory of the command")
+      .option("--name <name>", "specify the name of your project")
       .option(
-        "--path [path]",
+        "--path <path>",
         "specify the relative path where your project will be created (default: name of the project)",
       )
-      .option("--package-manager [packageManager]", "specify the package manager of your project")
-      .option("--language [language]", "specify the language of your project")
+      .option("--package-manager <packageManager>", "specify the package manager of your project")
+      .option("--language <language>", "specify the language of your project")
       .option("--strict", "use strict mode")
       .option("--no-strict", "do not use strict mode")
       .option("--server", "create a server")
@@ -42,6 +44,13 @@ export class NewCommand extends AbstractCommand {
       .option("--no-docker", "do not generate docker files")
       .option("--no-lint", "do not generate lint files")
       .option("--editor", "do add editor dependencies")
+      .option("--git", "generate git repository")
+      .option("--no-git", "do not generate git repository")
+      .option(
+        "--git-remote <gitRemote>",
+        "setup git remote to git repository (required if --git is used)",
+      )
+      .option("--no-git-remote", "do not setup git remote to git repository")
       .action(async (rawOptions: NewOptions) => {
         const options = AbstractCommand.mapToInput({
           directory: rawOptions.directory,
@@ -56,6 +65,8 @@ export class NewCommand extends AbstractCommand {
           docker: rawOptions.docker,
           lint: rawOptions.lint,
           editor: rawOptions.editor,
+          git: rawOptions.git,
+          gitRemote: rawOptions.gitRemote || undefined,
         });
 
         await this.action.run(new Map(), options);

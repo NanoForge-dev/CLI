@@ -15,19 +15,19 @@ interface CreateOptions {
 export class CreateCommand extends AbstractCommand {
   public load(program: Command) {
     program
-      .command("create [type]")
+      .command("create <type>")
       .description("create nanoforge components or systems")
-      .option("-d, --directory [directory]", "specify the working directory of the command")
-      .option("-c, --config [config]", "path to the config file", CONFIG_FILE_NAME)
-      .option("-n, --name [name]", "name of the component/system")
+      .option("-d, --directory <directory>", "specify the working directory of the command")
+      .option("-c, --config <config>", "path to the config file", CONFIG_FILE_NAME)
+      .option("-n, --name <name>", "name of the component/system")
       .option(
         "-s, --server",
         "install components/systems on server (default install on client)",
         false,
       )
       .option(
-        "-p, --path [path]",
-        "path to the component/system folder (default: [part]/<components|systems>)",
+        "-p, --path <path>",
+        "path to the component/system folder (default: <part>/<components|systems>)",
       )
       .action(async (type: string, rawOptions: CreateOptions) => {
         const args = AbstractCommand.mapToInput({

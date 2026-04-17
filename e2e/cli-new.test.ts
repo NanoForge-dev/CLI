@@ -35,6 +35,7 @@ describe("nf new (TypeScript, no server)", () => {
       "--no-init-functions",
       "--no-skip-install",
       "--no-docker",
+      "--no-git",
       "-d",
       projectDir,
     ]);
@@ -105,6 +106,7 @@ describe("nf new (JavaScript, with server)", () => {
       "--init-functions",
       "--no-skip-install",
       "--no-docker",
+      "--no-git",
       "-d",
       projectDir,
     ]);
@@ -175,6 +177,7 @@ describe("nf new (with --path option)", () => {
       "--no-init-functions",
       "--skip-install",
       "--no-docker",
+      "--no-git",
       "-d",
       projectDir,
     ]);
@@ -209,6 +212,7 @@ describe("nf new (with typescript with docker option)", () => {
       "--no-init-functions",
       "--no-skip-install",
       "--docker",
+      "--no-git",
       "-d",
       projectDir,
     ]);

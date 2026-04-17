@@ -34,6 +34,7 @@ describe("nf build (TypeScript, no server)", () => {
       "--no-init-functions",
       "--no-skip-install",
       "--no-docker",
+      "--no-git",
       "-d",
       projectDir,
     ]);
@@ -140,6 +141,7 @@ describe("nf build (TypeScript, with server)", () => {
       "--no-init-functions",
       "--no-skip-install",
       "--no-docker",
+      "--no-git",
       "-d",
       projectDir,
     ]);

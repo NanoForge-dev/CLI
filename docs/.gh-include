@@ -1,5 +1,2 @@
 config.schema.json
-server-config.schema.json
-client-config.schema.json
-build-config.schema.json
-run-config.schema.json
+manifest.schema.json

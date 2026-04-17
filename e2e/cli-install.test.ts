@@ -34,6 +34,7 @@ describe("nf install (with existing project)", () => {
       "--no-init-functions",
       "--no-skip-install",
       "--no-docker",
+      "--no-git",
       "-d",
       projectDir,
     ]);
@@ -126,6 +127,7 @@ describe("nf install (without library name)", () => {
       "--no-init-functions",
       "--no-skip-install",
       "--no-docker",
+      "--no-git",
       "-d",
       projectDir,
     ]);
