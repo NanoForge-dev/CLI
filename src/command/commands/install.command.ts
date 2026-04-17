@@ -14,7 +14,7 @@ export class InstallCommand extends AbstractCommand {
       .command("install [names...]")
       .alias("add")
       .description("add Nanoforge components and systems to your project")
-      .option("-d, --directory [directory]", "specify the working directory of the command")
+      .option("-d, --directory <directory>", "specify the working directory of the command")
       .option("-l, --lib", "install library instead of component/system", false)
       .option(
         "-s, --server",

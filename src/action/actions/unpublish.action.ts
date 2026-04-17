@@ -17,8 +17,9 @@ export class UnpublishAction extends AbstractAction {
 
     const manifest = await loadManifest(directory);
 
-    return withSpinner(Messages.UNPUBLISH_IN_PROGRESS(manifest.name), async () => {
-      await Registry.unpublish(manifest, directory);
-    });
+    return withSpinner(
+      () => Registry.unpublish(manifest, directory),
+      Messages.UNPUBLISH_IN_PROGRESS(manifest.name),
+    );
   }
 }

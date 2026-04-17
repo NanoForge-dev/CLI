@@ -17,8 +17,9 @@ export class PublishAction extends AbstractAction {
 
     const manifest = await loadManifest(directory);
 
-    return withSpinner(Messages.PUBLISH_IN_PROGRESS(manifest.name), async () => {
-      await Registry.publish(manifest, directory);
-    });
+    return withSpinner(
+      () => Registry.publish(manifest, directory),
+      Messages.PUBLISH_IN_PROGRESS(manifest.name),
+    );
   }
 }

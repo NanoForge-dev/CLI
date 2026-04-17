@@ -12,7 +12,7 @@ export class EditorCommand extends AbstractCommand {
     program
       .command("editor [path]")
       .description("start the editor")
-      .option("-d, --directory [directory]", "specify the working directory of the command")
+      .option("-d, --directory <directory>", "specify the working directory of the command")
       .option(
         "--open",
         "open the editor on the default web browser (default: true if path is specified, false otherwise)",

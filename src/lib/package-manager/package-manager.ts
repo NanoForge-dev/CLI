@@ -1,4 +1,4 @@
-import { bold, red } from "ansis";
+import { red } from "ansis";
 
 import { createStderrLogger, createStdoutLogger } from "@lib/runner/process-logger";
 import { type RunOptions, type Runner } from "@lib/runner/runner";
@@ -20,12 +20,10 @@ export class PackageManager {
     const args = [this.commands.install, this.commands.silentFlag];
 
     const result = await withSpinner(
+      () => this.exec(args, directory),
       Messages.PACKAGE_MANAGER_INSTALLATION_IN_PROGRESS,
-      async (spinner) => {
-        await this.exec(args, directory, { onFail: () => spinner.fail() });
-        this.logSuccess(Messages.PACKAGE_MANAGER_INSTALLATION_SUCCEED());
-      },
-      () => this.logFailure(this.formatFailCommand([this.commands.install])),
+      Messages.PACKAGE_MANAGER_INSTALLATION_SUCCEED(),
+      Messages.PACKAGE_MANAGER_INSTALLATION_FAILED(this.formatFailCommand([this.commands.install])),
     );
 
     return result.success;
@@ -64,11 +62,10 @@ export class PackageManager {
     ];
 
     const result = await withSpinner(
+      () => this.exec(args, directory),
       message,
-      async (spinner) => {
-        await this.exec(args, directory, { onFail: () => spinner.fail() });
-      },
-      () => this.logBuildFailure(name),
+      Messages.BUILD_PART_SUCCESS(name),
+      Messages.BUILD_PART_FAILED(name, this.formatFailCommand(args)),
     );
 
     return result.success;
@@ -160,12 +157,10 @@ export class PackageManager {
     const args = [this.commands.add, saveFlag, ...dependencies];
 
     const result = await withSpinner(
+      () => this.exec(args, directory),
       Messages.PACKAGE_MANAGER_INSTALLATION_IN_PROGRESS,
-      async (spinner) => {
-        await this.exec(args, directory, { onFail: () => spinner.fail() });
-        this.logSuccess(Messages.PACKAGE_MANAGER_INSTALLATION_SUCCEED(dependencies));
-      },
-      () => this.logFailure(this.formatFailCommand(args)),
+      Messages.PACKAGE_MANAGER_INSTALLATION_SUCCEED(),
+      Messages.PACKAGE_MANAGER_INSTALLATION_FAILED(this.formatFailCommand(args)),
     );
 
     return result.success;
@@ -227,21 +222,6 @@ export class PackageManager {
 
   private formatFailCommand(args: string[]): string {
     return this.runner.fullCommand(args);
-  }
-
-  private logSuccess(message: string): void {
-    console.info();
-    console.info(message);
-    console.info();
-  }
-
-  private logFailure(command: string): void {
-    console.error(red(Messages.PACKAGE_MANAGER_INSTALLATION_FAILED(bold(command))));
-  }
-
-  private logBuildFailure(name: string): void {
-    const command = this.formatFailCommand([this.commands.install]);
-    console.error(red(Messages.BUILD_PART_FAILED(name, bold(command))));
   }
 
   private logEmpty(message: string): void {

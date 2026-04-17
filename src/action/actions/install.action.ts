@@ -43,6 +43,7 @@ export class InstallAction extends AbstractAction {
     isServer?: boolean,
   ): Promise<HandleResult> {
     const deps = await resolveManifestDependencies(names, directory);
+    const part = isServer ? "server" : "client";
 
     const libSuccess = await this._installLibs(
       directory,
@@ -51,11 +52,9 @@ export class InstallAction extends AbstractAction {
 
     if (!libSuccess) return { success: false };
 
-    return withSpinner(Messages.INSTALL_PACKAGES_IN_PROGRESS, async () => {
-      await Registry.install(
-        Object.values(deps.nf),
-        join(directory, isServer ? "server" : "client"),
-      );
-    });
+    return withSpinner(
+      () => Registry.install(Object.values(deps.nf), join(directory, part)),
+      Messages.INSTALL_PACKAGES_IN_PROGRESS,
+    );
   }
 }

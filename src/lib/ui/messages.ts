@@ -1,4 +1,4 @@
-import { green } from "ansis";
+import { bold, green } from "ansis";
 
 import { Emojis } from "./emojis";
 
@@ -13,8 +13,9 @@ export const Messages = {
   BUILD_WATCH_START: "Watching for changes...",
   BUILD_PART_IN_PROGRESS: (part: string) => `Building ${part}`,
   BUILD_PART_WATCH_IN_PROGRESS: (part: string) => `${part} updated, rebuilding`,
+  BUILD_PART_SUCCESS: (name: string) => success(`Build of ${name} succeeded!`),
   BUILD_PART_FAILED: (part: string, command: string) =>
-    failure(`Build of ${part} failed!\nTry running manually: ${command}`),
+    failure(`Build of ${part} failed!\nTry running manually: ${bold(command)}`),
 
   // --- Install ---
   INSTALL_START: "NanoForge Installation",
@@ -38,6 +39,7 @@ export const Messages = {
   NEW_START: "NanoForge Project Creation",
   NEW_SUCCESS: success("Project successfully created!"),
   NEW_FAILED: failure("Project creation failed!"),
+  NEW_GENERATION_START: "Creating project...",
   NEW_NAME_QUESTION: "What is the name of your project?",
   NEW_PACKAGE_MANAGER_QUESTION: "Which package manager do you want to use?",
   NEW_LANGUAGE_QUESTION: "Which language do you want to use?",
@@ -45,6 +47,8 @@ export const Messages = {
   NEW_SERVER_QUESTION: "Do you want to generate a server for multiplayer?",
   NEW_SKIP_INSTALL_QUESTION: "Do you want to skip dependency installation?",
   NEW_DOCKER_QUESTION: "Do you want to add a Dockerfile for containerization?",
+  NEW_GIT_QUESTION: "Do you want to create a git repository?",
+  NEW_GIT_REMOTE_QUESTION: "Do you want to setup a git remote? (leave empty if you don't want to)",
 
   // --- Create ---
   CREATE_START: "NanoForge Component/System Creation",
@@ -88,7 +92,6 @@ export const Messages = {
   UNPUBLISH_IN_PROGRESS: (name: string) => `Unpublishing ${name}...`,
 
   // --- Schematics ---
-  SCHEMATICS_START: "Running schematics",
   SCHEMATIC_IN_PROGRESS: (name: string) => `Generating ${name}...`,
   SCHEMATIC_WATCH_IN_PROGRESS: (name: string) => `Change detected, regenerating ${name}...`,
   SCHEMATIC_SUCCESS: (name: string) => success(`${name} generated successfully!`),
@@ -102,8 +105,20 @@ export const Messages = {
       ? success(`Packages installed: ${names.map((n) => green(n)).join(", ")}`)
       : success("Packages installed!"),
   PACKAGE_MANAGER_INSTALLATION_FAILED: (command: string) =>
-    failure(`Package installation failed!\nTry running manually: ${command}`),
+    failure(`Package installation failed!\nTry running manually: ${bold(command)}`),
+
+  // --- Git init ---
+  GIT_INIT_IN_PROGRESS: `Initializing git repository... ${Emojis.COFFEE}`,
+  GIT_INIT_SUCCEED: success("Git repository initialized!"),
+  GIT_INIT_FAILED: (command: string) =>
+    failure(`Git repository initialization failed!\nTry running manually: ${bold(command)}`),
+
+  // --- Git remote ---
+  GIT_REMOTE_IN_PROGRESS: `Adding git remote... ${Emojis.COFFEE}`,
+  GIT_REMOTE_SUCCEED: success("Git remote added!"),
+  GIT_REMOTE_FAILED: (command: string) =>
+    failure(`Git remote addition failed!\nTry running manually: ${bold(command)}`),
 
   // --- Runner ---
-  RUNNER_EXECUTION_ERROR: (command: string) => `\nFailed to execute command: ${command}`,
+  RUNNER_EXECUTION_ERROR: (command: string) => `\nFailed to execute command: ${bold(command)}`,
 };

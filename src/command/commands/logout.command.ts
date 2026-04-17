@@ -12,7 +12,7 @@ export class LogoutCommand extends AbstractCommand {
     program
       .command("logout")
       .description("logout from Nanoforge registry")
-      .option("-d, --directory [directory]", "specify the working directory of the command")
+      .option("-d, --directory <directory>", "specify the working directory of the command")
       .option("-l, --local", "logout only for the project")
       .action(async (rawOptions: LogoutOptions) => {
         const options = AbstractCommand.mapToInput({

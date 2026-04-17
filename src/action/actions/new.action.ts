@@ -1,5 +1,6 @@
 import { join } from "node:path";
 
+import { GitRunner } from "@lib/git/git-runner";
 import {
   type Input,
   getDirectoryInput,
@@ -15,6 +16,8 @@ import {
   getNewStrictOrAsk,
   getPathInput,
 } from "@lib/input";
+import { getNewGitRemoteInputOrAsk } from "@lib/input/inputs/new/git-remote.input";
+import { getNewGitOrAsk } from "@lib/input/inputs/new/git.input";
 import { PackageManagerFactory } from "@lib/package-manager";
 import { Collection, CollectionFactory } from "@lib/schematics";
 import { Messages } from "@lib/ui";
@@ -34,6 +37,8 @@ interface NewValues {
   docker: boolean;
   lint: boolean;
   editor: boolean;
+  git: boolean;
+  gitRemote: string | null;
 }
 
 export class NewAction extends AbstractAction {
@@ -49,18 +54,19 @@ export class NewAction extends AbstractAction {
 
     let res = true;
 
+    const distDir = join(cwdDirectory, values.directory ?? values.name);
+
     if (!values.skipInstall) {
-      res = await this.installDependencies(
-        values.packageManager,
-        join(cwdDirectory, values.directory ?? values.name),
-      );
+      res = await this.installDependencies(values.packageManager, distDir);
     }
+
+    if (values.git) await this.setupGitRepository(values.gitRemote, distDir);
 
     return { success: res };
   }
 
   private async collectValues(inputs: Input): Promise<NewValues> {
-    return {
+    const values: Omit<NewValues, "gitRemote"> = {
       name: await getNewNameInputOrAsk(inputs),
       directory: getPathInput(inputs),
       packageManager: await getNewPackageManagerInputOrAsk(inputs),
@@ -72,13 +78,20 @@ export class NewAction extends AbstractAction {
       docker: await getNewDockerOrAsk(inputs),
       lint: getNewLintInput(inputs),
       editor: getEditorInput(inputs),
+      git: await getNewGitOrAsk(inputs),
+    };
+
+    return {
+      ...values,
+      gitRemote: values.git ? (await getNewGitRemoteInputOrAsk(inputs)) || null : null,
     };
   }
 
   private async scaffold(values: NewValues, directory: string): Promise<void> {
     const collection = CollectionFactory.create(Collection.NANOFORGE, directory);
 
-    console.info(Messages.SCHEMATICS_START);
+    console.info();
+    console.info(Messages.NEW_GENERATION_START);
     console.info();
 
     await this.generateApplication(collection, values);
@@ -175,5 +188,14 @@ export class NewAction extends AbstractAction {
   ): Promise<boolean> {
     const packageManager = PackageManagerFactory.create(packageManagerName);
     return await packageManager.install(directory);
+  }
+
+  private async setupGitRepository(gitRemote: string | null, dir: string): Promise<boolean> {
+    const runner = new GitRunner();
+    let res;
+
+    res = await runner.init(dir);
+    if (res && gitRemote) res = await runner.addRemote(dir, gitRemote);
+    return res;
   }
 }
