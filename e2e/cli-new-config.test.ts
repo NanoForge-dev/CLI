@@ -34,6 +34,7 @@ describe("nf new config output (no server)", () => {
       "--no-init-functions",
       "--skip-install",
       "--no-docker",
+      "--no-git",
       "-d",
       projectDir,
     ]);
@@ -72,6 +73,7 @@ describe("nf new config output (with server)", () => {
       "--no-init-functions",
       "--skip-install",
       "--no-docker",
+      "--no-git",
       "-d",
       projectDir,
     ]);
@@ -111,6 +113,7 @@ describe("nf new package.json output", () => {
       "--skip-install",
       "--no-docker",
       "--editor",
+      "--no-git",
       "-d",
       projectDir,
     ]);

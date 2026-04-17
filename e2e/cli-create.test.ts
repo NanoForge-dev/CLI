@@ -34,6 +34,7 @@ describe("nf create (TypeScript, client component)", () => {
       "--no-init-functions",
       "--skip-install",
       "--no-docker",
+      "--no-git",
       "-d",
       projectDir,
     ]);
@@ -128,6 +129,7 @@ describe("nf create (TypeScript, server component)", () => {
       "--no-init-functions",
       "--skip-install",
       "--no-docker",
+      "--no-git",
       "-d",
       projectDir,
     ]);
@@ -207,6 +209,7 @@ describe("nf create (JavaScript)", () => {
       "--no-init-functions",
       "--skip-install",
       "--no-docker",
+      "--no-git",
       "-d",
       projectDir,
     ]);
