@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+# [@nanoforge-dev/cli@1.4.1](https://github.com/NanoForge-dev/cli/compare/@nanoforge-dev/cli@1.4.0...@nanoforge-dev/cli@1.4.1) - (2026-04-19)
+
+## Features
+
+- Add git init on new command (#122) ([921a182](https://github.com/NanoForge-dev/cli/commit/921a182148ddfbf8470be1518cd8cbcb6092c7fb)) by @Exeloo
+- Add editor command (#118) ([918da39](https://github.com/NanoForge-dev/cli/commit/918da39ce41e421a5a3ae6c4d8264dbeed012209)) by @Exeloo
+
 # [@nanoforge-dev/cli@1.4.0](https://github.com/NanoForge-dev/cli/compare/@nanoforge-dev/cli@1.3.0...@nanoforge-dev/cli@1.4.0) - (2026-04-10)
 
 ## Features
