@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+# [@nanoforge-dev/cli@1.4.2](https://github.com/NanoForge-dev/cli/compare/@nanoforge-dev/cli@1.4.1...@nanoforge-dev/cli@1.4.2) - (2026-04-19)
+
+## Bug Fixes
+
+- Env nanoforge url (#127) ([bf23728](https://github.com/NanoForge-dev/cli/commit/bf237286ea9cfc259b782084091b6c1d1f3535a9)) by @Exeloo
+
 # [@nanoforge-dev/cli@1.4.1](https://github.com/NanoForge-dev/cli/compare/@nanoforge-dev/cli@1.4.0...@nanoforge-dev/cli@1.4.1) - (2026-04-19)
 
 ## Features
