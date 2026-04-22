@@ -1,0 +1,39 @@
+import dotenv from "dotenv";
+import { resolve } from "path";
+import { type UserConfig, defineConfig } from "tsdown";
+
+function createTsdownConfig({
+  entry,
+  outDir = "dist",
+  format = ["esm"],
+  shims = true,
+  dts = true,
+  sourcemap = true,
+}: UserConfig = {}) {
+  return defineConfig({
+    entry,
+    outDir,
+    format,
+    shims,
+    dts,
+    sourcemap,
+    fixedExtension: false,
+    platform: "node",
+    target: "esnext",
+    treeshake: false,
+    deps: {
+      skipNodeModulesBundle: true,
+    },
+    env: dotenv.config({
+      path: resolve(
+        process.cwd(),
+        process.env.NODE_ENV === "development" ? ".env.build.local" : ".env.build",
+      ),
+    }).parsed,
+  });
+}
+
+export default [
+  createTsdownConfig({ entry: ["src/bin/nf.ts"], dts: false, sourcemap: false }),
+  createTsdownConfig({ entry: ["src/command/command.loader.ts"] }),
+];

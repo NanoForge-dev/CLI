@@ -33,8 +33,8 @@
   },
   "funding": "",
   "scripts": {
-    "build": "tsc --noEmit && tsup",
-    "build:dev": "tsc --noEmit && NODE_ENV=development tsup",
+    "build": "tsc --noEmit && tsdown",
+    "build:dev": "tsc --noEmit && NODE_ENV=development tsdown",
     "start": "node dist/nf.js",
     "lint": "prettier --check . && eslint --format=pretty src",
     "format": "prettier --write . && eslint --fix --format=pretty src",
@@ -84,7 +84,7 @@
     "husky": "catalog:ci",
     "lint-staged": "catalog:ci",
     "prettier": "catalog:lint",
-    "tsup": "catalog:build",
+    "tsdown": "catalog:build",
     "typescript": "catalog:build",
     "vitest": "catalog:tests"
   },
