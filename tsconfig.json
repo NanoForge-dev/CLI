@@ -40,10 +40,11 @@
     "isolatedModules": true,
 
     // Language and Environment
-    "ignoreDeprecations": "6.0",
-    "experimentalDecorators": true,
+    "rootDir": ".",
     "lib": ["ESNext", "esnext.disposable"],
+    "types": ["node"],
     "target": "ESNext",
+    "experimentalDecorators": true,
     "useDefineForClassFields": true,
     "paths": {
       "~/*": ["./src/*"],

@@ -8,6 +8,8 @@ import { loadLocalBinCommandLoader, localBinExists } from "@utils/local-binaries
 
 import { CommandLoader } from "~/command";
 
+import * as pkg from "../../package.json";
+
 const bootstrap = async () => {
   const signals: NodeJS.Signals[] = ["SIGINT", "SIGTERM", "SIGHUP", "SIGQUIT", "SIGBREAK"];
 
@@ -21,11 +23,7 @@ const bootstrap = async () => {
   });
 
   program
-    .version(
-      (await import("../../package.json")).version ?? "unknown",
-      "-v, --version",
-      "output the current version",
-    )
+    .version(pkg.version ?? "unknown", "-v, --version", "output the current version")
     .usage("<command> [options]")
     .helpOption("-h, --help", "output usage information");
 
@@ -42,4 +40,4 @@ const bootstrap = async () => {
   }
 };
 
-bootstrap().then();
+void bootstrap();
