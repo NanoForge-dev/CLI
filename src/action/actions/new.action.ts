@@ -97,7 +97,7 @@ export class NewAction extends AbstractAction {
     await this.generateApplication(collection, values);
     await this.generateConfiguration(collection, values);
     await this.generateClientParts(collection, values);
-    await this.generateDocker(collection, values);
+    if (values.docker) await this.generateDocker(collection, values);
 
     if (values.server) {
       await this.generateServerParts(collection, values);
