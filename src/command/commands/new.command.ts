@@ -16,7 +16,7 @@ interface NewOptions {
   lint?: boolean;
   editor?: boolean;
   git?: boolean;
-  gitRemote?: string;
+  gitRemote?: string | false;
 }
 
 export class NewCommand extends AbstractCommand {
@@ -66,8 +66,11 @@ export class NewCommand extends AbstractCommand {
           lint: rawOptions.lint,
           editor: rawOptions.editor,
           git: rawOptions.git,
-          gitRemote: rawOptions.gitRemote || undefined,
         });
+
+        if (typeof rawOptions.gitRemote === "boolean")
+          options.set("gitRemote", { value: rawOptions.gitRemote ? undefined : "" });
+        else if (rawOptions.gitRemote) options.set("gitRemote", { value: rawOptions.gitRemote });
 
         await this.action.run(new Map(), options);
       });
