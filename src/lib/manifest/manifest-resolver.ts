@@ -29,7 +29,7 @@ const resolveDeps = async (name: string, client: Repository): Promise<ManifestDe
 };
 
 const getNpmDeps = (manifest: Manifest): [string, string][] => {
-  return Object.entries(manifest.npmDependencies ?? {});
+  return Object.entries({ ...manifest.npmDependencies, ...manifest.libDependencies });
 };
 
 const concatDeps = (deps: ManifestDeps[]): ManifestDeps => {

@@ -68,6 +68,11 @@ export class Manifest {
   @Expose()
   @IsObject()
   @IsOptional()
+  libDependencies?: Record<string, string>;
+
+  @Expose()
+  @IsObject()
+  @IsOptional()
   npmDependencies?: Record<string, string>;
 }
 
@@ -76,6 +81,7 @@ export interface FullManifest {
   type: ManifestPackageTypeEnum;
   description?: string;
   dependencies?: string[];
+  libDependencies?: Record<string, string>;
   npmDependencies?: Record<string, string>;
   publish?: {
     paths?: {
