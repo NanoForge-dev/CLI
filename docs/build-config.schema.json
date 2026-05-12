@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nanoforge-dev.github.io/docs/cli/build-config.schema.json",
+  "title": "Nanoforge CLI build config",
+  "type": "object",
+  "properties": {
+    "entryFile": {
+      "type": "string",
+      "description": "the entry file for the program"
+    },
+    "outDir": {
+      "type": "string",
+      "description": "the directory where to put the built files"
+    }
+  },
+  "required": ["entryFile", "outDir"]
+}
