@@ -31,8 +31,8 @@ jobs:
 
       - name: synchronize docs
         run: |
-          mkdir -p docs/cli
-          cp cli/docs/. -r docs/cli
+          mkdir -p docs/docs/cli
+          cp cli/docs/. -r docs/docs/cli
           cd docs
           git add .
           git commit -m "chore(cli): updating docs"
