@@ -4,7 +4,7 @@ catalogs:
     typescript: ^6.0.3
   ci:
     '@commitlint/cli': ^20.5.0
-    '@commitlint/config-conventional': ^20.5.0
+    '@commitlint/config-conventional': ^21.0.1
     '@favware/cliff-jumper': ^6.1.0
     '@nanoforge-dev/actions': ^1.4.2
     husky: ^9.1.7
