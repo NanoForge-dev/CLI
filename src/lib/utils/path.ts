@@ -12,7 +12,7 @@ export const getModulePath = (name: string, removeLast = false) => {
 };
 
 export const resolveCLINodeBinaryPath = (name: string) => {
-  let base = join(getModulePath(".", true), "..");
+  let base = join(getModulePath("./", true), "..");
   while (base.length >= 1) {
     const path = join(base, "node_modules", ".bin", name);
     try {
