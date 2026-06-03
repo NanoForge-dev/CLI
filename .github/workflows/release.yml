@@ -1,21 +1,21 @@
 name: Release
 
 on:
-  workflow_dispatch:
-    inputs:
-      dry_run:
-        description: Perform a dry run?
-        type: boolean
-        default: false
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
 
 permissions:
   contents: write
+  id-token: write
 
 jobs:
-  npm-publish:
-    name: npm publish
+  release:
+    name: Release
     runs-on: ubuntu-latest
-    if: github.repository_owner == 'NanoForge-dev'
+    if: github.repository_owner == 'NanoForge-dev' && github.event.pull_request.merged == true && startsWith(github.head_ref, 'releases/')
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -24,11 +24,61 @@ jobs:
         uses: ./.github/actions/prepare
 
       - name: Release packages
-        uses: ./node_modules/@nanoforge-dev/actions/dist/release-packages
+        uses: ./node_modules/@nanoforge-dev/actions/actions/release-packages
         with:
-          package: "@nanoforge-dev/cli"
-          exclude: ""
-          dry: ${{ inputs.dry_run }}
+          packages: "@nanoforge-dev/cli"
+          tag-format: "{version}"
+          latest: true
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  beta-release:
+    name: Beta release
+    runs-on: ubuntu-latest
+    if: github.repository_owner == 'NanoForge-dev' && github.event.pull_request.merged == true && !startsWith(github.head_ref, 'releases/')
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Prepare
+        uses: ./.github/actions/prepare
+
+      - name: Release beta
+        uses: ./node_modules/@nanoforge-dev/actions/actions/release-dev
+        with:
+          package: "@nanoforge-dev/cli"
+          tag: beta
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-docs:
+    name: Publish docs
+    runs-on: ubuntu-latest
+    if: github.repository_owner == 'NanoForge-dev'
+    needs: [release]
+    steps:
+      - name: Checkout src repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+          path: src
+
+      - name: Checkout docs repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+          path: docs
+          repository: nanoforge-dev/docs
+          token: ${{ secrets.ACTIONS_KEY }}
+
+      - name: Prepare
+        uses: ./.github/actions/prepare
+
+      - name: Publish docs
+        uses: ./node_modules/@nanoforge-dev/actions/actions/synchronize-docs
+        with:
+          category: cli

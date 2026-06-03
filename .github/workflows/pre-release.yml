@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "New version of the package (leave empty for auto generated version)"
+        description: New version for the packages
         type: string
-        required: false
+        required: true
       dry_run:
         description: Perform a dry run?
         type: boolean
@@ -31,10 +31,10 @@ jobs:
       - name: Prepare
         uses: ./.github/actions/prepare
 
-      - name: Release packages
-        uses: ./node_modules/@nanoforge-dev/actions/dist/create-release-pr
+      - name: Create release PR
+        uses: ./node_modules/@nanoforge-dev/actions/actions/create-packages-release-pr
         with:
-          package: "@nanoforge-dev/cli"
+          packages: "@nanoforge-dev/cli"
           version: ${{ inputs.version }}
           dry: ${{ inputs.dry_run }}
         env:
