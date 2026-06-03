@@ -76,9 +76,9 @@ jobs:
           token: ${{ secrets.ACTIONS_KEY }}
 
       - name: Prepare
-        uses: ./.github/actions/prepare
+        uses: ./src/.github/actions/prepare
 
       - name: Publish docs
-        uses: ./node_modules/@nanoforge-dev/actions/actions/synchronize-docs
+        uses: ./src/node_modules/@nanoforge-dev/actions/actions/synchronize-docs
         with:
           category: cli
