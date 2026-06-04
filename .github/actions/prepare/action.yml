@@ -10,6 +10,9 @@ inputs:
   build:
     description: Build packages
     default: "true"
+  sub-dir:
+    description: Is run in src sub directory
+    default: "false"
 runs:
   using: composite
   steps:
@@ -21,9 +24,13 @@ runs:
         package-manager-cache: false
         registry-url: https://registry.npmjs.org
 
-    - if: inputs.pnpm-install == 'true'
+    - if: inputs.pnpm-install == 'true' && inputs.sub-dir == 'false'
       name: Install dependencies
       uses: ./.github/actions/pnpm-install
+
+    - if: inputs.pnpm-install == 'true' && inputs.sub-dir == 'true'
+      name: Install dependencies in src sub directory
+      uses: ./src/.github/actions/pnpm-install
 
     - if: inputs.build == 'true'
       name: Build packages
