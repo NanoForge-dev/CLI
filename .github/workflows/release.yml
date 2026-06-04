@@ -77,6 +77,8 @@ jobs:
 
       - name: Prepare
         uses: ./src/.github/actions/prepare
+        with:
+          sub-dir: true
 
       - name: Publish docs
         uses: ./src/node_modules/@nanoforge-dev/actions/actions/synchronize-docs
