@@ -9,7 +9,7 @@ catalogs:
     '@commitlint/cli': ^21.0.2
     '@commitlint/config-conventional': ^21.0.2
     '@favware/cliff-jumper': ^6.1.0
-    '@nanoforge-dev/actions': ^2.1.0
+    '@nanoforge-dev/actions': ^2.1.1
     husky: ^9.1.7
     lint-staged: ^17.0.7
   cli:
@@ -48,4 +48,4 @@ catalogs:
     vitest: ^4.1.8
 
 minimumReleaseAgeExclude:
-  - '@nanoforge-dev/actions@2.1.0'
+  - '@nanoforge-dev/actions@2.1.1'
