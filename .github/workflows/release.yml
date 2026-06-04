@@ -80,4 +80,5 @@ jobs:
       - name: Publish docs
         uses: ./node_modules/@nanoforge-dev/actions/actions/synchronize-docs
         with:
+          repository: cli
           category: cli
