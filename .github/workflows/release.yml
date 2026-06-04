@@ -59,28 +59,25 @@ jobs:
     if: github.repository_owner == 'NanoForge-dev'
     needs: [release]
     steps:
-      - name: Checkout src repository
+      - name: Checkout repository
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
           fetch-tags: true
-          path: src
 
       - name: Checkout docs repository
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
           fetch-tags: true
-          path: docs
+          path: docs-dist
           repository: nanoforge-dev/docs
           token: ${{ secrets.ACTIONS_KEY }}
 
       - name: Prepare
-        uses: ./src/.github/actions/prepare
-        with:
-          sub-dir: true
+        uses: ./.github/actions/prepare
 
       - name: Publish docs
-        uses: ./src/node_modules/@nanoforge-dev/actions/actions/synchronize-docs
+        uses: ./node_modules/@nanoforge-dev/actions/actions/synchronize-docs
         with:
           category: cli

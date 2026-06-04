@@ -24,13 +24,9 @@ runs:
         package-manager-cache: false
         registry-url: https://registry.npmjs.org
 
-    - if: inputs.pnpm-install == 'true' && inputs.sub-dir == 'false'
+    - if: inputs.pnpm-install == 'true'
       name: Install dependencies
       uses: ./.github/actions/pnpm-install
-
-    - if: inputs.pnpm-install == 'true' && inputs.sub-dir == 'true'
-      name: Install dependencies in src sub directory
-      uses: ./src/.github/actions/pnpm-install
 
     - if: inputs.build == 'true'
       name: Build packages
