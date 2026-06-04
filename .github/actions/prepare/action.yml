@@ -23,7 +23,7 @@ runs:
 
     - if: inputs.pnpm-install == 'true'
       name: Install dependencies
-      uses: ./.github/actions/pnpm-install
+      uses: $GITHUB_ACTION_PATH/../pnpm-install
 
     - if: inputs.build == 'true'
       name: Build packages
