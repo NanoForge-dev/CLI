@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+# [@nanoforge-dev/cli@1.5.0](https://github.com/NanoForge-dev/cli/compare/@nanoforge-dev/cli@1.4.2...@nanoforge-dev/cli@1.5.0) - (2026-06-04)
+
+## Bug Fixes
+
+- Change local bun path finding (#144) ([76be5df](https://github.com/NanoForge-dev/cli/commit/76be5df8810c3589b16c75b18d95262c887aee68)) by @Exeloo
+- **docs:** Sumary link bad format (#140) ([dbea2cf](https://github.com/NanoForge-dev/cli/commit/dbea2cf411cfc8c1b60d0abd62d51d1631e3a2ee)) by @Tchips46
+- Add git remote and docker params handling (#130) ([99fbe2b](https://github.com/NanoForge-dev/cli/commit/99fbe2b1a5af9541650732314127413829b4192e)) by @Exeloo
+
+## Documentation
+
+- Refactor docs to mdx (#134) ([d301d90](https://github.com/NanoForge-dev/cli/commit/d301d9069fdb8d582ecc14ad2e0f5d91b4deb40f)) by @MartinFillon
+
+## Features
+
+- Handle lib deps (#131) ([9093c02](https://github.com/NanoForge-dev/cli/commit/9093c0207b4448eee8395885c9b7740ae8700307)) by @Exeloo
+
 # [@nanoforge-dev/cli@1.4.2](https://github.com/NanoForge-dev/cli/compare/@nanoforge-dev/cli@1.4.1...@nanoforge-dev/cli@1.4.2) - (2026-04-19)
 
 ## Bug Fixes
