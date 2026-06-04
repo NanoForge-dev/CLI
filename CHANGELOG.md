@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+# [1.5.3](https://github.com/NanoForge-dev/cli/compare/1.5.2...1.5.3) - (2026-06-04)
+
+## Bug Fixes
+
+- Rollback to ci path changes (#161) ([8113568](https://github.com/NanoForge-dev/cli/commit/81135687d625712fc8ee2e656bdc7da157048f40)) by @Exeloo
+
 # [@nanoforge-dev/cli@1.5.2](https://github.com/NanoForge-dev/cli/compare/@nanoforge-dev/cli@1.4.2...@nanoforge-dev/cli@1.5.2) - (2026-06-04)
 
 ## Bug Fixes
