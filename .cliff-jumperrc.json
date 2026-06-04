@@ -3,5 +3,6 @@
   "name": "cli",
   "org": "nanoforge-dev",
   "packagePath": ".",
+  "tagTemplate": "{{new-version}}",
   "identifierBase": false
 }
