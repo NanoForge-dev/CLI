@@ -1,4 +1,5 @@
 import { ApiRequestError } from "@utils/errors";
+
 import type { HttpClient, RequestOptions } from "./http-client";
 
 export class Repository {
@@ -78,8 +79,7 @@ export class Repository {
       options,
     );
     const data = (await res.json()) as R;
-    if (!res.ok)
-      throw new ApiRequestError(res.status, data["error" as keyof R]);
+    if (!res.ok) throw new ApiRequestError(res.status, data["error" as keyof R]);
     return data;
   }
 }
