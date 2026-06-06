@@ -32,7 +32,9 @@ describe("getStringInput", () => {
 
   it("should throw on non-string value", () => {
     const input = createInput([["name", 42]]);
-    expect(() => getStringInput(input, "name")).toThrow("Invalid type for name");
+    expect(() => getStringInput(input, "name")).toThrow(
+      "Invalid argument 'name'. Expected: string.",
+    );
   });
 });
 
@@ -61,7 +63,9 @@ describe("getBooleanInput", () => {
 
   it("should throw on non-boolean value", () => {
     const input = createInput([["strict", "yes"]]);
-    expect(() => getBooleanInput(input, "strict")).toThrow("Invalid type for strict");
+    expect(() => getBooleanInput(input, "strict")).toThrow(
+      "Invalid argument 'strict'. Expected: boolean.",
+    );
   });
 });
 
@@ -90,7 +94,7 @@ describe("getArrayInput", () => {
 
   it("should throw on non-array value", () => {
     const input = createInput([["libs", "not-array"]]);
-    expect(() => getArrayInput(input, "libs")).toThrow("Invalid type for libs");
+    expect(() => getArrayInput(input, "libs")).toThrow("Invalid argument 'libs'. Expected: array.");
   });
 });
 

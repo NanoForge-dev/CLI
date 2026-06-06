@@ -38,7 +38,7 @@ describe("PackageManagerFactory", () => {
 
     it("should throw for unsupported package manager", () => {
       expect(() => PackageManagerFactory.create("unknown")).toThrow(
-        "Package manager unknown is not managed.",
+        "Package manager 'unknown' is not managed/supported.",
       );
     });
   });
