@@ -5,6 +5,7 @@ import { GlobalConfigHandler } from "@lib/global-config";
 import { type Repository, withAuth } from "@lib/http";
 import { type FullManifest, type Manifest } from "@lib/manifest";
 
+import { CLIError } from "@utils/errors";
 import { getCwd } from "@utils/path";
 
 export class Registry {
@@ -62,14 +63,14 @@ export class Registry {
   private static _getPackageFile(filename: string, dir?: string): Promise<Blob> {
     const path = join(getCwd(dir ?? "."), filename);
     if (!fs.existsSync(path))
-      throw new Error(
+      throw new CLIError(
         "Package not found, please specify path in the nanoforge.manifest.json : `publish.paths.package`!",
       );
     try {
       fs.accessSync(path, fs.constants.R_OK);
       return fs.openAsBlob(path);
     } catch {
-      throw new Error("Cannot read package file, please verify your file permissions!");
+      throw new CLIError("Cannot read package file, please verify your file permissions!");
     }
   }
 }

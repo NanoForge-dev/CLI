@@ -1,5 +1,7 @@
 import { REGISTRY_URL } from "@lib/constants";
 
+import { RegistryAuthenticationError } from "@utils/errors";
+
 import { HttpClient } from "./http-client";
 import { Repository } from "./repository";
 
@@ -15,8 +17,7 @@ export const withAuth = (
   },
 ) => {
   if (!apiKey && force) {
-    console.error("No registry key found. Please use `nf login` to login");
-    throw new Error("No apikey found. Please use `nf login` to login");
+    throw new RegistryAuthenticationError();
   }
   return new Repository(
     new HttpClient(REGISTRY_URL ?? "", {

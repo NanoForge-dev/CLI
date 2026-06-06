@@ -40,6 +40,25 @@ export class ProjectInitializationError extends CLIError {
   }
 }
 
+export class ManifestError extends CLIError {
+  constructor(detail: string) {
+    super(`Manifest Error: ${detail}`);
+  }
+}
+
+export class FileSystemError extends CLIError {
+  constructor(action: string, targetPath: string) {
+    super(`File System Error [${action}]: ${targetPath}`);
+  }
+}
+
+export class ApiRequestError extends CLIError {
+  constructor(status: number, cause?: unknown) {
+    const causeStr = cause && typeof cause === "object" ? JSON.stringify(cause, null, 2) : cause;
+    super(`API Request failed (Status ${status})${causeStr ? `\nDetails: ${causeStr}` : ""}`);
+  }
+}
+
 const getErrorString = (error: Error): string => {
   const stack = error.stack ? error.stack : error.message;
   const cause =

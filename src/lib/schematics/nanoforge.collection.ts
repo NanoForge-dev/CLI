@@ -1,5 +1,7 @@
 import { type Runner } from "@lib/runner/runner";
 
+import { CLIError } from "@utils/errors";
+
 import { AbstractCollection } from "./abstract.collection";
 import { type SchematicOption } from "./schematic.option";
 
@@ -72,7 +74,7 @@ export class NanoforgeCollection extends AbstractCollection {
     );
 
     if (schematic === undefined || schematic === null) {
-      throw new Error(
+      throw new CLIError(
         `Invalid schematic "${name}". Please, ensure that "${name}" exists in this collection.`,
       );
     }

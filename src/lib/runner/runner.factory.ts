@@ -1,3 +1,4 @@
+import { CLIError } from "@utils/errors";
 import { getModulePath, resolveCLINodeBinaryPath } from "@utils/path";
 
 import { Runner } from "./runner";
@@ -20,7 +21,7 @@ export class RunnerFactory {
     try {
       return getModulePath("@angular-devkit/schematics-cli/bin/schematics.js");
     } catch {
-      throw new Error("'schematics' binary path could not be found!");
+      throw new CLIError("'schematics' binary path could not be found!");
     }
   }
 }

@@ -5,6 +5,7 @@ import { join } from "node:path";
 
 import { CONFIG_FILE_NAME } from "@lib/constants";
 
+import { CLIError, ConfigNotFoundError, FileSystemError } from "@utils/errors";
 import { deepMerge } from "@utils/object";
 
 import { CONFIG_DEFAULTS } from "./config-defaults";
@@ -20,7 +21,7 @@ const getConfigPath = (directory: string, name?: string) => {
       const path = join(directory, n);
       if (existsSync(path)) return path;
     }
-    throw new Error(`No config file found in directory: ${directory}`);
+    throw new ConfigNotFoundError(join(directory, CONFIG_FILE_NAME));
   }
 };
 
@@ -39,14 +40,14 @@ export const loadConfig = async (
   } catch {
     rawData = noThrow ? CONFIG_DEFAULTS : null;
   }
-  if (!rawData) throw new Error(`Not able to read config file : ${path}`);
+  if (!rawData) throw new FileSystemError("read config file", path);
 
   const data = plainToInstance(Config, rawData, {
     excludeExtraneousValues: true,
   });
   const errors = await validate(data);
   if (errors.length > 0)
-    throw new Error(`Invalid config :\n${errors.toString().replace(/,/g, "\n")}`);
+    throw new CLIError(`Invalid config:\n${errors.toString().replace(/,/g, "\n")}`);
 
   config = data;
   return config;
