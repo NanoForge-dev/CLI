@@ -1,4 +1,4 @@
-import { type Input, getDevGenerateInput, getDirectoryInput } from "@lib/input";
+import { type Input, getDevGenerateInput, getDirectoryInput, getEditorInput } from "@lib/input";
 import { PackageManagerFactory } from "@lib/package-manager";
 import { Messages } from "@lib/ui";
 
@@ -15,7 +15,7 @@ export class DevAction extends AbstractAction {
     const directory = getDirectoryInput(options);
     const generate = getDevGenerateInput(options);
 
-    const editor = Boolean(options.get("editor"));
+    const editor = getEditorInput(options);
     const tasks = this.buildTaskList(directory, generate, editor);
     await Promise.all(tasks);
 
