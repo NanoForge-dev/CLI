@@ -114,6 +114,7 @@ describe("nf dev --help", () => {
     expect(stdout).toContain("run your game in dev mode");
     expect(stdout).toContain("--directory");
     expect(stdout).toContain("--generate");
+    expect(stdout).toContain("--editor");
   });
 });
 

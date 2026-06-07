@@ -1,4 +1,4 @@
-import { type Input, getDevGenerateInput, getDirectoryInput } from "@lib/input";
+import { type Input, getDevGenerateInput, getDirectoryInput, getEditorInput } from "@lib/input";
 import { PackageManagerFactory } from "@lib/package-manager";
 import { Messages } from "@lib/ui";
 
@@ -15,20 +15,22 @@ export class DevAction extends AbstractAction {
     const directory = getDirectoryInput(options);
     const generate = getDevGenerateInput(options);
 
-    const tasks = this.buildTaskList(directory, generate);
+    const editor = getEditorInput(options);
+    const tasks = this.buildTaskList(directory, generate, editor);
     await Promise.all(tasks);
 
     return { keepAlive: true };
   }
 
-  private buildTaskList(directory: string, generate: boolean): Promise<void>[] {
+  private buildTaskList(directory: string, generate: boolean, editor: boolean): Promise<void>[] {
     const tasks: Promise<void>[] = [];
+    const extraFlags = editor ? ["--editor"] : [];
 
     if (generate) {
-      tasks.push(this.runSubCommand("generate", directory, { silent: true }));
+      tasks.push(this.runSubCommand("generate", directory, { silent: true, extraFlags }));
     }
 
-    tasks.push(this.runSubCommand("build", directory, { silent: true }));
+    tasks.push(this.runSubCommand("build", directory, { silent: true, extraFlags }));
     tasks.push(this.runSubCommand("start", directory, { silent: false }));
 
     return tasks;
@@ -37,11 +39,12 @@ export class DevAction extends AbstractAction {
   private async runSubCommand(
     command: string,
     directory: string,
-    options: { silent: boolean },
+    options: { silent: boolean; extraFlags?: string[] },
   ): Promise<void> {
     await runSafe(async () => {
       const packageManager = await PackageManagerFactory.find(directory);
-      await packageManager.runDev(directory, "nf", {}, [command, "--watch"], options.silent);
+      const args = [command, "--watch", ...(options.extraFlags ?? [])];
+      await packageManager.runDev(directory, "nf", {}, args, options.silent);
     });
   }
 }

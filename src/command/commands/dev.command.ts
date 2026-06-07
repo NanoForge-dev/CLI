@@ -8,6 +8,7 @@ interface DevOptions {
   directory?: string;
   config?: string;
   generate?: boolean;
+  editor?: boolean;
 }
 
 export class DevCommand extends AbstractCommand {
@@ -18,11 +19,13 @@ export class DevCommand extends AbstractCommand {
       .option("-d, --directory <directory>", "specify the working directory of the command")
       .option("-c, --config <config>", "path to the config file", CONFIG_FILE_NAME)
       .option("--generate", "generate app from config", false)
+      .option("-e, --editor", "run the editor", false)
       .action(async (rawOptions: DevOptions) => {
         const options = AbstractCommand.mapToInput({
           directory: rawOptions.directory,
           config: rawOptions.config,
           generate: rawOptions.generate,
+          editor: rawOptions.editor,
         });
 
         await this.action.run(new Map(), options);
