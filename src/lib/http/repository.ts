@@ -1,3 +1,5 @@
+import { ApiRequestError } from "@utils/errors";
+
 import type { HttpClient, RequestOptions } from "./http-client";
 
 export class Repository {
@@ -50,10 +52,7 @@ export class Repository {
   ): Promise<R> {
     const res = await this._client[request](path, options);
     const data = (await res.json()) as R;
-    if (!res.ok)
-      throw new Error(`Request failed with status code ${res.status}`, {
-        cause: data["error" as keyof R],
-      });
+    if (!res.ok) throw new ApiRequestError(res.status, data["error" as keyof R]);
     return data;
   }
 
@@ -64,9 +63,7 @@ export class Repository {
   ): Promise<Blob> {
     const res = await this._client[request](path, options);
     if (!res.ok)
-      throw new Error(`Request failed with status code ${res.status}`, {
-        cause: ((await res.json()) as { error: any })["error"],
-      });
+      throw new ApiRequestError(res.status, ((await res.json()) as { error: any })["error"]);
     return await res.blob();
   }
 
@@ -82,10 +79,7 @@ export class Repository {
       options,
     );
     const data = (await res.json()) as R;
-    if (!res.ok)
-      throw new Error(`Request failed with status code ${res.status}`, {
-        cause: data["error" as keyof R],
-      });
+    if (!res.ok) throw new ApiRequestError(res.status, data["error" as keyof R]);
     return data;
   }
 }

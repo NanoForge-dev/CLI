@@ -62,9 +62,7 @@ describe("loadConfig", () => {
 
     const { loadConfig: freshLoad } = await import("./config-loader");
 
-    await expect(freshLoad("/project")).rejects.toThrow(
-      "No config file found in directory: /project",
-    );
+    await expect(freshLoad("/project")).rejects.toThrow("Configuration file not found at path:");
   });
 
   it("should throw when config file cannot be parsed", async () => {
@@ -73,7 +71,7 @@ describe("loadConfig", () => {
 
     const { loadConfig: freshLoad } = await import("./config-loader");
 
-    await expect(freshLoad("/project")).rejects.toThrow("Not able to read config file");
+    await expect(freshLoad("/project")).rejects.toThrow("File System Error [read config file]");
   });
 
   it("should throw on validation errors", async () => {

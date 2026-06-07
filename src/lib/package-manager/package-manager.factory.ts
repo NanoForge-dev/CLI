@@ -3,6 +3,8 @@ import { resolve } from "path";
 
 import { RunnerFactory } from "@lib/runner";
 
+import { CLIError } from "@utils/errors";
+
 import { PackageManager } from "./package-manager";
 import { PM_CONFIGS } from "./package-manager-configs";
 import { PackageManagerName } from "./package-manager-name";
@@ -18,7 +20,7 @@ export class PackageManagerFactory {
   public static create(name: PackageManagerName | string): PackageManager {
     const config = PM_CONFIGS[name as PackageManagerName];
     if (!config) {
-      throw new Error(`Package manager ${name} is not managed.`);
+      throw new CLIError(`Package manager '${name}' is not managed/supported.`);
     }
 
     const runner = this.createRunner(name as PackageManagerName, config.binary);

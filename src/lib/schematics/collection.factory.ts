@@ -1,5 +1,7 @@
 import { RunnerFactory } from "@lib/runner";
 
+import { CLIError } from "@utils/errors";
+
 import { type AbstractCollection } from "./abstract.collection";
 import { Collection } from "./collection";
 import { NanoforgeCollection } from "./nanoforge.collection";
@@ -11,6 +13,6 @@ export class CollectionFactory {
     if (collection === Collection.NANOFORGE) {
       return new NanoforgeCollection(schematicRunner, directory);
     }
-    throw new Error(`Unknown collection: ${collection}`);
+    throw new CLIError(`Unknown collection: ${collection}`);
   }
 }

@@ -1,6 +1,8 @@
 import fs from "fs";
 import { join, resolve } from "path";
 
+import { FileSystemError } from "@utils/errors";
+
 export const getCwd = (directory: string) => {
   return resolve(directory);
 };
@@ -22,5 +24,5 @@ export const resolveCLINodeBinaryPath = (name: string) => {
       base = join(base, "..");
     }
   }
-  throw new Error("Could not find module path");
+  throw new FileSystemError("resolve binary", name);
 };

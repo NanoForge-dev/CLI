@@ -1,10 +1,12 @@
+import { InvalidCommandArgumentError } from "@utils/errors";
+
 import { type Input } from "./input.type";
 
 export const getStringInput = (input: Input, field: string): string | undefined => {
   const value = input.get(field)?.value;
   if (value === undefined) return undefined;
   if (typeof value === "string") return value;
-  throw new Error(`Invalid type for ${field}`);
+  throw new InvalidCommandArgumentError(field, "string");
 };
 
 export const getStringInputWithDefault = (
@@ -19,7 +21,7 @@ export const getBooleanInput = (input: Input, field: string): boolean | undefine
   const value = input.get(field)?.value;
   if (value === undefined) return undefined;
   if (typeof value === "boolean") return value;
-  throw new Error(`Invalid type for ${field}`);
+  throw new InvalidCommandArgumentError(field, "boolean");
 };
 
 export const getBooleanInputWithDefault = (
@@ -34,7 +36,7 @@ export const getArrayInput = (input: Input, field: string): string[] | undefined
   const value = input.get(field)?.value;
   if (value === undefined) return undefined;
   if (typeof value === "object" && Array.isArray(value)) return value;
-  throw new Error(`Invalid type for ${field}`);
+  throw new InvalidCommandArgumentError(field, "array");
 };
 
 export const getArrayInputWithDefault = (

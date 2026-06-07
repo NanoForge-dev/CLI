@@ -4,6 +4,7 @@ import { createStderrLogger, createStdoutLogger } from "@lib/runner/process-logg
 import { type RunOptions, type Runner } from "@lib/runner/runner";
 import { Messages } from "@lib/ui";
 
+import { CLIError } from "@utils/errors";
 import { getCwd } from "@utils/path";
 import { withSpinner } from "@utils/spinner";
 
@@ -168,7 +169,7 @@ export class PackageManager {
 
   private assertSupports(feature: keyof PackageManagerCommands): void {
     if (!this.commands[feature]) {
-      throw new Error(`Package manager "${this.name}" does not support "${feature}"`);
+      throw new CLIError(`Package manager "${this.name}" does not support "${feature}"`);
     }
   }
 
@@ -192,7 +193,7 @@ export class PackageManager {
     flags: string[],
     silent: boolean,
   ): string[] {
-    if (!this.commands.runFile) throw new Error("Package manager does not support runFile");
+    if (!this.commands.runFile) throw new CLIError("Package manager does not support runFile");
     const args = [...flags, this.commands.runFile];
     if (silent) args.push(this.commands.silentFlag);
     args.push(script);

@@ -1,3 +1,5 @@
+import { CLIError } from "@utils/errors";
+
 export const getInputOrAsk = async <T>(
   baseInput: T | undefined,
   askCb: () => Promise<T>,
@@ -7,5 +9,5 @@ export const getInputOrAsk = async <T>(
   const res = await askCb();
   if (res !== undefined) return res;
   if (defaultValue !== undefined) return defaultValue;
-  throw new Error("No input provided");
+  throw new CLIError("No input provided. Please provide a valid value.");
 };

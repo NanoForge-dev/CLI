@@ -1,6 +1,6 @@
 import { number } from "@inquirer/prompts";
 
-import { promptError } from "@utils/errors";
+import { CLIError, promptError } from "@utils/errors";
 
 interface NumberOptions {
   default?: number;
@@ -27,6 +27,7 @@ export const askNumber = async (
     required: options.required,
   }).catch(promptError);
 
-  if (res === undefined || isNaN(res) || !isFinite(res)) throw new Error("Invalid number");
+  if (res === undefined || isNaN(res) || !isFinite(res))
+    throw new CLIError("Invalid number provided.");
   return res;
 };

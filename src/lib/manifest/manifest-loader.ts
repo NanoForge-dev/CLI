@@ -5,6 +5,7 @@ import { join } from "node:path";
 
 import { MANIFEST_FILE_NAME } from "@lib/constants";
 
+import { ManifestError } from "@utils/errors";
 import { deepMerge } from "@utils/object";
 
 import { Manifest } from "./manifest.type";
@@ -14,7 +15,7 @@ const getManifestPath = (directory: string) => {
     const path = join(directory, n);
     if (existsSync(path)) return path;
   }
-  throw new Error(`No manifest file found in directory: ${directory}`);
+  throw new ManifestError(`No manifest file found in directory: ${directory}`);
 };
 
 export const loadManifest = async (directory: string): Promise<Manifest> => {
@@ -26,14 +27,17 @@ export const loadManifest = async (directory: string): Promise<Manifest> => {
   } catch {
     rawData = null;
   }
-  if (!rawData) throw new Error(`Not able to read manifest file : ${path}`);
+  if (!rawData) {
+    throw new ManifestError(`Unable to read or parse file at ${path}`);
+  }
 
   const data = plainToInstance(Manifest, rawData, {
     excludeExtraneousValues: true,
   });
 
   const errors = await validate(data);
-  if (errors.length > 0)
-    throw new Error(`Invalid manifest\n${errors.toString().replace(/,/g, "\n")}`);
+  if (errors.length > 0) {
+    throw new ManifestError(`Validation failed\n${errors.toString()}`);
+  }
   return data;
 };

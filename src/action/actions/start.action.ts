@@ -12,6 +12,7 @@ import {
 import { PackageManagerFactory } from "@lib/package-manager";
 import { Messages } from "@lib/ui";
 
+import { CLIError } from "@utils/errors";
 import { getCwd, getModulePath } from "@utils/path";
 import { runSafe } from "@utils/run-safe";
 
@@ -61,8 +62,8 @@ export class StartAction extends AbstractAction {
 
     if (!cert && !key) return undefined;
 
-    if (!cert) throw new Error("No cert entered for SSL. Please enter a key with --cert.");
-    if (!key) throw new Error("No key entered for SSL. Please enter a key with --key.");
+    if (!cert) throw new CLIError("No cert entered for SSL. Please enter a cert with --cert.");
+    if (!key) throw new CLIError("No key entered for SSL. Please enter a key with --key.");
 
     return {
       cert,
