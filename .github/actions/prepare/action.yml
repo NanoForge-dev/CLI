@@ -10,9 +10,6 @@ inputs:
   build:
     description: Build packages
     default: "true"
-  sub-dir:
-    description: Is run in src sub directory
-    default: "false"
 runs:
   using: composite
   steps:
