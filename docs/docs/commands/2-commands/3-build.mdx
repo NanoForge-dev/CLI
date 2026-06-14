@@ -1,0 +1,45 @@
+---
+title: build
+description: Build your NanoForge project for production
+---
+
+## Overview
+
+`nf build` compiles your NanoForge project. The client and server entry points, static directories,
+and output directories all default to the values in your
+[configuration file](../../configuration/1-configuration-file) and can be overridden per run.
+
+## Usage
+
+```bash
+nf build
+```
+
+## Options
+
+| Option                                  | Description                            |
+| --------------------------------------- | -------------------------------------- |
+| `-d, --directory <directory>`           | Working directory of the command.      |
+| `-c, --config <config>`                 | Path to the configuration file.        |
+| `--client-entry <clientEntry>`          | Entry file of the client.              |
+| `--server-entry <serverEntry>`          | Entry file of the server.              |
+| `--client-static-dir <clientStaticDir>` | Static directory of the client.        |
+| `--server-static-dir <serverStaticDir>` | Static directory of the server.        |
+| `--client-out-dir <clientOutDir>`       | Output directory of the client.        |
+| `--server-out-dir <serverOutDir>`       | Output directory of the server.        |
+| `--editor`                              | Build with the editor configuration.   |
+| `--watch`                               | Build in watch mode. Default: `false`. |
+
+## Examples
+
+**Build using the configuration defaults:**
+
+```bash
+nf build
+```
+
+**Rebuild on change with a custom client output directory:**
+
+```bash
+nf build --watch --client-out-dir dist/client
+```

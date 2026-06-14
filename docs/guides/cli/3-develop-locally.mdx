@@ -1,0 +1,50 @@
+---
+title: Develop locally
+description: Iterate on your game with dev mode and file generation
+---
+
+import { Note, Step, Steps } from "mintlify/components";
+
+Once a project exists, most of your time is spent in the develop-and-iterate loop.
+
+<Steps>
+  <Step title="Start dev mode">
+    ```bash
+    nf dev
+    ```
+
+    `nf dev` serves the game and watches your files, so changes are picked up as you work. Keep it
+    running in a dedicated terminal.
+
+  </Step>
+
+  <Step title="Regenerate files after config changes">
+    When you change `nanoforge.config.json` — for example adding new component or system directories
+    — regenerate the project files. You can do this in a one-off run:
+
+    ```bash
+    nf generate
+    ```
+
+    Or have dev mode regenerate as it runs:
+
+    ```bash
+    nf dev --generate
+    ```
+
+  </Step>
+
+  <Step title="Point at a different config or directory">
+    Working in a monorepo or with multiple configs? Every command accepts `-d` and `-c`:
+
+    ```bash
+    nf dev -d ./packages/game -c nanoforge.dev.json
+    ```
+
+  </Step>
+</Steps>
+
+<Note>
+  Need runtime values like a server address or ports? Put them in a `.env` file — see [Environment
+  variables](../../docs/configuration/2-environment-variables).
+</Note>

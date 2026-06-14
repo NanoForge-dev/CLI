@@ -1,0 +1,40 @@
+---
+title: Installation
+description: Install the NanoForge CLI and verify your setup
+---
+
+import { Tab, Tabs } from "mintlify/components";
+
+## Requirements
+
+- **Node.js** 20 or later
+- A package manager: `npm`, `yarn`, `pnpm`, or `bun`
+
+## Install globally
+
+Installing the CLI globally exposes the `nf` command everywhere on your machine.
+
+<Tabs>
+  <Tab title="npm">```bash npm install -g @nanoforge-dev/cli ```</Tab>
+  <Tab title="pnpm">```bash pnpm add -g @nanoforge-dev/cli ```</Tab>
+  <Tab title="yarn">```bash yarn global add @nanoforge-dev/cli ```</Tab>
+  <Tab title="bun">```bash bun add -g @nanoforge-dev/cli ```</Tab>
+</Tabs>
+
+## Verify the installation
+
+```bash
+nf --version
+nf --help
+```
+
+`nf --help` lists every available command. To see the options for a specific command, append
+`--help` to it:
+
+```bash
+nf new --help
+```
+
+## Next steps
+
+Continue to the [Quickstart](./3-quickstart) to create and run your first project.

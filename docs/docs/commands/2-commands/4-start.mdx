@@ -1,0 +1,51 @@
+---
+title: start
+description: Start a built NanoForge project
+---
+
+import { Note } from "mintlify/components";
+
+## Overview
+
+`nf start` serves a previously built NanoForge project. It launches the loader (the website that
+loads the game) and, when enabled, the server. It can also serve over HTTPS when given a
+certificate and key.
+
+## Usage
+
+```bash
+nf start
+```
+
+## Options
+
+| Option                           | Description                                                       |
+| -------------------------------- | ----------------------------------------------------------------- |
+| `-d, --directory <directory>`    | Working directory of the command.                                 |
+| `-c, --config <config>`          | Path to the configuration file. Default: `nanoforge.config.json`. |
+| `-p, --port <port>`              | Port of the loader (the website that loads the game).             |
+| `--client-dir <clientDirectory>` | Directory of the built client.                                    |
+| `--server-dir <serverDirectory>` | Directory of the built server.                                    |
+| `--watch`                        | Run in watch mode. Default: `false`.                              |
+| `--cert <cert>`                  | Path to the SSL certificate for HTTPS.                            |
+| `--key <key>`                    | Path to the SSL key for HTTPS.                                    |
+
+## Examples
+
+**Start on a custom port:**
+
+```bash
+nf start --port 8080
+```
+
+**Start over HTTPS:**
+
+```bash
+nf start --cert ./certs/cert.pem --key ./certs/key.pem
+```
+
+<Note>
+  Environment variables (for example server addresses and ports) are read from a `.env` file at the
+  project root when the game starts. See [Environment
+  variables](../../configuration/2-environment-variables).
+</Note>

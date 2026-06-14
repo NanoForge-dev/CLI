@@ -1,0 +1,82 @@
+---
+title: Configuration file
+description: The nanoforge.config.json file consumed by the CLI
+---
+
+import { Tooltip } from "mintlify/components";
+
+## Overview
+
+Every NanoForge project has a `nanoforge.config.json` at its root. The CLI reads this file to know
+how to build, generate, and start your game. Commands accept `-c, --config <config>` to point at a
+different file, and most fields can be overridden per run with command flags.
+
+## Top-level fields
+
+| Field           | Type           | Default         | Description                                                                                                                                 |
+| --------------- | -------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`          | `string`       | `nanoforge-app` | The name of the application.                                                                                                                |
+| `language`      | `"ts" \| "js"` | `ts`            | Language used in the project.                                                                                                               |
+| `initFunctions` | `boolean`      | `true`          | <Tooltip tip="Lifecycle hooks such as beforeInit, afterInit, beforeRun, etc.">Whether init function lifecycle hooks are wired up.</Tooltip> |
+| `client`        | `object`       | —               | Client configuration. See below.                                                                                                            |
+| `server`        | `object`       | —               | Server configuration. See below.                                                                                                            |
+
+## `client`
+
+| Field             | Type      | Default                            | Description                            |
+| ----------------- | --------- | ---------------------------------- | -------------------------------------- |
+| `enable`          | `boolean` | `true`                             | Whether the client is enabled.         |
+| `port`            | `string`  | `3000`                             | Port the client listens on.            |
+| `outDir`          | `string`  | `.nanoforge/client`                | Build output directory for the client. |
+| `build.entry`     | `string`  | `client/main.ts`                   | Client entry file.                     |
+| `build.staticDir` | `string`  | `client/static`                    | Client static assets directory.        |
+| `editor.entry`    | `string`  | `.nanoforge/editor/client/main.ts` | Editor entry file for the client.      |
+| `editor.save`     | `string`  | `.nanoforge/client.save.json`      | Editor save file for the client.       |
+| `dirs.components` | `string`  | `client/components`                | Where client components live.          |
+| `dirs.systems`    | `string`  | `client/systems`                   | Where client systems live.             |
+
+## `server`
+
+The `server` block mirrors `client`, minus `port`. It is disabled by default.
+
+| Field             | Type      | Default                            | Description                            |
+| ----------------- | --------- | ---------------------------------- | -------------------------------------- |
+| `enable`          | `boolean` | `false`                            | Whether the server is enabled.         |
+| `outDir`          | `string`  | `.nanoforge/server`                | Build output directory for the server. |
+| `build.entry`     | `string`  | `server/main.ts`                   | Server entry file.                     |
+| `build.staticDir` | `string`  | `server/static`                    | Server static assets directory.        |
+| `editor.entry`    | `string`  | `.nanoforge/editor/server/main.ts` | Editor entry file for the server.      |
+| `editor.save`     | `string`  | `.nanoforge/server.save.json`      | Editor save file for the server.       |
+| `dirs.components` | `string`  | `server/components`                | Where server components live.          |
+| `dirs.systems`    | `string`  | `server/systems`                   | Where server systems live.             |
+
+## Example
+
+```json
+{
+  "name": "my-game",
+  "language": "ts",
+  "initFunctions": true,
+  "client": {
+    "enable": true,
+    "port": "3000",
+    "outDir": ".nanoforge/client",
+    "build": { "entry": "client/main.ts", "staticDir": "client/static" },
+    "editor": {
+      "entry": ".nanoforge/editor/client/main.ts",
+      "save": ".nanoforge/client.save.json"
+    },
+    "dirs": { "components": "client/components", "systems": "client/systems" }
+  },
+  "server": {
+    "enable": false,
+    "outDir": ".nanoforge/server",
+    "build": { "entry": "server/main.ts", "staticDir": "server/static" },
+    "editor": {
+      "entry": ".nanoforge/editor/server/main.ts",
+      "save": ".nanoforge/server.save.json"
+    },
+    "dirs": { "components": "server/components", "systems": "server/systems" }
+  }
+}
+```

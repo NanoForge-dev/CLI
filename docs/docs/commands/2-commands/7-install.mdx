@@ -1,0 +1,46 @@
+---
+title: install / add
+description: Add components, systems, or libraries to your project
+---
+
+import { Note } from "mintlify/components";
+
+## Overview
+
+`nf install` (aliased as `nf add`) pulls components, systems, or libraries from the NanoForge
+registry into your project. By default it installs components and systems for the client; use
+`--lib` for libraries and `--server` to target the server.
+
+## Usage
+
+```bash
+nf install [names...]
+```
+
+## Options
+
+| Option                        | Description                                                        |
+| ----------------------------- | ------------------------------------------------------------------ |
+| `[names...]`                  | Names of the components/systems/libraries to install.              |
+| `-d, --directory <directory>` | Working directory of the command.                                  |
+| `-l, --lib`                   | Install a library instead of a component/system. Default: `false`. |
+| `-s, --server`                | Install on the server instead of the client. Default: `false`.     |
+
+## Examples
+
+**Install a component for the client:**
+
+```bash
+nf install my-org/health-bar
+```
+
+**Install a library on the server:**
+
+```bash
+nf add my-org/physics --lib --server
+```
+
+<Note>
+  Installing from a private scope may require authentication. See the [registry
+  commands](./9-registry) to log in first.
+</Note>

@@ -1,0 +1,35 @@
+---
+title: Environment variables
+description: Pass configuration to the client and server at runtime
+---
+
+import { Note } from "mintlify/components";
+
+## Overview
+
+When running a NanoForge game (via `nf start`), environment variables can be passed to the client
+and server through a `.env` file at the root of the project, or directly from the environment.
+
+```dotenv
+NANOFORGE_CLIENT_SERVER_TCP_PORT=4445
+NANOFORGE_CLIENT_SERVER_UDP_PORT=4444
+NANOFORGE_CLIENT_SERVER_ADDRESS=127.0.0.1
+```
+
+## Scoping by prefix
+
+Variables are scoped by their prefix, which controls where they are available:
+
+| Prefix              | Availability                        |
+| ------------------- | ----------------------------------- |
+| `NANOFORGE_CLIENT_` | Available in the client only        |
+| `NANOFORGE_SERVER_` | Available in the server only        |
+| `NANOFORGE_`        | Available in both client and server |
+
+<Note>
+  Prefixes are stripped before the variable is exposed to libraries. For example,
+  `NANOFORGE_CLIENT_SERVER_ADDRESS` is exposed to the client as `SERVER_ADDRESS`.
+</Note>
+
+For full documentation on how libraries consume these variables, see
+[`@nanoforge-dev/config`](https://github.com/NanoForge-dev/Engine/tree/main/packages/config).

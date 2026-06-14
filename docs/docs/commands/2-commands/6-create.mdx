@@ -1,0 +1,42 @@
+---
+title: create
+description: Create a NanoForge component or system
+---
+
+## Overview
+
+`nf create` scaffolds a single ECS **component** or **system** in your project. By default it
+creates files for the client; pass `--server` to target the server instead.
+
+## Usage
+
+```bash
+nf create <type>
+```
+
+`<type>` is either `component` or `system`.
+
+## Options
+
+| Option                        | Description                                                   |
+| ----------------------------- | ------------------------------------------------------------- |
+| `<type>`                      | The type to create: `component` or `system`.                  |
+| `-d, --directory <directory>` | Working directory of the command.                             |
+| `-c, --config <config>`       | Path to the configuration file.                               |
+| `-n, --name <name>`           | Name of the component or system.                              |
+| `-s, --server`                | Create on the server instead of the client. Default: `false`. |
+| `-p, --path <path>`           | Path to the component/system folder.                          |
+
+## Examples
+
+**Create a client component:**
+
+```bash
+nf create component --name Position
+```
+
+**Create a server system:**
+
+```bash
+nf create system --name Movement --server
+```
