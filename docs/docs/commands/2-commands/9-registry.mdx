@@ -1,0 +1,65 @@
+---
+title: registry
+description: Authenticate with and publish to the NanoForge registry
+---
+
+## Overview
+
+These commands manage your relationship with the NanoForge registry: authenticating, then publishing
+or removing packages. Authentication can be **global** (default, stored for your user) or **local**
+(scoped to the current project) with `-l, --local`.
+
+## login
+
+Log in to the NanoForge registry.
+
+```bash
+nf login
+```
+
+| Option                        | Description                                            |
+| ----------------------------- | ------------------------------------------------------ |
+| `-d, --directory <directory>` | Working directory of the command.                      |
+| `-l, --local`                 | Log in only for the current project. Default: `false`. |
+| `-k, --api-key <key>`         | API key for the NanoForge registry.                    |
+
+```bash
+nf login --api-key <your-api-key>
+```
+
+## logout
+
+Log out from the NanoForge registry.
+
+```bash
+nf logout
+```
+
+| Option                        | Description                           |
+| ----------------------------- | ------------------------------------- |
+| `-d, --directory <directory>` | Working directory of the command.     |
+| `-l, --local`                 | Log out only for the current project. |
+
+## publish
+
+Publish a package to the NanoForge registry.
+
+```bash
+nf publish
+```
+
+| Option                        | Description                       |
+| ----------------------------- | --------------------------------- |
+| `-d, --directory <directory>` | Working directory of the command. |
+
+## unpublish
+
+Unpublish a package from the NanoForge registry.
+
+```bash
+nf unpublish
+```
+
+| Option                        | Description                       |
+| ----------------------------- | --------------------------------- |
+| `-d, --directory <directory>` | Working directory of the command. |

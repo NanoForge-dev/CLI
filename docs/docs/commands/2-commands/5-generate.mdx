@@ -1,0 +1,39 @@
+---
+title: generate
+description: Generate NanoForge project files from configuration
+---
+
+## Overview
+
+`nf generate` generates project files from your [configuration](../../configuration/1-configuration-file).
+It reads the config and produces the entry files and wiring your project needs, including the editor
+main file when requested.
+
+## Usage
+
+```bash
+nf generate
+```
+
+## Options
+
+| Option                        | Description                               |
+| ----------------------------- | ----------------------------------------- |
+| `-d, --directory <directory>` | Working directory of the command.         |
+| `-c, --config <config>`       | Path to the configuration file.           |
+| `--editor`                    | Generate the editor main file.            |
+| `--watch`                     | Generate in watch mode. Default: `false`. |
+
+## Examples
+
+**Generate once:**
+
+```bash
+nf generate
+```
+
+**Regenerate on change, including the editor entry:**
+
+```bash
+nf generate --editor --watch
+```

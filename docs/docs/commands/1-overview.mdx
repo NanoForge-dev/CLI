@@ -1,0 +1,54 @@
+---
+title: Commands
+description: Overview of every NanoForge CLI command
+---
+
+import { Card, CardGroup } from "mintlify/components";
+
+## Using the CLI
+
+Every command follows the same shape:
+
+```bash
+nf [command] [options]
+```
+
+Most commands accept `-d, --directory <directory>` to set the working directory and
+`-c, --config <config>` to point at a specific configuration file. Run any command with `--help` to
+see its full option list:
+
+```bash
+nf <command> --help
+```
+
+## Available commands
+
+<CardGroup cols={2}>
+  <Card title="new" href="./2-commands/1-new">
+    Scaffold a brand new NanoForge project.
+  </Card>
+  <Card title="dev" href="./2-commands/2-dev">
+    Run your project in development mode with watching.
+  </Card>
+  <Card title="build" href="./2-commands/3-build">
+    Compile your client and server for production.
+  </Card>
+  <Card title="start" href="./2-commands/4-start">
+    Serve a built project, optionally over HTTPS.
+  </Card>
+  <Card title="generate" href="./2-commands/5-generate">
+    Generate project files from your configuration.
+  </Card>
+  <Card title="create" href="./2-commands/6-create">
+    Create a single component or system.
+  </Card>
+  <Card title="install / add" href="./2-commands/7-install">
+    Add components, systems, or libraries from the registry.
+  </Card>
+  <Card title="editor" href="./2-commands/8-editor">
+    Launch the NanoForge visual editor.
+  </Card>
+  <Card title="registry" href="./2-commands/9-registry">
+    Authenticate, publish, and unpublish packages.
+  </Card>
+</CardGroup>

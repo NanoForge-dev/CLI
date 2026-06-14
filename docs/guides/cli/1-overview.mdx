@@ -1,0 +1,28 @@
+---
+title: Guides
+description: Task-oriented walkthroughs for common NanoForge CLI workflows
+---
+
+import { Card, CardGroup } from "mintlify/components";
+
+The [Commands reference](../../docs/commands/1-overview) documents what each command does. These guides
+take the opposite angle: they follow the **paths a user actually walks** when building a game with
+the CLI, stitching commands together end to end.
+
+<CardGroup cols={2}>
+  <Card title="Create your first project" href="./2-create-a-project">
+    Scaffold a project, understand what was generated, and run it.
+  </Card>
+  <Card title="Develop locally" href="./3-develop-locally">
+    Use dev mode and regenerate files as you change your configuration.
+  </Card>
+  <Card title="Build & deploy" href="./4-build-and-deploy">
+    Produce a production build and serve it, optionally over HTTPS.
+  </Card>
+  <Card title="Add components & systems" href="./5-components-and-systems">
+    Create your own ECS pieces or install shared ones from the registry.
+  </Card>
+  <Card title="Publish a package" href="./6-publish-a-package">
+    Authenticate and share a component, system, or library with others.
+  </Card>
+</CardGroup>

@@ -1,0 +1,54 @@
+---
+title: Build & deploy
+description: Produce a production build and serve it
+---
+
+import { Note, Step, Steps } from "mintlify/components";
+
+When your game is ready to ship, the build-and-serve path takes it from source to a running
+production instance.
+
+<Steps>
+  <Step title="Build for production">
+    ```bash
+    nf build
+    ```
+
+    The client and server are compiled into the output directories defined in your
+    [configuration](../../docs/configuration/1-configuration-file) (`.nanoforge/client` and
+    `.nanoforge/server` by default). Override any path per run, for example:
+
+    ```bash
+    nf build --client-out-dir dist/client --server-out-dir dist/server
+    ```
+
+  </Step>
+
+  <Step title="Start the built game">
+    ```bash
+    nf start
+    ```
+
+    `nf start` launches the loader (the website that loads the game) and the server when enabled.
+    Choose the loader port with `-p`:
+
+    ```bash
+    nf start --port 8080
+    ```
+
+  </Step>
+
+  <Step title="Serve over HTTPS (optional)">
+    Provide a certificate and key to serve securely:
+
+    ```bash
+    nf start --cert ./certs/cert.pem --key ./certs/key.pem
+    ```
+
+  </Step>
+</Steps>
+
+<Note>
+  Scaffolding with `nf new --docker` generates Docker files so you can containerize the build for
+  deployment.
+</Note>

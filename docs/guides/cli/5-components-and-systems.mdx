@@ -1,0 +1,52 @@
+---
+title: Add components & systems
+description: Create your own ECS pieces or install shared ones
+---
+
+import { Step, Steps } from "mintlify/components";
+
+NanoForge games are built from ECS **components** and **systems**. You can author your own or pull
+ready-made ones from the registry.
+
+## Create your own
+
+<Steps>
+  <Step title="Create a component">
+    ```bash
+    nf create component --name Position
+    ```
+
+    Files are created under the client's component directory by default. Target the server with
+    `--server`.
+
+  </Step>
+
+  <Step title="Create a system">
+    ```bash
+    nf create system --name Movement --server
+    ```
+
+    See [`nf create`](../../docs/commands/2-commands/6-create) for all options.
+
+  </Step>
+</Steps>
+
+## Install shared ones
+
+To reuse components, systems, or libraries published to the NanoForge registry:
+
+```bash
+# a component or system
+nf install my-org/health-bar
+
+# a library, on the server
+nf add my-org/physics --lib --server
+```
+
+If the package lives in a private scope, [log in](../../docs/commands/2-commands/9-registry) first:
+
+```bash
+nf login --api-key <your-api-key>
+```
+
+See [`nf install`](../../docs/commands/2-commands/7-install) for the full reference.

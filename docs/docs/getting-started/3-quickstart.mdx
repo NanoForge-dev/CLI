@@ -1,0 +1,63 @@
+---
+title: Quickstart
+description: Create, run, and build your first NanoForge project
+---
+
+import { Step, Steps } from "mintlify/components";
+
+This quickstart takes you from an empty folder to a running game in a few minutes.
+
+<Steps>
+  <Step title="Create a project">
+    Run the interactive scaffolder and answer the prompts (project name, language, package manager,
+    whether to include a server, and so on):
+
+    ```bash
+    nf new
+    ```
+
+    Prefer a non-interactive run? Pass the answers as flags:
+
+    ```bash
+    nf new --name my-game --language ts --package-manager pnpm --server
+    ```
+
+  </Step>
+
+  <Step title="Move into the project">
+    ```bash
+    cd my-game
+    ```
+
+    The scaffolder generates a `nanoforge.config.json` at the root. See
+    [Configuration](../configuration/1-configuration-file) for what every field means.
+
+  </Step>
+
+  <Step title="Run in development mode">
+    Start the game locally with file watching:
+
+    ```bash
+    nf dev
+    ```
+
+  </Step>
+
+  <Step title="Build for production">
+    ```bash
+    nf build
+    ```
+
+    Then start the built game:
+
+    ```bash
+    nf start
+    ```
+
+  </Step>
+</Steps>
+
+## Where to go next
+
+- Learn each command in detail in the [Commands reference](../commands/1-overview).
+- Follow task-oriented [Guides](../../guides/cli/1-overview) for common workflows.

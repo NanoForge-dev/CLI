@@ -1,0 +1,39 @@
+---
+title: editor
+description: Launch the NanoForge visual editor
+---
+
+## Overview
+
+`nf editor` starts the NanoForge editor — a visual environment for inspecting and authoring your
+game. When a project `path` is given, the editor opens that project; by default it then opens in
+your browser.
+
+## Usage
+
+```bash
+nf editor [path]
+```
+
+## Options
+
+| Option                        | Description                                                                                   |
+| ----------------------------- | --------------------------------------------------------------------------------------------- |
+| `[path]`                      | Path to the project to open in the editor.                                                    |
+| `-d, --directory <directory>` | Working directory of the command.                                                             |
+| `--open`                      | Open the editor in the default web browser. Default: `true` when `path` is set, else `false`. |
+| `--no-open`                   | Do not open the editor in the browser.                                                        |
+
+## Examples
+
+**Open the editor for the current project:**
+
+```bash
+nf editor .
+```
+
+**Start the editor without opening a browser tab:**
+
+```bash
+nf editor --no-open
+```

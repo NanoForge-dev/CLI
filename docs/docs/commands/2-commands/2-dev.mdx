@@ -1,0 +1,37 @@
+---
+title: dev
+description: Run your NanoForge project in development mode
+---
+
+## Overview
+
+`nf dev` runs your NanoForge project in development mode. It is the command you keep open while
+working — it serves the game and reacts to changes.
+
+## Usage
+
+```bash
+nf dev
+```
+
+## Options
+
+| Option                        | Description                                                                                |
+| ----------------------------- | ------------------------------------------------------------------------------------------ |
+| `-d, --directory <directory>` | Working directory of the command.                                                          |
+| `-c, --config <config>`       | Path to the configuration file.                                                            |
+| `--generate`                  | Generate app files from config in dev mode, like the `generate` command. Default: `false`. |
+
+## Examples
+
+**Standard dev run:**
+
+```bash
+nf dev
+```
+
+**Regenerate files from config while developing:**
+
+```bash
+nf dev --generate
+```

@@ -1,0 +1,54 @@
+---
+title: new
+description: Create a new NanoForge project
+---
+
+## Overview
+
+`nf new` scaffolds a brand new NanoForge project. Run without flags it is fully interactive,
+prompting for everything it needs. Any answer can be supplied up front as a flag to skip the
+corresponding prompt.
+
+## Usage
+
+```bash
+nf new
+```
+
+## Options
+
+| Option                                         | Description                                                             |
+| ---------------------------------------------- | ----------------------------------------------------------------------- |
+| `-d, --directory <directory>`                  | Working directory of the command.                                       |
+| `--name <name>`                                | Name of your project.                                                   |
+| `--path <path>`                                | Relative path where the project is created (default: the project name). |
+| `--package-manager <pm>`                       | Package manager: `npm`, `yarn`, `pnpm`, or `bun`.                       |
+| `--language <language>`                        | Project language: `ts` or `js`.                                         |
+| `--strict` / `--no-strict`                     | Enable or disable strict mode.                                          |
+| `--server` / `--no-server`                     | Generate a server alongside the client.                                 |
+| `--init-functions` / `--no-init-functions`     | Add lifecycle init functions.                                           |
+| `--skip-install` / `--no-skip-install`         | Skip installing dependencies after scaffolding.                         |
+| `--docker` / `--no-docker`                     | Generate Docker files.                                                  |
+| `--no-lint`                                    | Skip generating lint configuration files.                               |
+| `--editor`                                     | Add editor dependencies.                                                |
+| `--git` / `--no-git`                           | Initialize a git repository.                                            |
+| `--git-remote <gitRemote>` / `--no-git-remote` | Set up a git remote (requires `--git`).                                 |
+
+## Examples
+
+**Interactive:**
+
+```bash
+nf new
+```
+
+**Non-interactive TypeScript project with a server:**
+
+```bash
+nf new \
+  --name my-game \
+  --language ts \
+  --package-manager pnpm \
+  --server \
+  --no-docker
+```

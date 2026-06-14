@@ -1,0 +1,51 @@
+---
+title: Create your first project
+description: Scaffold a NanoForge project and understand the result
+---
+
+import { Step, Steps } from "mintlify/components";
+
+This guide walks the most common starting point: turning an idea into a runnable project.
+
+<Steps>
+  <Step title="Scaffold the project">
+    The interactive scaffolder is the easiest way to start:
+
+    ```bash
+    nf new
+    ```
+
+    You'll be asked for a name, language, package manager, and whether to include a server, Docker
+    files, git, and so on. To skip the prompts, pass the answers as flags:
+
+    ```bash
+    nf new --name my-game --language ts --package-manager pnpm --server
+    ```
+
+    See [`nf new`](../../docs/commands/2-commands/1-new) for the full flag list.
+
+  </Step>
+
+  <Step title="Look at what was generated">
+    Move into the project and inspect it:
+
+    ```bash
+    cd my-game
+    ```
+
+    The most important file is `nanoforge.config.json`, the central configuration the CLI reads for
+    every command. Each field is documented in
+    [Configuration file](../../docs/configuration/1-configuration-file).
+
+  </Step>
+
+  <Step title="Run it">
+    ```bash
+    nf dev
+    ```
+
+    Your game now runs locally in development mode. The next guide,
+    [Develop locally](./3-develop-locally), goes deeper into the dev workflow.
+
+  </Step>
+</Steps>

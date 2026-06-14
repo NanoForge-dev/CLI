@@ -1,0 +1,43 @@
+---
+title: Publish a package
+description: Share a component, system, or library through the registry
+---
+
+import { Note, Step, Steps } from "mintlify/components";
+
+Once you've built something reusable, you can publish it to the NanoForge registry so other projects
+can `nf install` it.
+
+<Steps>
+  <Step title="Authenticate">
+    Log in with your API key. Authentication is global by default; use `-l` to scope it to the
+    current project only:
+
+    ```bash
+    nf login --api-key <your-api-key>
+    ```
+
+  </Step>
+
+  <Step title="Publish">
+    From the package directory:
+
+    ```bash
+    nf publish
+    ```
+
+  </Step>
+
+<Step title="Remove a published package (if needed)">```bash nf unpublish ```</Step>
+
+  <Step title="Log out (optional)">
+    ```bash
+    nf logout
+    ```
+  </Step>
+</Steps>
+
+<Note>
+  All four commands are documented together under [registry
+  commands](../../docs/commands/2-commands/9-registry).
+</Note>
