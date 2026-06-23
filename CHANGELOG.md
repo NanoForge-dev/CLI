@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+# [1.6.0](https://github.com/NanoForge-dev/cli/compare/1.5.3...1.6.0) - (2026-06-23)
+
+## Bug Fixes
+
+- Upgrade actions and add repository name to publish docs (#163) ([acc5439](https://github.com/NanoForge-dev/cli/commit/acc5439c8edd2afd016cdcb4aec8be7fd9f4301b)) by @Exeloo
+
+## Documentation
+
+- Add full cli docs and guides (#174) ([f618d37](https://github.com/NanoForge-dev/cli/commit/f618d374413a7087a97b422cf301d88efe32a761)) by @Exeloo
+
+## Features
+
+- Add read global config on cwd (#173) ([67c0eac](https://github.com/NanoForge-dev/cli/commit/67c0eaca7ac81a44eba45268da01c18120192ff0)) by @Exeloo
+- Add editor flag on dev cmd (#171) ([2af80f5](https://github.com/NanoForge-dev/cli/commit/2af80f503419c6c2155282aea3c58b2a7b934205)) by @josephinecr
+- Add suggestion for error messages (#170) ([c7cb939](https://github.com/NanoForge-dev/cli/commit/c7cb93941d411683da2f00fea74efbdc3f76253a)) by @josephinecr
+- Change error handling to be more specific (#168) ([5329236](https://github.com/NanoForge-dev/cli/commit/532923687b0208a1c26dac16e9d7671591e11666)) by @josephinecr
+
+### New Contributors
+
+- @josephinecr made their first contribution in #171
+
 # [1.5.3](https://github.com/NanoForge-dev/cli/compare/1.5.2...1.5.3) - (2026-06-04)
 
 ## Bug Fixes
