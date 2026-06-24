@@ -4,6 +4,11 @@ export const CONFIG_DEFAULTS: Config = {
   name: "nanoforge-app",
   language: "ts",
   initFunctions: true,
+  ssl: {
+    enable: false,
+    cert: "",
+    key: "",
+  },
   client: {
     enable: true,
     port: "3000",
