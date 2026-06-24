@@ -63,8 +63,8 @@ export class StartAction extends AbstractAction {
 
     if (!isSslRequested) return undefined;
 
-    const cert = cliCert || config.ssl?.cert;
-    const key = cliKey || config.ssl?.key;
+    const cert = cliCert ? cliCert : config.ssl?.cert;
+    const key = cliKey ? cliKey : config.ssl?.key;
 
     if (!cert) {
       throw new CLIError(
