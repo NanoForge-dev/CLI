@@ -18,10 +18,14 @@ export class EditorAction extends AbstractAction {
   public async handle(args: Input, options: Input): Promise<HandleResult> {
     const directory = getDirectoryInput(options);
     const path = getPathInput(args);
-    const open = getEditorOpenInput(options, !!path);
+    const shouldOpen = getEditorOpenInput(options, !!path);
+    const query = path ? `?projectPath=${encodeURIComponent(path)}` : "";
+    const url = `http://localhost:3000/load-project${query}`;
+
+    console.log(`\n🔗 Editor running! Open it in your browser: \x1b[36m${url}\x1b[0m\n`);
 
     void this.startEditor(directory);
-    if (open) await this.openEditor(path);
+    if (shouldOpen) await this.openBrowser(url);
 
     return { keepAlive: true };
   }
@@ -39,9 +43,7 @@ export class EditorAction extends AbstractAction {
     });
   }
 
-  private async openEditor(path: string | undefined): Promise<void> {
-    const query = path ? `?projectPath=${encodeURIComponent(path)}` : "";
-    const url = `http://localhost:3000/load-project${query}`;
+  private async openBrowser(url: string): Promise<void> {
     await open(url);
   }
 }
