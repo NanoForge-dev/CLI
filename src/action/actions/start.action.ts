@@ -42,7 +42,7 @@ export class StartAction extends AbstractAction {
     const serverDir = getStringInputWithDefault(options, "serverDir", config.server.outDir);
     const watch = getWatchInput(options);
     const port = getStringInputWithDefault(options, "port", config.client.port);
-    const ssl = this.resolveSSL(options);
+    const ssl = this.resolveSSL(options, config);
 
     const tasks = this.buildStartTasks(config, directory, {
       clientDir,
@@ -56,14 +56,29 @@ export class StartAction extends AbstractAction {
     return { keepAlive: true };
   }
 
-  private resolveSSL(options: Input): SSLOptions | undefined {
-    const cert = getStringInput(options, "cert");
-    const key = getStringInput(options, "key");
+  private resolveSSL(options: Input, config: Config): SSLOptions | undefined {
+    const cliCert = getStringInput(options, "cert");
+    const cliKey = getStringInput(options, "key");
+    const isSslRequested = Boolean(cliCert || cliKey || config.ssl?.enable);
 
-    if (!cert && !key) return undefined;
+    if (!isSslRequested) return undefined;
 
-    if (!cert) throw new CLIError("No cert entered for SSL. Please enter a cert with --cert.");
-    if (!key) throw new CLIError("No key entered for SSL. Please enter a key with --key.");
+    const cert = cliCert ? cliCert : config.ssl?.cert;
+    const key = cliKey ? cliKey : config.ssl?.key;
+
+    if (!cert) {
+      throw new CLIError(
+        "No certificate found for SSL.",
+        "Please provide a certificate path with --cert or configure 'ssl.cert' in your nanoforge.config.json.",
+      );
+    }
+
+    if (!key) {
+      throw new CLIError(
+        "No key found for SSL.",
+        "Please provide a key path with --key or configure 'ssl.key' in your nanoforge.config.json.",
+      );
+    }
 
     return {
       cert,

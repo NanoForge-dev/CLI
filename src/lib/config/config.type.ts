@@ -93,6 +93,20 @@ export class ServerConfig {
   dirs!: DirsConfig;
 }
 
+export class SslConfig {
+  @Expose()
+  @IsBoolean()
+  enable!: boolean;
+
+  @Expose()
+  @IsString()
+  cert!: string;
+
+  @Expose()
+  @IsString()
+  key!: string;
+}
+
 export class Config {
   @Expose()
   @IsString()
@@ -116,4 +130,9 @@ export class Config {
   @Type(() => ServerConfig)
   @ValidateNested()
   server!: ServerConfig;
+
+  @Expose()
+  @Type(() => SslConfig)
+  @ValidateNested()
+  ssl!: SslConfig;
 }
