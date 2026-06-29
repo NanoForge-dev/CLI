@@ -104,8 +104,8 @@ catalogs:
       version: 1.2.0
   schematics:
     '@angular-devkit/schematics':
-      specifier: ^21.2.13
-      version: 21.2.13
+      specifier: ^22.0.4
+      version: 22.0.4
     '@angular-devkit/schematics-cli':
       specifier: ^21.2.13
       version: 21.2.13
@@ -126,7 +126,7 @@ importers:
     dependencies:
       '@angular-devkit/schematics':
         specifier: catalog:schematics
-        version: 21.2.13(chokidar@5.0.0)
+        version: 22.0.4(chokidar@5.0.0)
       '@angular-devkit/schematics-cli':
         specifier: catalog:schematics
         version: 21.2.13(@types/node@25.9.1)(chokidar@5.0.0)
@@ -281,6 +281,10 @@ packages:
   '@angular-devkit/schematics@21.2.13':
     resolution: {integrity: sha512-gifpOcMNiAy49lQmQKhzpxoSfS3qJQSEdJSF5m7RVFkAcmllfcCD76GPN4dhho3wdAnbZ3qr54LtDqrGY4xNjw==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
+
+  '@angular-devkit/schematics@22.0.4':
+    resolution: {integrity: sha512-VRxL1hD/Q3TQglM6EfQ0ksAW4OIvtKyZgtaUpyGsJRfD6tGmLFn7MDnmyyq1ceLX/Clq+3tzH/wN0tF6rcE0jA==}
+    engines: {node: ^22.22.3 || ^24.15.0 || >=26.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
 
   '@babel/code-frame@7.29.7':
     resolution: {integrity: sha512-Aup7aUOfpbAUg2ROOJN6Iw5f9DMBlzu0mIkm/malLQFN/YQgO48wCj0Kxa3sEHJvPVFg7siR+qRInwXd2qhQKw==}
@@ -2845,6 +2849,16 @@ snapshots:
       jsonc-parser: 3.3.1
       magic-string: 0.30.21
       ora: 9.3.0
+      rxjs: 7.8.2
+    transitivePeerDependencies:
+      - chokidar
+
+  '@angular-devkit/schematics@22.0.4(chokidar@5.0.0)':
+    dependencies:
+      '@angular-devkit/core': 22.0.4(chokidar@5.0.0)
+      jsonc-parser: 3.3.1
+      magic-string: 0.30.21
+      ora: 9.4.0
       rxjs: 7.8.2
     transitivePeerDependencies:
       - chokidar
