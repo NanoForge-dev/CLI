@@ -1,6 +1,7 @@
 import { type Runner } from "@lib/runner/runner";
 
 import { getCwd } from "@utils/path";
+import { getModulePath } from "@utils/path";
 
 import { type Schematic } from "./nanoforge.collection";
 import { type SchematicOption } from "./schematic.option";
@@ -31,9 +32,13 @@ export abstract class AbstractCollection {
   private buildCommandLine(
     name: string,
     options: SchematicOption[],
-    flags: string[] = [],
+    flags: string[] = ["--no-dry-run", "--allow-private", "--no-debug"],
   ): string[] {
-    return [`${this.collection}:${name}`, ...flags, ...this.serializeOptions(options)];
+    return [
+      ...flags,
+      `'${getModulePath(this.collection + "/collection.json")}:${name}'`,
+      ...this.serializeOptions(options),
+    ];
   }
 
   private serializeOptions(options: SchematicOption[]): string[] {
