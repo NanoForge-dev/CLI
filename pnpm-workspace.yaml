@@ -41,7 +41,7 @@ catalogs:
     '@nanoforge-dev/loader-server': ^1.2.0
   schematics:
     '@angular-devkit/schematics': ^21.2.13
-    '@angular-devkit/schematics-cli': ^21.2.13
+    '@angular-devkit/schematics-cli': ^22.0.4
     '@nanoforge-dev/schematics': ^2.1.4
   tests:
     '@vitest/coverage-v8': ^4.1.8
