@@ -20,6 +20,7 @@ different file, and most fields can be overridden per run with command flags.
 | `initFunctions` | `boolean`      | `true`          | <Tooltip tip="Lifecycle hooks such as beforeInit, afterInit, beforeRun, etc.">Whether init function lifecycle hooks are wired up.</Tooltip> |
 | `client`        | `object`       | —               | Client configuration. See below.                                                                                                            |
 | `server`        | `object`       | —               | Server configuration. See below.                                                                                                            |
+| `ssl`           | `object`       | —               | Ssl configuration for the game. See below.                                                                                                  |
 
 ## `client`
 
@@ -50,6 +51,14 @@ The `server` block mirrors `client`, minus `port`. It is disabled by default.
 | `dirs.components` | `string`  | `server/components`                | Where server components live.          |
 | `dirs.systems`    | `string`  | `server/systems`                   | Where server systems live.             |
 
+## `ssl`
+
+| Field    | Type     | Default | Description                 |
+| -------- | -------- | ------- | --------------------------- |
+| `enable` | `boolean | `false` | Whether the ssl is enabled. |
+| `cert`   | `string` | -       | Certificate file.           |
+| `key`    | `string` | -       | Key file.                   |
+
 ## Example
 
 ```json
@@ -77,6 +86,11 @@ The `server` block mirrors `client`, minus `port`. It is disabled by default.
       "save": ".nanoforge/server.save.json"
     },
     "dirs": { "components": "server/components", "systems": "server/systems" }
+  },
+  "ssl": {
+    "enable": true,
+    "cert": "path/to/cert",
+    "key": "path/to/key"
   }
 }
 ```
