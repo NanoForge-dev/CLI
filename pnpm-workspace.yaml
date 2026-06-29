@@ -42,10 +42,10 @@ catalogs:
   schematics:
     '@angular-devkit/schematics': ^21.2.13
     '@angular-devkit/schematics-cli': ^21.2.13
-    '@nanoforge-dev/schematics': ^2.1.3
+    '@nanoforge-dev/schematics': ^2.1.4
   tests:
     '@vitest/coverage-v8': ^4.1.8
     vitest: ^4.1.8
 
 minimumReleaseAgeExclude:
-  - '@nanoforge-dev/actions@2.1.2'
+  - '@nanoforge-dev/schematics@2.1.4'

@@ -110,8 +110,8 @@ catalogs:
       specifier: ^21.2.13
       version: 21.2.13
     '@nanoforge-dev/schematics':
-      specifier: ^2.1.3
-      version: 2.1.3
+      specifier: ^2.1.4
+      version: 2.1.4
   tests:
     '@vitest/coverage-v8':
       specifier: ^4.1.8
@@ -141,7 +141,7 @@ importers:
         version: 1.2.0
       '@nanoforge-dev/schematics':
         specifier: catalog:schematics
-        version: 2.1.3(chokidar@5.0.0)
+        version: 2.1.4(chokidar@5.0.0)
       ansis:
         specifier: catalog:cli
         version: 4.3.1
@@ -258,6 +258,15 @@ packages:
   '@angular-devkit/core@21.2.13':
     resolution: {integrity: sha512-9jLaHcUr6BumIY9nCsBib1q62p259nf++gd2igYJ7mLm1w/0wEacsZ1cC8wCGEe6vx8a+DrD+EVCQ6zivePG2A==}
     engines: {node: ^20.19.0 || ^22.12.0 || >=24.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
+    peerDependencies:
+      chokidar: ^5.0.0
+    peerDependenciesMeta:
+      chokidar:
+        optional: true
+
+  '@angular-devkit/core@22.0.4':
+    resolution: {integrity: sha512-zA2UJSMAU3su5uJTOn5ul/gCLRcw6/uIQ6EC5v/Ju/ePjgDIw9R3y3MAvWQ4Ibi/fXiq0FVxpF8hE7RUclYmJA==}
+    engines: {node: ^22.22.3 || ^24.15.0 || >=26.0.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
       chokidar: ^5.0.0
     peerDependenciesMeta:
@@ -798,8 +807,8 @@ packages:
     resolution: {integrity: sha512-gKFEQFt1+RIQyRzpVyjuaXib4nBLa4g3LNfy9TEMPlXe21IZy346L3RO5PmlVslPAYJuy5chUXfBE+BmE9BedA==}
     engines: {node: '25'}
 
-  '@nanoforge-dev/schematics@2.1.3':
-    resolution: {integrity: sha512-5o4z+GTQF/dzvkk6UrwtoUrlrjFWQBevvtupCqc0coiLfetU2FUORryFPG1tZhrIP3GPuuYTM/8meTJDs7IMPA==}
+  '@nanoforge-dev/schematics@2.1.4':
+    resolution: {integrity: sha512-GYe3j8HTyk8oQ9Bv3N/yQrmj6hNWegosOa3s6V2C/WptKABAntdc7TtTOYXHi8aZylH7ZzPMlpsVe15Z99oTqA==}
     engines: {node: '25'}
 
   '@nanoforge-dev/utils-eslint-config@1.0.2':
@@ -2810,6 +2819,17 @@ snapshots:
     optionalDependencies:
       chokidar: 5.0.0
 
+  '@angular-devkit/core@22.0.4(chokidar@5.0.0)':
+    dependencies:
+      ajv: 8.20.0
+      ajv-formats: 3.0.1(ajv@8.20.0)
+      jsonc-parser: 3.3.1
+      picomatch: 4.0.4
+      rxjs: 7.8.2
+      source-map: 0.7.6
+    optionalDependencies:
+      chokidar: 5.0.0
+
   '@angular-devkit/schematics-cli@21.2.13(@types/node@25.9.1)(chokidar@5.0.0)':
     dependencies:
       '@angular-devkit/core': 21.2.13(chokidar@5.0.0)
@@ -3388,9 +3408,9 @@ snapshots:
 
   '@nanoforge-dev/loader-website@1.2.0': {}
 
-  '@nanoforge-dev/schematics@2.1.3(chokidar@5.0.0)':
+  '@nanoforge-dev/schematics@2.1.4(chokidar@5.0.0)':
     dependencies:
-      '@angular-devkit/core': 21.2.13(chokidar@5.0.0)
+      '@angular-devkit/core': 22.0.4(chokidar@5.0.0)
       '@angular-devkit/schematics': 21.2.13(chokidar@5.0.0)
       rxjs: 7.8.2
     transitivePeerDependencies:
@@ -3872,6 +3892,10 @@ snapshots:
   ajv-formats@3.0.1(ajv@8.18.0):
     optionalDependencies:
       ajv: 8.18.0
+
+  ajv-formats@3.0.1(ajv@8.20.0):
+    optionalDependencies:
+      ajv: 8.20.0
 
   ajv@6.15.0:
     dependencies:

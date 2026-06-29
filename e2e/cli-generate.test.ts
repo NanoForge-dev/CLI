@@ -142,10 +142,8 @@ describe("nf generate (TypeScript, no server)", () => {
     const content = readFileSync(resolve(appDir, "client/main.ts"), "utf-8");
 
     // Component and system imports
-    expect(content).toContain(
-      'import { ExampleComponent } from "./components/example.component.ts"',
-    );
-    expect(content).toContain('import { exampleSystem } from "./systems/example.system.ts"');
+    expect(content).toContain('import { ExampleComponent } from "./components/example.component"');
+    expect(content).toContain('import { exampleSystem } from "./systems/example.system"');
 
     // Registry access
     expect(content).toContain("const registry = ecsLibrary.registry");
@@ -189,7 +187,7 @@ describe("nf generate (TypeScript, no server)", () => {
 
     const content = readFileSync(resolve(appDir, "client/main.ts"), "utf-8");
 
-    expect(content).toContain('import { HealthComponent } from "./components/health.component.ts"');
+    expect(content).toContain('import { HealthComponent } from "./components/health.component"');
     expect(content).toContain("new HealthComponent(100)");
 
     expect(content).toContain("const exampleEntity2 = registry.spawnEntity()");
@@ -199,9 +197,7 @@ describe("nf generate (TypeScript, no server)", () => {
 
     // Original component should still be present
 
-    expect(content).toContain(
-      'import { ExampleComponent } from "./components/example.component.ts"',
-    );
+    expect(content).toContain('import { ExampleComponent } from "./components/example.component"');
     expect(content).toContain("const exampleEntity = registry.spawnEntity()");
     expect(content).toContain(
       'registry.addComponent(exampleEntity, new ExampleComponent("example", 10, undefined))',
@@ -324,10 +320,10 @@ describe("nf generate (TypeScript, with server)", () => {
 
     const content = readFileSync(resolve(appDir, "server/main.ts"), "utf-8");
 
-    expect(content).toContain('import { movementSystem } from "./systems/movement.system.ts"');
+    expect(content).toContain('import { movementSystem } from "./systems/movement.system"');
     expect(content).toContain("registry.addSystem(movementSystem)");
     // Original system should still be present
-    expect(content).toContain('import { exampleSystem } from "./systems/example.system.ts"');
+    expect(content).toContain('import { exampleSystem } from "./systems/example.system"');
     expect(content).toContain("registry.addSystem(exampleSystem)");
   });
 
