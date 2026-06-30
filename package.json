@@ -89,9 +89,9 @@
     "vitest": "catalog:tests"
   },
   "optionalDependencies": {
-    "@nanoforge-dev/editor": "file:../editor"
+    "@nanoforge-dev/editor": "catalog:core"
   },
-  "packageManager": "pnpm@11.5.1",
+  "packageManager": "pnpm@11.9.0",
   "engines": {
     "node": "25"
   },
