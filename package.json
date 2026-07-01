@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@nanoforge-dev/cli",
-  "version": "1.6.0",
+  "version": "1.6.1-alpha.upgrade-schematics.0",
   "description": "NanoForge CLI",
   "keywords": [
     "nanoforge",
@@ -89,9 +89,9 @@
     "vitest": "catalog:tests"
   },
   "optionalDependencies": {
-    "@nanoforge-dev/editor": "file:../editor"
+    "@nanoforge-dev/editor": "catalog:core"
   },
-  "packageManager": "pnpm@11.5.1",
+  "packageManager": "pnpm@11.9.0",
   "engines": {
     "node": "25"
   },

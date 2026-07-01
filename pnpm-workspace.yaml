@@ -3,24 +3,25 @@ allowBuilds:
 
 catalogs:
   build:
-    tsdown: ^0.22.1
+    tsdown: ^0.22.3
     typescript: ^6.0.3
   ci:
-    '@commitlint/cli': ^21.0.2
-    '@commitlint/config-conventional': ^21.0.2
+    '@commitlint/cli': ^21.1.0
+    '@commitlint/config-conventional': ^21.1.0
     '@favware/cliff-jumper': ^6.1.0
-    '@nanoforge-dev/actions': ^2.1.2
+    '@nanoforge-dev/actions': ^2.1.5
     husky: ^9.1.7
-    lint-staged: ^17.0.7
+    lint-staged: ^17.0.8
   cli:
     '@inquirer/prompts': ^8.5.2
-    '@types/inquirer': ^9.0.9
+    '@types/inquirer': ^9.0.10
     ansis: ^4.3.1
     commander: ^15.0.0
     node-emoji: ^2.2.0
-    ora: ^9.4.0
+    ora: ^9.4.1
   core:
-    '@types/node': ^25.9.1
+    '@nanoforge-dev/editor': 0.0.2-beta.82a2d26
+    '@types/node': ^26.0.1
     bun: ^1.3.14
   libs:
     chokidar: ^5.0.0
@@ -34,18 +35,19 @@ catalogs:
     '@nanoforge-dev/utils-eslint-config': ^1.0.2
     '@nanoforge-dev/utils-prettier-config': ^1.0.2
     '@trivago/prettier-plugin-sort-imports': ^6.0.2
-    eslint: ^10.4.1
-    prettier: ^3.8.3
+    eslint: ^10.6.0
+    prettier: ^3.9.3
   loader:
     '@nanoforge-dev/loader-client': ^1.3.0
     '@nanoforge-dev/loader-server': ^1.2.0
   schematics:
-    '@angular-devkit/schematics': ^21.2.13
-    '@angular-devkit/schematics-cli': ^21.2.13
-    '@nanoforge-dev/schematics': ^2.1.4
+    '@angular-devkit/schematics': ^22.0.4
+    '@angular-devkit/schematics-cli': ^22.0.4
+    '@nanoforge-dev/schematics': ^2.2.0
   tests:
-    '@vitest/coverage-v8': ^4.1.8
-    vitest: ^4.1.8
+    '@vitest/coverage-v8': ^4.1.9
+    vitest: ^4.1.9
 
 minimumReleaseAgeExclude:
-  - '@nanoforge-dev/schematics@2.1.4'
+  - '@nanoforge-dev/editor@0.0.2-beta.82a2d26'
+  - '@nanoforge-dev/schematics@2.2.0'
