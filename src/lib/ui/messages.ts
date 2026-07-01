@@ -28,7 +28,8 @@ export const Messages = {
   LOGIN_START: "NanoForge Login",
   LOGIN_SUCCESS: success("Login completed!"),
   LOGIN_FAILED: failure("Login failed!"),
-  LOGIN_API_KEY_QUESTION: "What is your registry api key?",
+  LOGIN_API_KEY_QUESTION:
+    "What is your registry api key? (you can find it at https://registry.nanoforge.eu/dashboard/registry)",
 
   // --- Logout ---
   LOGOUT_START: "NanoForge Logout",

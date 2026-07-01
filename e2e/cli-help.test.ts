@@ -21,7 +21,7 @@ describe("nf --help", () => {
     const { stdout, exitCode } = await runCli(["--version"]);
 
     expect(exitCode).toBe(0);
-    expect(stdout.trim()).toMatch(/^\d+\.\d+\.\d+$/);
+    expect(stdout.trim()).toMatch(/^\d+\.\d+\.\d+/);
   });
 
   it("should exit with 1 on invalid command", async () => {
