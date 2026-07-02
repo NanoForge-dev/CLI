@@ -19,8 +19,8 @@ export class EditorAction extends AbstractAction {
     const directory = getDirectoryInput(options);
     const path = getPathInput(args);
     const shouldOpen = getEditorOpenInput(options, !!path);
-    const query = path ? `?projectPath=${encodeURIComponent(path)}` : "";
-    const url = `http://localhost:3000/load-project${query}`;
+    const query = path ? `/load?path=${encodeURIComponent(path)}` : "";
+    const url = `http://localhost:3000${query}`;
 
     console.log(`\n🔗 Editor running! Open it in your browser: \x1b[36m${url}\x1b[0m\n`);
 
