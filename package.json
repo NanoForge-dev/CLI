@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@nanoforge-dev/cli",
-  "version": "1.6.1-alpha.upgrade-schematics.0",
+  "version": "1.6.1",
   "description": "NanoForge CLI",
   "keywords": [
     "nanoforge",
