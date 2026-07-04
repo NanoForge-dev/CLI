@@ -17,9 +17,18 @@ export class PublishAction extends AbstractAction {
 
     const manifest = await loadManifest(directory);
 
-    return withSpinner(
+    const result = await withSpinner(
       () => Registry.publish(manifest, directory),
       Messages.PUBLISH_IN_PROGRESS(manifest.name),
     );
+
+    const registryUrl = process.env.REGISTRY_URL || "https://www.npmjs.com";
+
+    const cleanRegistryUrl = registryUrl.replace(/\/$/, "");
+    const packageUrl = `${cleanRegistryUrl}/package/${manifest.name}`;
+
+    console.log(`\n📦 Package published! View it here: \x1b[36m${packageUrl}\x1b[0m\n`);
+
+    return result;
   }
 }
