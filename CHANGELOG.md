@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+# [1.6.1](https://github.com/NanoForge-dev/cli/compare/1.6.0...1.6.1) - (2026-07-04)
+
+## Bug Fixes
+
+- Editor command (#188) ([3cd1d8f](https://github.com/NanoForge-dev/cli/commit/3cd1d8fc62909d5e64fb9ab5969b9cfd4d86aa12)) by @Exeloo
+- **schematics:** Since pnpm v11 we need to resolve the path to schematics ourselves (#185) ([6ba1d3f](https://github.com/NanoForge-dev/cli/commit/6ba1d3f09dac4982b0639cad6d55c860d2da6b55)) by @MartinFillon
+
+## Documentation
+
+- Add registry link to login command (#187) ([cbec8dc](https://github.com/NanoForge-dev/cli/commit/cbec8dc21bee49b4ac7874a4f8d22cccb3f4f5b8)) by @Exeloo
+- **ssl:** Add missing config for ssl docs (#184) ([7a4431c](https://github.com/NanoForge-dev/cli/commit/7a4431c3a4f6d5687af5312df0ffd2f78bf5aef3)) by @MartinFillon
+
+## Features
+
+- Display npm package link (#182) ([eb0a85c](https://github.com/NanoForge-dev/cli/commit/eb0a85c792152006c205a3de09bb14cfb23f3d91)) by @josephinecr
+- **editor:** Display clickable link when starting editor (#180) ([22c536d](https://github.com/NanoForge-dev/cli/commit/22c536d07e4a6d8a9bad15839989d7bccdc02db3)) by @josephinecr
+- Add ssl config to json configuration (#179) ([10787fd](https://github.com/NanoForge-dev/cli/commit/10787fd37aabfbfe3ecadd234d445e02526e9493)) by @josephinecr
+
 # [1.6.0](https://github.com/NanoForge-dev/cli/compare/1.5.3...1.6.0) - (2026-06-23)
 
 ## Bug Fixes
