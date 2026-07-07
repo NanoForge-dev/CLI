@@ -3,7 +3,7 @@ import { type Config } from "./config.type";
 export const CONFIG_DEFAULTS: Config = {
   name: "nanoforge-app",
   language: "ts",
-  initFunctions: true,
+  initFunctions: false,
   ssl: {
     enable: false,
     cert: "",
