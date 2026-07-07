@@ -91,7 +91,7 @@
   "optionalDependencies": {
     "@nanoforge-dev/editor": "catalog:core"
   },
-  "packageManager": "pnpm@11.9.0",
+  "packageManager": "pnpm@11.10.0",
   "engines": {
     "node": "25"
   },
