@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+# [1.6.2](https://github.com/NanoForge-dev/cli/compare/1.6.1...1.6.2) - (2026-07-07)
+
+## Bug Fixes
+
+- Set init functions default config to false (#190) ([1981e20](https://github.com/NanoForge-dev/cli/commit/1981e20235b8e67dfe520c3525aca15cbcdfbd23)) by @Exeloo
+
 # [1.6.1](https://github.com/NanoForge-dev/cli/compare/1.6.0...1.6.1) - (2026-07-04)
 
 ## Bug Fixes
