@@ -2,6 +2,29 @@ import dotenv from "dotenv";
 import { resolve } from "path";
 import { type UserConfig, defineConfig } from "tsdown";
 
+export function createTsdownLibConfig() {
+  return defineConfig({
+    entry: ["src/index.ts"],
+    outDir: "dist",
+    format: ["esm", "cjs"],
+    shims: true,
+    dts: true,
+    sourcemap: true,
+    clean: true,
+    minify: true,
+    fixedExtension: false,
+    platform: "node",
+    target: "esnext",
+    treeshake: false,
+    deps: {
+      neverBundle: true,
+    },
+    outputOptions: {
+      assetFileNames: "[name][extname]",
+    },
+  });
+}
+
 function createTsdownConfig({
   entry,
   outDir = "dist",
@@ -22,7 +45,7 @@ function createTsdownConfig({
     target: "esnext",
     treeshake: false,
     deps: {
-      skipNodeModulesBundle: true,
+      neverBundle: true,
     },
     env: dotenv.config({
       path: resolve(
