@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json.schemastore.org/jsconfig.json",
+  "compilerOptions": {
+    "allowUnreachableCode": <%= !strict %>,
+    "allowUnusedLabels": <%= !strict %>,
+    "exactOptionalPropertyTypes": <%= strict %>,
+    "noFallthroughCasesInSwitch": <%= strict %>,
+    "noImplicitOverride": <%= strict %>,
+    "noImplicitReturns": <%= strict %>,
+    "noPropertyAccessFromIndexSignature": <%= !strict %>,
+    "noUncheckedIndexedAccess": <%= strict %>,
+    "noUnusedLocals": <%= strict %>,
+    "noUnusedParameters": <%= strict %>,
+
+    "allowArbitraryExtensions": false,
+    "allowImportingTsExtensions": false,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "resolveJsonModule": true,
+    "resolvePackageJsonExports": true,
+    "resolvePackageJsonImports": true,
+
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": false,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+
+    "experimentalDecorators": true,
+    "lib": ["ESNext", "esnext.disposable", "DOM"],
+    "target": "ESNext",
+    "useDefineForClassFields": true
+  },
+  "include": ["client/**/*.js", "server/**/*.js"],
+  "exclude": ["node_modules", ".nanoforge"]
+}

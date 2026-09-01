@@ -8,6 +8,7 @@ allowBuilds:
 
 catalogs:
   build:
+    cpx2: ^9.0.0
     tsdown: ^0.22.3
     turbo: ^2.10.12
     typescript: ^6.0.3
@@ -48,9 +49,10 @@ catalogs:
     '@nanoforge-dev/loader-client': ^1.4.0
     '@nanoforge-dev/loader-server': ^1.4.0
   schematics:
+    '@angular-devkit/core': ^22.0.4
     '@angular-devkit/schematics': ^22.0.5
     '@angular-devkit/schematics-cli': ^22.0.5
-    '@nanoforge-dev/schematics': ^2.2.1
+    rxjs: ^7.8.2
   test:
     '@vitest/coverage-v8': ^4.1.10
     vitest: ^4.1.10
