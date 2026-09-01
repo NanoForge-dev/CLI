@@ -1,7 +1,7 @@
 packages:
   - .
   - libs/*
-#  - libs/loader/*
+  - libs/loader/*
 
 allowBuilds:
   bun: true
@@ -9,19 +9,19 @@ allowBuilds:
 catalogs:
   build:
     cpx2: ^9.0.0
-    tsdown: ^0.22.3
+    tsdown: ^0.22.14
     turbo: ^2.10.12
     typescript: ^6.0.3
     unrun: ^0.3.0
   ci:
-    '@commitlint/cli': ^21.2.0
-    '@commitlint/config-conventional': ^21.2.0
+    '@commitlint/cli': ^21.2.2
+    '@commitlint/config-conventional': ^21.2.2
     '@favware/cliff-jumper': ^6.1.0
     '@nanoforge-dev/actions': ^2.1.5
     husky: ^9.1.7
-    lint-staged: ^17.0.8
+    lint-staged: ^17.4.1
   cli:
-    '@inquirer/prompts': ^8.5.2
+    '@inquirer/prompts': ^8.7.0
     '@types/inquirer': ^9.0.10
     ansis: ^4.3.1
     commander: ^15.0.0
@@ -29,30 +29,31 @@ catalogs:
     ora: ^9.4.1
   core:
     '@nanoforge-dev/editor': ^0.1.4
-    '@types/node': ^26.1.0
-    bun: ^1.3.14
+    '@types/bun': ^1.3.14
+    '@types/node': ^26.4.0
+    bun: ^1.4.0
   libs:
     chokidar: ^5.0.0
     class-transformer: ^0.5.1
     class-validator: ^0.15.1
     dotenv: ^17.4.2
-    open: ^11.0.0
+    open: ^11.0.2
     rc9: ^3.0.1
     reflect-metadata: ^0.2.2
   lint:
     '@nanoforge-dev/utils-eslint-config': ^1.0.2
     '@nanoforge-dev/utils-prettier-config': ^1.0.2
     '@trivago/prettier-plugin-sort-imports': ^6.0.2
-    eslint: ^10.6.0
-    prettier: ^3.9.4
+    eslint: ^10.9.1
+    prettier: ^3.9.6
   loader:
-    '@nanoforge-dev/loader-client': ^1.4.0
-    '@nanoforge-dev/loader-server': ^1.4.0
+    '@nanoforge-dev/loader-client': ^1.5.0
+    '@nanoforge-dev/loader-server': ^1.5.0
   schematics:
     '@angular-devkit/core': ^22.0.4
-    '@angular-devkit/schematics': ^22.0.5
-    '@angular-devkit/schematics-cli': ^22.0.5
+    '@angular-devkit/schematics': ^22.1.6
+    '@angular-devkit/schematics-cli': ^22.1.6
     rxjs: ^7.8.2
   test:
-    '@vitest/coverage-v8': ^4.1.10
-    vitest: ^4.1.10
+    '@vitest/coverage-v8': ^4.1.11
+    vitest: ^4.1.11

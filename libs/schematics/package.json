@@ -62,8 +62,7 @@
     "test:unit:watch": "vitest -c vitest.config.ts",
     "test:e2e": "vitest run -c vitest.config.e2e.ts",
     "test:e2e:watch": "vitest -c vitest.config.e2e.ts",
-    "test:coverage": "pnpm run test:unit --coverage && pnpm run test:e2e --coverage",
-    "prepare": "husky"
+    "test:coverage": "pnpm run test:unit --coverage && pnpm run test:e2e --coverage"
   },
   "dependencies": {
     "@angular-devkit/core": "catalog:schematics",
@@ -92,7 +91,7 @@
   },
   "packageManager": "pnpm@11.9.0",
   "engines": {
-    "node": "25"
+    "node": "26"
   },
   "publishConfig": {
     "access": "public"
