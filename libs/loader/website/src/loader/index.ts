@@ -1,0 +1,1 @@
+export { loadGameFiles } from "./loader";

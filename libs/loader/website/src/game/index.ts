@@ -1,0 +1,1 @@
+export { runGame } from "./game";

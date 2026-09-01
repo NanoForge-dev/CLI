@@ -1,0 +1,77 @@
+#nanoforge-loader {
+  height: 100%;
+  width: 100%;
+  left: 0;
+  top: 0;
+  background-color: oklch(0.21 0.034 264.665);
+  font-weight: bold;
+  color: white;
+  position: absolute;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+#loader-logo {
+  height: 125px;
+  width: 125px;
+}
+
+#loading-status {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+#loading-status[hidden] {
+  display: none !important;
+}
+
+#loading-bar {
+  height: 12px;
+  width: 500px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+  position: relative;
+}
+
+#loading-bar-fill {
+  height: 100%;
+  width: 0;
+  background-color: #973fff;
+  transition: width 0.3s ease-in-out;
+}
+
+#loader-error {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+#loader-error[hidden] {
+  display: none !important;
+}
+
+#back-home {
+  background-color: rgba(151, 63, 255, 0.8);
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: bold;
+  font-size: large;
+  color: white;
+  padding: 10px;
+}
+
+.fade-out {
+  opacity: 0;
+  transition: opacity 1s ease-out;
+  pointer-events: none;
+}

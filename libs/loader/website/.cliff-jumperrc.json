@@ -1,0 +1,8 @@
+{
+  "$schema": "https://raw.githubusercontent.com/favware/cliff-jumper/main/assets/cliff-jumper.schema.json",
+  "name": "loader-website",
+  "org": "nanoforge-dev",
+  "packagePath": "apps/website",
+  "tagTemplate": "{{new-version}}",
+  "identifierBase": false
+}

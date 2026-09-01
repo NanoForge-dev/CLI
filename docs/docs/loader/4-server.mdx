@@ -1,0 +1,93 @@
+---
+title: Server
+description: Node.js process that runs the server-side game code of a NanoForge project
+---
+
+import { Tooltip } from "mintlify/components";
+
+## Overview
+
+`loader-server` is a Node.js process that runs the compiled server-side game code. It scans a built game directory, locates `/main.js`, then forks an isolated child process — the worker — that loads the game and calls its exported `main()` function. The parent process manages the worker lifecycle and restarts it when files change in watch mode.
+
+## Usage
+
+```bash
+nf start
+```
+
+Or invoke directly after building the loader packages:
+
+```bash
+npx loader-server --dir .nanoforge/server
+```
+
+## How it works
+
+The server loader runs as two processes:
+
+1. **Server** (`server.js`) — the entry point. Scans the game directory, finds `/main.js`, and forks the worker. In `--watch` mode it restarts the worker on any file change.
+2. **Worker** (`worker.js`) — an isolated child process forked by the server. It requires the game's `main.js` via `createRequire` and calls `main({ files, env })` to start the game.
+
+This two-process split ensures that a game crash or `process.exit()` call in the game code does not terminate the loader itself.
+
+## Options
+
+| Option            | Type      | Default             | Description                                                                                                                              |
+| ----------------- | --------- | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `-d, --dir <dir>` | `string`  | `.nanoforge/server` | <Tooltip tip="The directory produced by nf build for the server part.">Directory of compiled server game files</Tooltip>                 |
+| `--watch`         | `boolean` | `false`             | <Tooltip tip="Kills and reforks the worker whenever a file changes in --dir.">Enable file watcher and worker restart on change</Tooltip> |
+
+## Watch mode
+
+When `--watch` is enabled, the loader watches the game directory recursively. On any file change the running worker is killed and a new worker is immediately forked with a clean state. Changes are debounced to 100 ms to avoid redundant restarts during bulk builds.
+
+## Environment variables
+
+The server loader collects all environment variables whose name starts with `NANOFORGE_`, strips the prefix, and passes the resulting object to the game via the `env` field of `main()`:
+
+```
+NANOFORGE_MY_VAR=hello  →  { MY_VAR: "hello" }
+```
+
+The game receives these inside the worker:
+
+```ts
+export const main = async ({
+  files,
+  env,
+}: {
+  files: Map<string, string>;
+  env: Record<string, string | undefined>;
+}) => {
+  console.log(env.MY_VAR); // "hello"
+};
+```
+
+## Game interface
+
+The worker calls the game's `main` export with the following shape:
+
+| Field   | Type                                  | Description                                                                 |
+| ------- | ------------------------------------- | --------------------------------------------------------------------------- |
+| `files` | `Map<string, string>`                 | Map of logical game paths (`/main.js`, etc.) to their full filesystem paths |
+| `env`   | `Record<string, string \| undefined>` | Environment variables forwarded from the host (prefix stripped)             |
+
+## Examples
+
+**Start with a custom game directory:**
+
+```bash
+npx loader-server --dir ./dist/server
+```
+
+**Start in watch mode:**
+
+```bash
+npx loader-server --watch
+```
+
+**Pass environment variables to the game:**
+
+```bash
+NANOFORGE_PORT=4000 NANOFORGE_DEBUG=true npx loader-server
+```

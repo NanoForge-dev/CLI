@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "@nanoforge-dev/loader-client",
+  "version": "1.5.0",
+  "description": "NanoForge CLI - Loader Client",
+  "homepage": "https://github.com/NanoForge-dev/CLI#readme",
+  "bugs": "https://github.com/NanoForge-dev/CLI/issues",
+  "license": "MIT",
+  "contributors": [
+    "Bill <timothe.jacquot@epitech.eu>",
+    "Exelo <contact@exelo.dev>",
+    "Fexkoser <martin.fillon@epitech.eu>",
+    "Josephine <josephine.chicouras@epitech.eu>",
+    "Tchips <leo.outmizguine@epitech.eu>"
+  ],
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.cts",
+  "exports": {
+    ".": {
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      },
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "type": "module",
+  "browser": true,
+  "directories": {
+    "lib": "src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NanoForge-dev/CLI.git",
+    "directory": "apps/client"
+  },
+  "funding": "https://github.com/NanoForge-dev/CLI?sponsor",
+  "scripts": {
+    "build": "bun build src/server.ts --outdir dist --target bun",
+    "start": "bun run dist/server.js",
+    "lint": "prettier --check . && eslint --format=pretty src",
+    "format": "prettier --write . && eslint --fix --format=pretty src",
+    "prepack": "pnpm run build && pnpm run lint",
+    "changelog": "git cliff --prepend ./CHANGELOG.md -u -c ./cliff.toml -r ../../ --include-path 'libs/loader/client/*'",
+    "release": "cliff-jumper"
+  },
+  "dependencies": {
+    "@nanoforge-dev/loader-website": "workspace:*",
+    "bun": "catalog:core",
+    "commander": "catalog:cli"
+  },
+  "devDependencies": {
+    "@favware/cliff-jumper": "catalog:ci",
+    "@nanoforge-dev/utils-eslint-config": "catalog:lint",
+    "@nanoforge-dev/utils-prettier-config": "catalog:lint",
+    "@trivago/prettier-plugin-sort-imports": "catalog:lint",
+    "@types/bun": "catalog:core",
+    "eslint": "catalog:lint",
+    "prettier": "catalog:lint",
+    "typescript": "catalog:build"
+  },
+  "packageManager": "pnpm@12.0.0",
+  "engines": {
+    "node": "26"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "pnpm": {
+    "allowBuilds": {
+      "bun": true
+    }
+  },
+  "lint-staged": {
+    "**": [
+      "prettier --ignore-unknown --write"
+    ],
+    "src/**/*.ts": [
+      "eslint --fix"
+    ]
+  }
+}

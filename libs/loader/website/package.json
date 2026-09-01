@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "@nanoforge-dev/loader-website",
+  "version": "1.5.0",
+  "description": "NanoForge CLI - Loader Website",
+  "homepage": "https://github.com/NanoForge-dev/CLI#readme",
+  "bugs": "https://github.com/NanoForge-dev/CLI/issues",
+  "license": "MIT",
+  "contributors": [
+    "Bill <timothe.jacquot@epitech.eu>",
+    "Exelo <contact@exelo.dev>",
+    "Fexkoser <martin.fillon@epitech.eu>",
+    "Josephine <josephine.chicouras@epitech.eu>",
+    "Tchips <leo.outmizguine@epitech.eu>"
+  ],
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.html",
+  "module": "./dist/index.html",
+  "exports": {
+    "./*": "./dist/*",
+    "./package.json": "./package.json"
+  },
+  "type": "module",
+  "browser": true,
+  "directories": {
+    "lib": "src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NanoForge-dev/CLI.git",
+    "directory": "apps/website"
+  },
+  "funding": "https://github.com/NanoForge-dev/CLI?sponsor",
+  "scripts": {
+    "build": "bun build src/index.html --outdir dist --target browser --asset-naming [name].[ext]",
+    "lint": "prettier --check . && eslint --format=pretty src",
+    "format": "prettier --write . && eslint --fix --format=pretty src",
+    "prepack": "pnpm run build && pnpm run lint",
+    "changelog": "git cliff --prepend ./CHANGELOG.md -u -c ./cliff.toml -r ../../ --include-path 'libs/loader/website/*'",
+    "release": "cliff-jumper"
+  },
+  "devDependencies": {
+    "@favware/cliff-jumper": "catalog:ci",
+    "@nanoforge-dev/utils-eslint-config": "catalog:lint",
+    "@nanoforge-dev/utils-prettier-config": "catalog:lint",
+    "@trivago/prettier-plugin-sort-imports": "catalog:lint",
+    "@types/bun": "catalog:core",
+    "bun": "catalog:core",
+    "eslint": "catalog:lint",
+    "prettier": "catalog:lint",
+    "typescript": "catalog:build"
+  },
+  "packageManager": "pnpm@12.0.0",
+  "engines": {
+    "node": "26"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "lint-staged": {
+    "**": [
+      "prettier --ignore-unknown --write"
+    ],
+    "src/**/*.{ts,html,css}": [
+      "eslint --fix"
+    ]
+  }
+}

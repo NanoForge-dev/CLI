@@ -1,0 +1,82 @@
+---
+title: Client
+description: Bun HTTP server that serves the browser-side of a NanoForge project
+---
+
+import { Tooltip } from "mintlify/components";
+
+## Overview
+
+`loader-client` is a Bun HTTP server that bridges the browser and the compiled game client. It serves the `loader-website` frontend, exposes the game file manifest, delivers the compiled game assets, and forwards environment variables to the browser. It is the single entry point for everything the player's browser contacts.
+
+## Usage
+
+```bash
+nf start
+```
+
+Or invoke directly after building the loader packages:
+
+```bash
+npx loader-client --dir .nanoforge/client --port 3000
+```
+
+## Routes
+
+| Route           | Description                                                           |
+| --------------- | --------------------------------------------------------------------- |
+| `GET /`         | Serves the `loader-website` HTML application                          |
+| `GET /*`        | Serves static assets bundled with `loader-website`                    |
+| `GET /manifest` | Returns the list of game files and the current version as JSON        |
+| `GET /env`      | Returns `NANOFORGE_*` environment variables (prefix stripped) as JSON |
+| `GET /game/*`   | Serves compiled game client files from the configured game directory  |
+
+## Options
+
+| Option                     | Type      | Default             | Description                                                                                                                                                      |
+| -------------------------- | --------- | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `-p, --port <port>`        | `string`  | `3000`              | Port the HTTP server listens on                                                                                                                                  |
+| `-d, --dir <dir>`          | `string`  | `.nanoforge/client` | <Tooltip tip="The directory produced by nf build for the client part.">Directory of compiled client game files</Tooltip>                                         |
+| `--watch`                  | `boolean` | `false`             | Enable file watcher and browser hot-reload                                                                                                                       |
+| `--watch-port <port>`      | `string`  | auto                | <Tooltip tip="When not provided, the OS picks the first available port.">Port for the WebSocket watch server</Tooltip>                                           |
+| `--watch-server-dir <dir>` | `string`  | —                   | <Tooltip tip="Useful when client and server are compiled together and you want a single watch trigger.">Also watch a server game directory for changes</Tooltip> |
+| `--cert <file>`            | `string`  | —                   | TLS certificate file (enables HTTPS)                                                                                                                             |
+| `--key <file>`             | `string`  | —                   | TLS private key file (enables HTTPS)                                                                                                                             |
+
+## Watch mode
+
+When `--watch` is enabled, `loader-client` starts a WebSocket server on `--watch-port` (or a random free port) and sets the `watch.url` field in the manifest response. Any file change in the game directory causes the server to broadcast an `update` message. The `loader-website` frontend connects to that WebSocket and reloads the page on receipt.
+
+Pass `--watch-server-dir` to also reload when the server game directory changes — useful when client and server are compiled in one step.
+
+## HTTPS / TLS
+
+Pass `--cert` and `--key` to enable HTTPS. The server reads both files with Bun's native TLS support. The `/env` response will include `tlsEnabled: true` so the game can detect the protocol at runtime.
+
+HTTPS is required when the browser enforces a secure context — for example when using the Origin Private File System API used by `loader-website` to cache game files.
+
+## Examples
+
+**Start on port 8080:**
+
+```bash
+npx loader-client --port 8080
+```
+
+**Start with watch mode:**
+
+```bash
+npx loader-client --watch --watch-server-dir .nanoforge/server
+```
+
+**Start with HTTPS:**
+
+```bash
+npx loader-client --cert ./certs/server.crt --key ./certs/server.key
+```
+
+**Point to a custom game directory:**
+
+```bash
+npx loader-client --dir ./dist/client
+```

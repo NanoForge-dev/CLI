@@ -1,0 +1,57 @@
+---
+title: Loader
+description: Overview of the @nanoforge-dev/loader packages
+---
+
+import { Card, CardGroup } from "mintlify/components";
+
+## What is the Loader?
+
+The NanoForge Loader is the runtime layer that starts a NanoForge project. It is invoked by the [NanoForge CLI](https://github.com/NanoForge-dev/CLI) when you run `nf start`, and handles both sides of a game simultaneously: the **client side** delivered to the browser and the **server side** running in Node.js.
+
+The Loader is a monorepo of three packages, each with a distinct responsibility at runtime:
+
+- **`loader-client`** — the Bun HTTP server that serves the browser with the loader UI and the compiled game files.
+- **`loader-server`** — the Node.js process that runs the compiled server game code in an isolated worker.
+- **`loader-website`** — the browser application that displays the loading screen, caches game files locally, and bootstraps the game.
+
+The NanoForge CLI orchestrates all three; as a game developer you never interact with these packages directly.
+
+## Installation
+
+```bash
+npm install -g @nanoforge-dev/cli
+```
+
+The loader packages are dependencies of the CLI and do not need to be installed separately. If you want to invoke the loaders directly outside of the CLI:
+
+```bash
+npm install @nanoforge-dev/loader-client
+npm install @nanoforge-dev/loader-server
+```
+
+Then run them with:
+
+```bash
+npx loader-client --dir .nanoforge/client
+npx loader-server --dir .nanoforge/server
+```
+
+## Packages
+
+<CardGroup cols={2}>
+  <Card title="loader-client" href="./2-client">
+    Bun HTTP server that serves the loader website and the compiled client game files. Exposes the
+    manifest, environment variables, and game assets. Supports HTTPS and hot-reload.
+  </Card>
+  <Card title="loader-website" href="./3-website">
+    Browser application bundled as static assets. Displays the loading screen, downloads and caches
+    game files via the browser Origin Private File System, then bootstraps the game.
+  </Card>
+  <Card title="loader-server" href="./4-server">
+    Node.js process that runs the server-side game code in an isolated worker process. Supports
+    live-reload by restarting the worker on file changes.
+  </Card>
+</CardGroup>
+
+see the [changelog](https://github.com/NanoForge-dev/Loader/blob/main/CHANGELOG.md) for the full release history.

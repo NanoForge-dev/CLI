@@ -1,0 +1,64 @@
+---
+title: Website
+description: Browser application that loads and bootstraps a NanoForge game
+---
+
+import { Tooltip } from "mintlify/components";
+
+## Overview
+
+`loader-website` is a browser application (HTML + TypeScript) bundled as static assets and served by `loader-client`. It is the loading screen the player sees before the game starts. It fetches the game's file list from the server, downloads and caches each file locally in the browser, then dynamically imports the game entry point and starts it.
+
+This package is a dependency of `loader-client` and is not consumed directly.
+
+## Loading sequence
+
+When the browser opens the loader URL, the following steps happen in order:
+
+1. **Fetch manifest** — requests `/manifest` to get the game version and the list of files to download.
+2. **Verify cache** — checks whether the game files from the previous session are still present in the browser's Origin Private File System (OPFS). The loading screen shows _"Verifying application integrity"_.
+3. **Download files** — if the cache is stale or missing, downloads each game file from `/game/*` and writes it into OPFS. The loading screen shows a progress bar and the name of the current file.
+4. **Fetch environment** — requests `/env` to get the `NANOFORGE_*` variables forwarded by `loader-client`.
+5. **Bootstrap game** — dynamically imports `/main.js` from the local OPFS cache, calls its exported `main({ files, env, container })`, and fades out the loading screen.
+
+If any step fails, the error message is displayed on screen instead of a blank page or an unhandled rejection.
+
+## Game interface
+
+`loader-website` calls the game's `main` export with the following shape:
+
+| Field       | Type                                  | Description                                                                    |
+| ----------- | ------------------------------------- | ------------------------------------------------------------------------------ |
+| `files`     | `Map<string, string>`                 | Map of logical game paths (`/assets/sprite.png`, etc.) to their OPFS blob URLs |
+| `env`       | `Record<string, string \| undefined>` | Environment variables fetched from `/env` (prefix stripped)                    |
+| `container` | `HTMLDivElement`                      | The DOM element the game should render into                                    |
+
+## Watch mode
+
+When `loader-client` starts with `--watch`, the manifest response includes a `watch.url` WebSocket URL. `loader-website` connects to that URL and listens for messages. When it receives an `update` message it reloads the page, giving the developer an automatic live-reload experience.
+
+## Error display
+
+`loader-website` installs global handlers for `error` and `unhandledrejection` window events. If the game throws or rejects after starting, the error message is surfaced on the loading screen instead of failing silently.
+
+## Requirements
+
+`loader-website` uses the browser's [Origin Private File System](https://developer.mozilla.org/en-US/docs/Web/API/File_System_API/Origin_private_file_system) (OPFS) API to cache game files locally. This API is only available in a **secure context** — either `localhost` or a page served over HTTPS.
+
+Start `loader-client` with `--cert` and `--key` to enable HTTPS when running on a non-localhost address.
+
+## Examples
+
+The website loader is not invoked directly. Start it via the CLI or `loader-client`:
+
+```bash
+nf start
+```
+
+Or:
+
+```bash
+npx loader-client --port 3000 --cert ./certs/server.crt --key ./certs/server.key
+```
+
+Then open the printed URL in a browser. The loader screen will appear, followed by the game.
