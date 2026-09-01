@@ -22,7 +22,7 @@ function createTsdownConfig({
     target: "esnext",
     treeshake: false,
     deps: {
-      skipNodeModulesBundle: true,
+      neverBundle: true,
     },
     env: dotenv.config({
       path: resolve(

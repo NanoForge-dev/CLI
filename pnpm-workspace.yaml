@@ -1,10 +1,17 @@
+packages:
+  - .
+  - libs/*
+#  - libs/loader/*
+
 allowBuilds:
   bun: true
 
 catalogs:
   build:
     tsdown: ^0.22.3
+    turbo: ^2.10.12
     typescript: ^6.0.3
+    unrun: ^0.3.0
   ci:
     '@commitlint/cli': ^21.2.0
     '@commitlint/config-conventional': ^21.2.0
@@ -44,10 +51,6 @@ catalogs:
     '@angular-devkit/schematics': ^22.0.5
     '@angular-devkit/schematics-cli': ^22.0.5
     '@nanoforge-dev/schematics': ^2.2.1
-  tests:
+  test:
     '@vitest/coverage-v8': ^4.1.10
     vitest: ^4.1.10
-
-minimumReleaseAgeExclude:
-  - '@nanoforge-dev/editor@0.1.4'
-  - '@nanoforge-dev/schematics@2.2.1'

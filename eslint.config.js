@@ -1,3 +1,8 @@
 import eslintConfig from "@nanoforge-dev/utils-eslint-config";
 
-export default eslintConfig;
+export default [
+  ...eslintConfig,
+  {
+    ignores: ["libs/**"],
+  },
+];
