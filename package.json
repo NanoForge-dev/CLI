@@ -13,8 +13,9 @@
   "license": "MIT",
   "contributors": [
     "Bill <timothe.jacquot@epitech.eu>",
-    "Exelo <exelo.corp@gmail.com>",
+    "Exelo <contact@exelo.dev>",
     "Fexkoser <martin.fillon@epitech.eu>",
+    "Josephine <josephine.chicouras@epitech.eu>",
     "Tchips <leo.outmizguine@epitech.eu>"
   ],
   "files": [
@@ -31,18 +32,18 @@
     "type": "git",
     "url": "git+https://github.com/NanoForge-dev/CLI.git"
   },
-  "funding": "",
+  "funding": "https://github.com/NanoForge-dev/CLI?sponsor",
   "scripts": {
-    "build": "tsc --noEmit && tsdown",
-    "build:dev": "tsc --noEmit && NODE_ENV=development tsdown",
+    "build": "turbo run build --concurrency=5 --filter='!@nanoforge-dev/cli' && tsc --noEmit && tsdown",
+    "build:dev": "turbo run build --concurrency=5 --filter='!@nanoforge-dev/cli' && tsc --noEmit && NODE_ENV=development tsdown",
     "start": "node dist/nf.js",
-    "lint": "prettier --check . && eslint --format=pretty src",
-    "format": "prettier --write . && eslint --fix --format=pretty src",
+    "lint": "prettier --check . && eslint --format=pretty src && turbo run lint --concurrency=5 --filter='!@nanoforge-dev/cli'",
+    "format": "prettier --write . && eslint --fix --format=pretty src && turbo run format --concurrency=5 --filter='!@nanoforge-dev/cli'",
     "prepack": "pnpm run build && pnpm run lint",
     "changelog": "git cliff --prepend ./CHANGELOG.md -u -c ./cliff.toml -r . --include-path '.'",
     "release": "cliff-jumper",
     "test": "pnpm run test:unit && pnpm run test:e2e",
-    "test:unit": "vitest run -c vitest.config.ts",
+    "test:unit": "vitest run -c vitest.config.ts && turbo run test:unit --concurrency=5 --filter='!@nanoforge-dev/cli'",
     "test:unit:watch": "vitest -c vitest.config.ts",
     "test:e2e": "vitest run -c vitest.config.e2e.ts",
     "test:e2e:watch": "vitest -c vitest.config.e2e.ts",
@@ -79,21 +80,22 @@
     "@trivago/prettier-plugin-sort-imports": "catalog:lint",
     "@types/inquirer": "catalog:cli",
     "@types/node": "catalog:core",
-    "@vitest/coverage-v8": "catalog:tests",
+    "@vitest/coverage-v8": "catalog:test",
     "eslint": "catalog:lint",
     "husky": "catalog:ci",
     "lint-staged": "catalog:ci",
     "prettier": "catalog:lint",
     "tsdown": "catalog:build",
+    "turbo": "catalog:build",
     "typescript": "catalog:build",
-    "vitest": "catalog:tests"
+    "vitest": "catalog:test"
   },
   "optionalDependencies": {
     "@nanoforge-dev/editor": "catalog:core"
   },
-  "packageManager": "pnpm@11.10.0",
+  "packageManager": "pnpm@12.0.0",
   "engines": {
-    "node": "25"
+    "node": "26"
   },
   "publishConfig": {
     "access": "public"

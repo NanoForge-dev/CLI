@@ -12,3 +12,5 @@ CHANGELOG.md
 coverage/
 
 .tmp-e2e-*/
+
+libs/
