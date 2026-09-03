@@ -11,6 +11,12 @@
       "outputs": ["dist/**"],
       "outputLogs": "errors-only"
     },
+    "build:dev": {
+      "dependsOn": ["^build:dev"],
+      "inputs": ["src/**", "test/**", "package.json", "tsconfig.json", "tsdown.config.ts"],
+      "outputs": ["dist/**"],
+      "outputLogs": "errors-only"
+    },
     "format": {
       "dependsOn": ["^format"],
       "inputs": ["**"],
@@ -25,7 +31,27 @@
     },
     "test:unit": {
       "dependsOn": ["^test:unit"],
-      "inputs": ["src/**", "test/**", "package.json", "tsconfig.json", "tsdown.config.ts"],
+      "inputs": [
+        "src/**",
+        "test/**",
+        "package.json",
+        "tsconfig.json",
+        "tsdown.config.ts",
+        "vitest.config.ts"
+      ],
+      "outputs": [],
+      "outputLogs": "errors-only"
+    },
+    "test:e2e": {
+      "dependsOn": ["build", "^test:e2e"],
+      "inputs": [
+        "src/**",
+        "e2e/**",
+        "package.json",
+        "tsconfig.json",
+        "tsdown.config.ts",
+        "vitest.config.e2e.ts"
+      ],
       "outputs": [],
       "outputLogs": "errors-only"
     },

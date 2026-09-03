@@ -1,0 +1,49 @@
+{
+  "libraries": [
+    {
+      "id": "assetManagerLibrary",
+      "type": "asset-manager",
+      "name": "AssetManagerLibrary",
+      "path": "@nanoforge-dev/asset-manager",
+      "params": []
+    },
+    {
+      "id": "ecsLibrary",
+      "type": "component-system",
+      "name": "ECSServerLibrary",
+      "path": "@nanoforge-dev/ecs-server",
+      "params": []
+    }<% if (server) { %>,
+    {
+      "id": "networkLibrary",
+      "type": "network",
+      "name": "NetworkServerLibrary",
+      "path": "@nanoforge-dev/network-server",
+      "params": []
+    }<% } %>
+  ],
+  "components": [
+    {
+      "name": "ExampleComponent",
+      "path": "./components/example.component.ts",
+      "paramsNames": ["paramA", "paramB", "paramC"]
+    }
+  ],
+  "systems": [
+    {
+      "name": "exampleSystem",
+      "path": "./systems/example.system.ts"
+    }
+  ],
+  "entities": [
+    {
+      "id": "exampleEntity",
+      "components": {
+        "ExampleComponent": {
+          "paramA": "example",
+          "paramB": 10
+        }
+      }
+    }
+  ]
+}

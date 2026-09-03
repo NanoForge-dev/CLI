@@ -125,7 +125,7 @@ describe("nf install (without library name)", () => {
       "--strict",
       "--no-server",
       "--no-init-functions",
-      "--no-skip-install",
+      "--skip-install",
       "--no-docker",
       "--no-git",
       "-d",

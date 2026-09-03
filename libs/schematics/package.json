@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "@nanoforge-dev/schematics",
+  "version": "2.2.0",
+  "description": "NanoForge Schematics",
+  "keywords": [
+    "nanoforge",
+    "game",
+    "schematics"
+  ],
+  "homepage": "https://github.com/NanoForge-dev/schematics#readme",
+  "bugs": "https://github.com/NanoForge-dev/schematics/issues",
+  "license": "MIT",
+  "contributors": [
+    "Bill <timothe.jacquot@epitech.eu>",
+    "Exelo <contact@exelo.dev>",
+    "Fexkoser <martin.fillon@epitech.eu>",
+    "Josephine <josephine.chicouras@epitech.eu>",
+    "Tchips <leo.outmizguine@epitech.eu>"
+  ],
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.cts",
+  "exports": {
+    ".": {
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      },
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./package.json": "./package.json",
+    "./collection.json": "./dist/collection.json"
+  },
+  "type": "module",
+  "directories": {
+    "lib": "src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NanoForge-dev/schematics.git"
+  },
+  "funding": "https://github.com/NanoForge-dev/schematics?sponsor",
+  "scripts": {
+    "build": "tsc --noEmit && tsdown",
+    "postbuild": "pnpm run copy:collection && pnpm run copy:lib",
+    "copy:collection": "cpx src/collection.json dist && cpx 'src/libs/**/schema.json' dist/libs",
+    "copy:lib": "cpx 'src/libs/**/files/**/{.,}*' dist/libs",
+    "lint": "prettier --check . && eslint --format=pretty src",
+    "format": "prettier --write . && eslint --fix --format=pretty src",
+    "prepack": "pnpm run build && pnpm run lint",
+    "changelog": "git cliff --prepend ./CHANGELOG.md -u -c ./cliff.toml -r . --include-path 'libs/schematics/*'",
+    "release": "cliff-jumper",
+    "test": "pnpm run test:unit && pnpm run test:e2e",
+    "test:unit": "vitest run -c vitest.config.ts",
+    "test:unit:watch": "vitest -c vitest.config.ts",
+    "test:e2e": "vitest run -c vitest.config.e2e.ts",
+    "test:e2e:watch": "vitest -c vitest.config.e2e.ts",
+    "test:coverage": "pnpm run test:unit --coverage && pnpm run test:e2e --coverage"
+  },
+  "dependencies": {
+    "@angular-devkit/core": "catalog:schematics",
+    "@angular-devkit/schematics": "catalog:schematics",
+    "rxjs": "catalog:schematics"
+  },
+  "devDependencies": {
+    "@angular-devkit/schematics-cli": "catalog:schematics",
+    "@commitlint/cli": "catalog:ci",
+    "@commitlint/config-conventional": "catalog:ci",
+    "@favware/cliff-jumper": "catalog:ci",
+    "@nanoforge-dev/actions": "catalog:ci",
+    "@nanoforge-dev/utils-eslint-config": "catalog:lint",
+    "@nanoforge-dev/utils-prettier-config": "catalog:lint",
+    "@trivago/prettier-plugin-sort-imports": "catalog:lint",
+    "@types/node": "catalog:core",
+    "@vitest/coverage-v8": "catalog:test",
+    "cpx2": "catalog:build",
+    "eslint": "catalog:lint",
+    "husky": "catalog:ci",
+    "lint-staged": "catalog:ci",
+    "prettier": "catalog:lint",
+    "tsdown": "catalog:build",
+    "typescript": "catalog:build",
+    "vitest": "catalog:test"
+  },
+  "packageManager": "pnpm@11.9.0",
+  "engines": {
+    "node": "26"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "schematics": "./dist/collection.json",
+  "lint-staged": {
+    "**": [
+      "prettier --ignore-unknown --write"
+    ],
+    "src/**/*.ts": [
+      "eslint --fix"
+    ]
+  }
+}
