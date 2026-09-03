@@ -1,0 +1,77 @@
+{
+  "libraries": [
+    {
+      "id": "assetManagerLibrary",
+      "type": "asset-manager",
+      "name": "AssetManagerLibrary",
+      "path": "@nanoforge-dev/asset-manager",
+      "params": []
+    },
+    {
+      "id": "ecsLibrary",
+      "type": "component-system",
+      "name": "ECSClientLibrary",
+      "path": "@nanoforge-dev/ecs-client",
+      "params": []
+    },
+    {
+      "id": "graphicsLibrary",
+      "type": "graphics",
+      "name": "Graphics2DLibrary",
+      "path": "@nanoforge-dev/graphics-2d",
+      "params": []
+    },
+    {
+      "id": "inputLibrary",
+      "type": "input",
+      "name": "InputLibrary",
+      "path": "@nanoforge-dev/input",
+      "params": []
+    },
+    {
+      "id": "musicLibrary",
+      "type": "music",
+      "name": "MusicLibrary",
+      "path": "@nanoforge-dev/music",
+      "params": []
+    },<% if (server) { %>
+    {
+      "id": "networkLibrary",
+      "type": "network",
+      "name": "NetworkClientLibrary",
+      "path": "@nanoforge-dev/network-client",
+      "params": []
+    },<% } %>
+    {
+      "id": "soundLibrary",
+      "type": "sound",
+      "name": "SoundLibrary",
+      "path": "@nanoforge-dev/sound",
+      "params": []
+    }
+  ],
+  "components": [
+    {
+      "name": "ExampleComponent",
+      "path": "./components/example.component.js",
+      "paramsNames": ["paramA", "paramB", "paramC"]
+    }
+  ],
+  "systems": [
+    {
+      "name": "exampleSystem",
+      "path": "./systems/example.system.js"
+    }
+  ],
+  "entities": [
+    {
+      "id": "exampleEntity",
+      "components": {
+        "ExampleComponent": {
+          "paramA": "example",
+          "paramB": 10
+        }
+      }
+    }
+  ]
+}

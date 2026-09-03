@@ -1,0 +1,70 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "SchematicsNanoForgeBaseApplication",
+  "title": "NanoForge Base Application Options Schema",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The name of the application",
+      "default": "nanoforge-app"
+    },
+    "version": {
+      "type": "string",
+      "description": "NanoForge application version",
+      "default": "0.0.0"
+    },
+    "author": {
+      "type": "string",
+      "description": "NanoForge application author",
+      "default": ""
+    },
+    "description": {
+      "type": "string",
+      "description": "NanoForge application description",
+      "default": ""
+    },
+    "directory": {
+      "type": "string",
+      "description": "NanoForge application destination directory"
+    },
+    "language": {
+      "type": "string",
+      "enum": ["ts", "js"],
+      "description": "NanoForge application language",
+      "default": "ts"
+    },
+    "strict": {
+      "type": "boolean",
+      "description": "With strict mode (TypeScript or JavaScript but only on compatible editor)",
+      "default": true
+    },
+    "lint": {
+      "type": "boolean",
+      "description": "Generate lint files",
+      "default": true
+    },
+    "packageManager": {
+      "type": "string",
+      "enum": ["npm", "yarn", "pnpm", "bun"],
+      "description": "NanoForge application package manager",
+      "default": "npm"
+    },
+    "server": {
+      "type": "boolean",
+      "description": "Configure a server for the application",
+      "default": false
+    },
+    "editor": {
+      "type": "boolean",
+      "description": "Add editor dependencies",
+      "default": false
+    },
+    "initFunctions": {
+      "type": "boolean",
+      "description": "Add init functions to the application",
+      "default": false
+    }
+  },
+  "required": ["name"]
+}

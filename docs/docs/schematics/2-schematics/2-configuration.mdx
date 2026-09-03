@@ -1,0 +1,50 @@
+---
+title: Configuration
+description: Generate a NanoForge configuration file
+---
+
+import { Tooltip } from "mintlify/components";
+
+## Overview
+
+The `configuration` schematic creates a `nanoforge.config.json` file at the root of your project. This file is the central configuration consumed by the NanoForge CLI for builds, starts, and other operations.
+
+## Usage
+
+```bash
+schematics @nanoforge-dev/schematics:configuration
+```
+
+## Options
+
+| Option          | Type           | Default         | Description                                                                                                                                                           |
+| --------------- | -------------- | --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`          | `string`       | `nanoforge-app` | The name of the application                                                                                                                                           |
+| `directory`     | `string`       | `.`             | <Tooltip tip="Where nanoforge.config.json will be written. Use '.' for the project root.">Destination directory</Tooltip>                                             |
+| `server`        | `boolean`      | `false`         | <Tooltip tip="Adds server-specific fields to the configuration file.">Include server configuration</Tooltip>                                                          |
+| `language`      | `"ts" \| "js"` | `ts`            | Language used in the project                                                                                                                                          |
+| `initFunctions` | `boolean`      | `false`         | <Tooltip tip="Lifecycle hooks such as beforeInit, afterInit, beforeRun, etc. present in the generated main file.">Reference init functions in configuration</Tooltip> |
+
+## Generated file
+
+```
+nanoforge.config.json
+```
+
+The generated file is an empty JSON object `{}` that you populate with the fields the NanoForge CLI expects. Refer to the [CLI documentation](https://github.com/NanoForge-dev/CLI) for the full list of supported fields.
+
+## Examples
+
+**Generate configuration at the project root:**
+
+```bash
+schematics @nanoforge-dev/schematics:configuration --name=my-game
+```
+
+**Generate configuration for a server-enabled project:**
+
+```bash
+schematics @nanoforge-dev/schematics:configuration \
+  --name=my-game \
+  --server=true
+```

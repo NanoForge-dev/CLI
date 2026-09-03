@@ -1,0 +1,115 @@
+---
+title: Part Base
+description: Generate the base structure for a NanoForge client or server part
+---
+
+import { Tooltip } from "mintlify/components";
+
+## Overview
+
+The `part-base` schematic generates the foundational folder structure for a NanoForge **client** or **server** part. It creates example components and systems, the `.nanoforge` save file used to track ECS state, and optionally lifecycle init functions.
+
+## Usage
+
+```bash
+schematics @nanoforge-dev/schematics:part-base --part=client
+```
+
+## Options
+
+| Option          | Type                   | Default      | Description                                                                                                                                                                                   |
+| --------------- | ---------------------- | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `part`          | `"client" \| "server"` | _(required)_ | <Tooltip tip="Determines which part of the application to scaffold. Affects class names, imports, and the save file created.">The part of the application to generate</Tooltip>               |
+| `directory`     | `string`               | `.`          | Destination directory for the generated files                                                                                                                                                 |
+| `language`      | `"ts" \| "js"`         | `ts`         | Language to use for generated source files                                                                                                                                                    |
+| `server`        | `boolean`              | `false`      | <Tooltip tip="When true, the client save file includes a network library entry for multiplayer support.">Whether the application has a server</Tooltip>                                       |
+| `initFunctions` | `boolean`              | `false`      | <Tooltip tip="Generates beforeInit, afterInit, beforeRegistryInit, afterRegistryInit, beforeRun, and afterRun functions inside the init/ folder.">Add lifecycle init function hooks</Tooltip> |
+
+## Generated structure
+
+```
+{directory}/
+├── {part}/
+│   ├── components/
+│   │   └── example.component.ts
+│   ├── systems/
+│   │   └── example.system.ts
+│   └── init/                    # if initFunctions: true
+│       ├── before-init.ts
+│       ├── after-init.ts
+│       ├── before-registry-init.ts
+│       ├── after-registry-init.ts
+│       ├── before-run.ts
+│       └── after-run.ts
+└── .nanoforge/
+    └── {part}.save.json
+```
+
+## Save file
+
+The `.nanoforge/{part}.save.json` file is the source of truth for ECS state. It lists the libraries, components, systems, and entities registered for this part. The `part-main` schematic reads this file to generate the `main.ts` entry point.
+
+```json
+{
+  "libraries": [ ... ],
+  "components": [
+    {
+      "name": "ExampleComponent",
+      "path": "./components/example.component.ts",
+      "paramsNames": ["paramA", "paramB", "paramC"]
+    }
+  ],
+  "systems": [
+    {
+      "name": "exampleSystem",
+      "path": "./systems/example.system.ts"
+    }
+  ],
+  "entities": [
+    {
+      "id": "exampleEntity",
+      "components": {
+        "ExampleComponent": { "paramA": "example", "paramB": 10 }
+      }
+    }
+  ]
+}
+```
+
+## Init functions
+
+When `initFunctions` is `true`, the following lifecycle hooks are scaffolded:
+
+| File                      | Hook                 | Called                              |
+| ------------------------- | -------------------- | ----------------------------------- |
+| `before-init.ts`          | `beforeInit`         | Before the app initializes          |
+| `after-init.ts`           | `afterInit`          | After the app initializes           |
+| `before-registry-init.ts` | `beforeRegistryInit` | Before the ECS registry initializes |
+| `after-registry-init.ts`  | `afterRegistryInit`  | After the ECS registry initializes  |
+| `before-run.ts`           | `beforeRun`          | Before the game loop starts         |
+| `after-run.ts`            | `afterRun`           | After the game loop ends            |
+
+## Examples
+
+**Generate a TypeScript client part:**
+
+```bash
+schematics @nanoforge-dev/schematics:part-base --part=client
+```
+
+**Generate a server part with init hooks:**
+
+```bash
+schematics @nanoforge-dev/schematics:part-base \
+  --part=server \
+  --initFunctions=true
+```
+
+**Generate a JavaScript client in a specific directory:**
+
+```bash
+schematics @nanoforge-dev/schematics:part-base \
+  --part=client \
+  --language=js \
+  --directory=./my-game
+```

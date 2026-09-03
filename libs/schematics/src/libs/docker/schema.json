@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "SchematicsNanoForgeDocker",
+  "title": "NanoForge Base Docker Options Schema",
+  "type": "object",
+  "properties": {
+    "directory": {
+      "type": "string",
+      "description": "NanoForge application destination directory",
+      "default": "."
+    },
+    "packageManager": {
+      "type": "string",
+      "enum": ["npm", "yarn", "pnpm", "bun"],
+      "description": "NanoForge application package manager",
+      "default": "npm"
+    }
+  }
+}
