@@ -21,9 +21,9 @@ function createTsdownConfig({
     platform: "node",
     target: "esnext",
     treeshake: false,
-    deps: {
-      neverBundle: true,
-    },
+    // No `deps.neverBundle: true` here: it externalizes anything matching tsdown's
+    // npm-package-specifier heuristic, which our `@lib/*` and `@utils/*` path aliases
+    // match too, leaving them as unresolvable imports in the built output.
     env: dotenv.config({
       path: resolve(
         process.cwd(),

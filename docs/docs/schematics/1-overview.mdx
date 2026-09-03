@@ -1,0 +1,62 @@
+---
+title: Schematics
+description: Overview of the @nanoforge-dev/schematics package
+---
+
+import { Card, CardGroup } from "mintlify/components";
+
+## What are schematics?
+
+NanoForge schematics are code generators built on [Angular DevKit](https://github.com/angular/angular-cli/tree/main/packages/angular_devkit/schematics). They produce the boilerplate files that every NanoForge project needs — from the initial application scaffold down to individual ECS components and systems.
+
+The NanoForge CLI (`nf`) calls these schematics internally whenever you run commands like `nf new` or `nf generate`. You can also invoke them directly via the `schematics` CLI for advanced use cases.
+
+## Installation
+
+```bash
+npm install -g @nanoforge-dev/cli
+```
+
+The schematics package is a dependency of the CLI and does not need to be installed separately. If you want to run schematics without the CLI:
+
+```bash
+npm install -g @angular-devkit/schematics-cli
+npm install @nanoforge-dev/schematics
+```
+
+Then invoke directly:
+
+```bash
+schematics @nanoforge-dev/schematics:<schematic-name> [options]
+```
+
+## Available schematics
+
+<CardGroup cols={2}>
+  <Card title="application" href="./2-schematics/1-application">
+    Scaffold a complete NanoForge project with `package.json`, TypeScript or JavaScript config,
+    linting, and optional server setup.
+  </Card>
+  <Card title="configuration" href="./2-schematics/2-configuration">
+    Generate a `nanoforge.config.json` configuration file consumed by the NanoForge CLI.
+  </Card>
+  <Card title="part-base" href="./2-schematics/3-part-base">
+    Create the base folder structure for a client or server part, including example component,
+    system, save file, and optional lifecycle hooks.
+  </Card>
+  <Card title="part-main" href="./2-schematics/4-part-main">
+    Generate the `main.ts` entry point for a client or server part by reading the `.nanoforge` save
+    file.
+  </Card>
+  <Card title="docker" href="./2-schematics/5-docker">
+    Generate a production-ready `Dockerfile` and `.dockerignore` tailored to your package manager.
+  </Card>
+  <Card title="component" href="./2-schematics/6-component">
+    Scaffold an ECS component class with an editor manifest for use in the NanoForge editor.
+  </Card>
+  <Card title="system" href="./2-schematics/7-system">
+    Scaffold an ECS system function with an editor manifest for use in the NanoForge editor.
+  </Card>
+</CardGroup>
+
+see the [changelog](https://github.com/NanoForge-dev/schematics/blob/main/CHANGELOG.md) for the full release history.

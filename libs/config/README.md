@@ -8,6 +8,7 @@
         <a href="https://www.npmjs.com/package/@nanoforge-dev/config"><img src="https://img.shields.io/npm/v/@nanoforge-dev/config.svg?maxAge=3600" alt="npm version" /></a>
         <a href="https://www.npmjs.com/package/@nanoforge-dev/config"><img src="https://img.shields.io/npm/dt/@nanoforge-dev/config.svg?maxAge=3600" alt="npm downloads" /></a>
         <a href="https://github.com/NanoForge-dev/CLI/actions/workflows/tests.yml"><img src="https://github.com/NanoForge-dev/CLI/actions/workflows/tests.yml/badge.svg" alt="Tests status" /></a>
+        <a href="https://github.com/NanoForge-dev/CLI/actions/workflows/release.yml"><img src="https://github.com/NanoForge-dev/CLI/actions/workflows/release.yml/badge.svg" alt="Release status" /></a>
         <a href="https://github.com/NanoForge-dev/CLI/commits/main/libs/config"><img src="https://img.shields.io/github/last-commit/NanoForge-dev/CLI.svg?logo=github&logoColor=ffffff&path=libs%2Fconfig" alt="Last commit" /></a>
         <a href="https://github.com/NanoForge-dev/CLI/graphs/contributors"><img src="https://img.shields.io/github/contributors/NanoForge-dev/CLI.svg?maxAge=3600&logo=github&logoColor=fff&color=00c7be" alt="Contributors" /></a>
     </p>

@@ -1,0 +1,34 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "SchematicsNanoForgeConfiguration",
+  "title": "NanoForge Base Application Options Schema",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The name of the application",
+      "default": "nanoforge-app"
+    },
+    "directory": {
+      "type": "string",
+      "description": "NanoForge application destination directory",
+      "default": "."
+    },
+    "server": {
+      "type": "boolean",
+      "description": "Server configuration",
+      "default": false
+    },
+    "language": {
+      "type": "string",
+      "enum": ["ts", "js"],
+      "description": "NanoForge application language",
+      "default": "ts"
+    },
+    "initFunctions": {
+      "type": "boolean",
+      "description": "Add init functions to the main application",
+      "default": false
+    }
+  }
+}

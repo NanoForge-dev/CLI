@@ -1,0 +1,105 @@
+---
+title: System
+description: Generate a NanoForge ECS system
+---
+
+import { Tooltip } from "mintlify/components";
+
+## Overview
+
+The `system` schematic scaffolds a new ECS system function for a NanoForge client or server part. The generated file includes the system function, a default export required for code generation, and an `EDITOR_SYSTEM_MANIFEST` required for the NanoForge editor to display and configure the system.
+
+## Usage
+
+```bash
+schematics @nanoforge-dev/schematics:system --part=client --name=movement
+```
+
+## Options
+
+| Option      | Type                   | Default      | Description                                                                                                                                                                          |
+| ----------- | ---------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `name`      | `string`               | `example`    | <Tooltip tip="Converted to camelCase for the function name (e.g. 'movement' → 'movementSystem') and kebab-case for the file name (e.g. 'movement.system.ts').">System name</Tooltip> |
+| `part`      | `"client" \| "server"` | _(required)_ | <Tooltip tip="Determines which ECS package to import from: @nanoforge-dev/ecs-client or @nanoforge-dev/ecs-server.">The part of the application this system belongs to</Tooltip>     |
+| `directory` | `string`               | `.`          | <Tooltip tip="Typically the systems/ folder inside your part directory, e.g. client/systems/.">Destination directory for the generated file</Tooltip>                                |
+| `language`  | `"ts" \| "js"`         | `ts`         | Language to use for the generated file                                                                                                                                               |
+
+## Generated file
+
+`{directory}/{name}.system.ts`
+
+```ts
+import { type Context } from "@nanoforge-dev/common";
+import { type EditorSystemManifest, type Registry } from "@nanoforge-dev/ecs-client";
+
+import { ExampleComponent } from "../components/example.component";
+
+export const movementSystem = (registry: Registry, ctx: Context) => {
+  const entities = registry.getZipper([ExampleComponent]);
+
+  entities.forEach((entity) => {
+    if (entity.ExampleComponent.paramA === "end") {
+      ctx.app.setIsRunning(false);
+      return;
+    }
+
+    if (entity.ExampleComponent.paramB === 0) entity.ExampleComponent.paramA = "end";
+
+    if (entity.ExampleComponent.paramB >= 0)
+      entity.ExampleComponent.paramB = entity.ExampleComponent.paramB - 1;
+  });
+};
+
+// Required to generate code
+export default movementSystem.name;
+
+// Required for the editor to display the system and generate code
+export const EDITOR_SYSTEM_MANIFEST: EditorSystemManifest = {
+  name: "movement",
+  description:
+    "This system end the game when paramB reaches 0 for any entity with ExampleComponent",
+  dependencies: ["ExampleComponent"],
+};
+```
+
+## Editor manifest
+
+The `EDITOR_SYSTEM_MANIFEST` export is required for the NanoForge editor to discover the system and wire it into the game loop.
+
+| Field          | Required | Description                                                                                                                                                                            |
+| -------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`         | Yes      | System name as displayed in the editor                                                                                                                                                 |
+| `description`  | Yes      | Human-readable description of what the system does                                                                                                                                     |
+| `dependencies` | Yes      | <Tooltip tip="Lists the component class names this system queries via registry.getZipper(). The editor uses this to validate wiring.">Component names this system depends on</Tooltip> |
+
+## System signature
+
+Every NanoForge system follows the same function signature:
+
+```ts
+(registry: Registry, ctx: Context) => void
+```
+
+- **`registry`** — the ECS registry; use `registry.getZipper([...])` to query entities with specific components.
+- **`ctx`** — the application context; provides access to `ctx.app`, `ctx.assets`, and other engine services.
+
+## Examples
+
+**Generate a `PhysicsSystem` for the client:**
+
+```bash
+schematics @nanoforge-dev/schematics:system \
+  --part=client \
+  --name=physics \
+  --directory=client/systems
+```
+
+**Generate a JavaScript server system:**
+
+```bash
+schematics @nanoforge-dev/schematics:system \
+  --part=server \
+  --name=sync-state \
+  --language=js \
+  --directory=server/systems
+```

@@ -1,0 +1,80 @@
+---
+title: Application
+description: Generate a complete NanoForge application scaffold
+---
+
+import { ToolTip } from "mintlify/components";
+
+## Overview
+
+The `application` schematic creates a fully structured NanoForge project with all the base files needed to start development — `package.json`, linting configuration, TypeScript or JavaScript setup, and optionally `.env` for server-enabled apps.
+
+## Usage
+
+```bash
+nf new
+```
+
+Or via Angular DevKit schematics directly:
+
+```bash
+schematics @nanoforge-dev/schematics:application --name=my-app
+```
+
+## Options
+
+| Option           | Type                                 | Default         | Description                                                                                                                                                         |
+| ---------------- | ------------------------------------ | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`           | `string`                             | `nanoforge-app` | <Tooltip tip="Used as the project folder name and package.json name field.">The name of the application</Tooltip>                                                   |
+| `version`        | `string`                             | `0.0.0`         | Initial version in `package.json`                                                                                                                                   |
+| `author`         | `string`                             | `""`            | Author field in `package.json`                                                                                                                                      |
+| `description`    | `string`                             | `""`            | Description field in `package.json`                                                                                                                                 |
+| `directory`      | `string`                             | `name`          | <Tooltip tip="Defaults to the application name when not provided.">Destination directory for the generated files</Tooltip>                                          |
+| `language`       | `"ts" \| "js"`                       | `ts`            | Language to use for generated source files                                                                                                                          |
+| `strict`         | `boolean`                            | `true`          | <Tooltip tip="Enables strict mode in tsconfig.json for TypeScript, or strict JSDoc checking in compatible editors for JavaScript.">Enable strict mode</Tooltip>     |
+| `lint`           | `boolean`                            | `true`          | <Tooltip tip="Generates eslint.config.js, prettier.config.js, and .prettierignore. Omitting this skips those files.">Generate linting configuration files</Tooltip> |
+| `packageManager` | `"npm" \| "yarn" \| "pnpm" \| "bun"` | `npm`           | Package manager to target in scripts and lockfile references                                                                                                        |
+| `server`         | `boolean`                            | `false`         | <Tooltip tip="Includes server-side NanoForge packages and generates a .env file.">Configure a server for the application</Tooltip>                                  |
+| `editor`         | `boolean`                            | `false`         | <Tooltip tip="Adds @nanoforge-dev/core-editor to devDependencies.">Include editor dependencies</Tooltip>                                                            |
+| `initFunctions`  | `boolean`                            | `false`         | <Tooltip tip="Lifecycle hooks such as beforeInit, afterInit, beforeRun, etc.">Add init function lifecycle hooks</Tooltip>                                           |
+
+## Generated structure
+
+```
+my-app/
+├── package.json
+├── tsconfig.json          # TypeScript only
+├── jsconfig.json          # JavaScript only
+├── eslint.config.js       # if lint: true
+├── prettier.config.js     # if lint: true
+├── .prettierignore        # if lint: true
+├── .env                   # if server: true
+├── .gitignore
+└── README.md
+```
+
+## Examples
+
+**Minimal TypeScript app:**
+
+```bash
+schematics @nanoforge-dev/schematics:application --name=my-game
+```
+
+**JavaScript app with pnpm and server:**
+
+```bash
+schematics @nanoforge-dev/schematics:application \
+  --name=my-game \
+  --language=js \
+  --packageManager=pnpm \
+  --server=true
+```
+
+**TypeScript app without linting:**
+
+```bash
+schematics @nanoforge-dev/schematics:application \
+  --name=my-game \
+  --lint=false
+```

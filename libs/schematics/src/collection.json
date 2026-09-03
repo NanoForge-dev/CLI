@@ -1,0 +1,40 @@
+{
+  "$schema": "../node_modules/@angular-devkit/schematics/collection-schema.json",
+  "schematics": {
+    "application": {
+      "factory": "./libs/application/application.factory#main",
+      "description": "Create a NanoForge Base application.",
+      "schema": "./libs/application/schema.json"
+    },
+    "configuration": {
+      "factory": "./libs/configuration/configuration.factory#main",
+      "description": "Create a NanoForge Configuration.",
+      "schema": "./libs/configuration/schema.json"
+    },
+    "part-base": {
+      "factory": "./libs/part-base/part-base.factory#main",
+      "description": "Create a NanoForge Base for client or server.",
+      "schema": "./libs/part-base/schema.json"
+    },
+    "part-main": {
+      "factory": "./libs/part-main/part-main.factory#main",
+      "description": "Create a Main file for client or server.",
+      "schema": "./libs/part-main/schema.json"
+    },
+    "docker": {
+      "factory": "./libs/docker/docker.factory#main",
+      "description": "Create a Dockerfile for the application.",
+      "schema": "./libs/docker/schema.json"
+    },
+    "component": {
+      "factory": "./libs/component/component.factory#main",
+      "description": "Create a NanoForge component.",
+      "schema": "./libs/component/schema.json"
+    },
+    "system": {
+      "factory": "./libs/system/system.factory#main",
+      "description": "Create a NanoForge system.",
+      "schema": "./libs/system/schema.json"
+    }
+  }
+}

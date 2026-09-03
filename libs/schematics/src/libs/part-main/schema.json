@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "SchematicsNanoForgePartMain",
+  "title": "NanoForge Part Main Options Schema",
+  "type": "object",
+  "properties": {
+    "directory": {
+      "type": "string",
+      "description": "NanoForge application destination directory",
+      "default": "."
+    },
+    "part": {
+      "type": "string",
+      "enum": ["client", "server"],
+      "description": "The part of the application to generate"
+    },
+    "language": {
+      "type": "string",
+      "enum": ["ts", "js"],
+      "description": "NanoForge application language",
+      "default": "ts"
+    },
+    "initFunctions": {
+      "type": "boolean",
+      "description": "Add init functions to the main application",
+      "default": false
+    },
+    "saveFile": {
+      "type": "string",
+      "description": "Save file path with components and systems in JSON format"
+    },
+    "outFile": {
+      "type": "string",
+      "description": "Path of the out file"
+    },
+    "editor": {
+      "type": "boolean",
+      "description": "Build main editor",
+      "default": false
+    }
+  },
+  "required": ["part"]
+}

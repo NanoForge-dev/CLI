@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "SchematicsNanoForgePartBase",
+  "title": "NanoForge Part Base Options Schema",
+  "type": "object",
+  "properties": {
+    "directory": {
+      "type": "string",
+      "description": "NanoForge application destination directory",
+      "default": "."
+    },
+    "part": {
+      "type": "string",
+      "enum": ["client", "server"],
+      "description": "The part of the application to generate"
+    },
+    "language": {
+      "type": "string",
+      "enum": ["ts", "js"],
+      "description": "NanoForge application language",
+      "default": "ts"
+    },
+    "initFunctions": {
+      "type": "boolean",
+      "description": "Add init functions to the application",
+      "default": false
+    },
+    "server": {
+      "type": "boolean",
+      "description": "There is a Server in app",
+      "default": false
+    }
+  },
+  "required": ["part"]
+}

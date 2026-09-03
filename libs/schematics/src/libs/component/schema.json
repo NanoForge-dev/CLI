@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "SchematicsNanoForgeComponent",
+  "title": "NanoForge Component Options Schema",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Component name",
+      "default": "example"
+    },
+    "directory": {
+      "type": "string",
+      "description": "Component destination directory",
+      "default": "."
+    },
+    "part": {
+      "type": "string",
+      "enum": ["client", "server"],
+      "description": "The part of the application to generate"
+    },
+    "language": {
+      "type": "string",
+      "enum": ["ts", "js"],
+      "description": "NanoForge application language",
+      "default": "ts"
+    }
+  },
+  "required": ["part"]
+}

@@ -1,0 +1,77 @@
+---
+title: Part Main
+description: Generate the main entry point for a NanoForge client or server part
+---
+
+import { Tooltip } from "mintlify/components";
+
+## Overview
+
+The `part-main` schematic reads the `.nanoforge/{part}.save.json` file produced by `part-base` and generates a fully wired `main.ts` (or `main.js`) entry point. It registers all libraries, components, systems, and entities declared in the save file.
+
+<Tooltip tip="Run part-base first to create the save file that part-main depends on.">
+  This schematic must be run after `part-base`.
+</Tooltip>
+
+## Usage
+
+```bash
+schematics @nanoforge-dev/schematics:part-main --part=client
+```
+
+## Options
+
+| Option          | Type                   | Default      | Description                                                                                                                                                                                    |
+| --------------- | ---------------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `part`          | `"client" \| "server"` | _(required)_ | <Tooltip tip="Determines which save file to read (.nanoforge/client.save.json or .nanoforge/server.save.json) and which output path to use.">The part of the application to generate</Tooltip> |
+| `directory`     | `string`               | `.`          | <Tooltip tip="The root of the NanoForge project containing the .nanoforge folder.">Project root directory</Tooltip>                                                                            |
+| `language`      | `"ts" \| "js"`         | `ts`         | Language of the generated entry point                                                                                                                                                          |
+| `initFunctions` | `boolean`              | `false`      | <Tooltip tip="Imports and wires the lifecycle hooks from the init/ folder into the main file.">Wire init lifecycle functions into the main file</Tooltip>                                      |
+| `saveFile`      | `string`               | —            | <Tooltip tip="Defaults to .nanoforge/{part}.save.json relative to directory when not provided.">Custom path to the save JSON file</Tooltip>                                                    |
+| `outFile`       | `string`               | —            | <Tooltip tip="Defaults to {part}/main.{language}, or .nanoforge/editor/{part}/main.{language} when editor is true.">Custom output path for the generated main file</Tooltip>                   |
+| `editor`        | `boolean`              | `false`      | <Tooltip tip="Writes the file to .nanoforge/editor/{part}/main.{language} instead of {part}/main.{language}.">Generate the editor variant of the main file</Tooltip>                           |
+
+## Output path resolution
+
+The generated file is placed at one of the following paths, in priority order:
+
+1. `outFile` — if provided explicitly
+2. `.nanoforge/editor/{part}/main.{language}` — if `editor: true`
+3. `{part}/main.{language}` — default
+
+## How it works
+
+`part-main` reads `{directory}/.nanoforge/{part}.save.json`, builds the full application bootstrap code, then writes the result as the entry point. Every time you add a component, system, or entity through the NanoForge CLI or editor, regenerating `part-main` keeps the entry point in sync with the save file.
+
+## Examples
+
+**Generate a client main file:**
+
+```bash
+schematics @nanoforge-dev/schematics:part-main --part=client
+```
+
+**Generate a server main file with init hooks:**
+
+```bash
+schematics @nanoforge-dev/schematics:part-main \
+  --part=server \
+  --initFunctions=true
+```
+
+**Generate with a custom save file and output path:**
+
+```bash
+schematics @nanoforge-dev/schematics:part-main \
+  --part=client \
+  --saveFile=./custom.save.json \
+  --outFile=./src/client/main.ts
+```
+
+**Regenerate the editor entry point:**
+
+```bash
+schematics @nanoforge-dev/schematics:part-main \
+  --part=client \
+  --editor=true
+```

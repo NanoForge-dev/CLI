@@ -1,0 +1,70 @@
+---
+title: Docker
+description: Generate a Dockerfile for a NanoForge application
+---
+
+import { Tooltip } from "mintlify/components";
+
+## Overview
+
+The `docker` schematic generates a production-ready `Dockerfile` and a `.dockerignore` at the specified directory. The Dockerfile is tailored to the package manager you use — selecting the correct base image, lockfile, and install command automatically.
+
+## Usage
+
+```bash
+schematics @nanoforge-dev/schematics:docker
+```
+
+## Options
+
+| Option           | Type                                 | Default | Description                                                                                                                                                      |
+| ---------------- | ------------------------------------ | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `directory`      | `string`                             | `.`     | Destination directory for the generated files                                                                                                                    |
+| `packageManager` | `"npm" \| "yarn" \| "pnpm" \| "bun"` | `npm`   | <Tooltip tip="Determines the base Docker image, lockfile to copy, and install command used in the Dockerfile.">Package manager used by the application</Tooltip> |
+
+## Generated files
+
+```
+{directory}/
+├── Dockerfile
+└── .dockerignore
+```
+
+## Dockerfile behaviour by package manager
+
+| Package manager | Base image     | Install command                                    |
+| --------------- | -------------- | -------------------------------------------------- |
+| `npm`           | `node:25-slim` | `npm install --no-lockfile`                        |
+| `yarn`          | `node:25-slim` | `yarn install --frozen-lockfile`                   |
+| `pnpm`          | `node:25-slim` | `pnpm install --frozen-lockfile --allow-build=bun` |
+| `bun`           | `oven/bun:1.3` | `bun install --frozen-lockfile`                    |
+
+The Dockerfile follows a standard multi-step approach:
+
+1. Copy `package.json` and the lockfile.
+2. Install dependencies with frozen lockfile for reproducible builds.
+3. Copy the rest of the source.
+4. Run `build`.
+5. Start with `start`.
+
+## Examples
+
+**Generate a Dockerfile for an npm project:**
+
+```bash
+schematics @nanoforge-dev/schematics:docker
+```
+
+**Generate a Dockerfile for a pnpm project:**
+
+```bash
+schematics @nanoforge-dev/schematics:docker --packageManager=pnpm
+```
+
+**Generate in a specific directory:**
+
+```bash
+schematics @nanoforge-dev/schematics:docker \
+  --packageManager=bun \
+  --directory=./my-game
+```
