@@ -5,6 +5,9 @@ export {
   defaultWorkspaceConfig,
 } from "./defaults/default-configs";
 export { defineConfig } from "./define-config";
+export { ConfigParseError } from "./parse/config-error";
+export type { ConfigParseErrorCode } from "./parse/config-error";
+export { parseConfig } from "./parse/parse-config";
 export {
   resolveClientConfig,
   resolveConfig,

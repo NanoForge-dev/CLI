@@ -1,7 +1,6 @@
 packages:
   - .
   - libs/*
-  - libs/loader/*
 
 allowBuilds:
   bun: true
@@ -12,7 +11,6 @@ catalogs:
     tsdown: ^0.22.14
     turbo: ^2.10.12
     typescript: ^6.0.3
-    unrun: ^0.3.0
   ci:
     '@commitlint/cli': ^21.2.2
     '@commitlint/config-conventional': ^21.2.2
@@ -40,6 +38,8 @@ catalogs:
     open: ^11.0.2
     rc9: ^3.0.1
     reflect-metadata: ^0.2.2
+    unrun: ^0.3.0
+    zod: ^4.5.4
   lint:
     '@nanoforge-dev/utils-eslint-config': ^1.0.2
     '@nanoforge-dev/utils-prettier-config': ^1.0.2
