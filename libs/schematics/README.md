@@ -38,13 +38,10 @@ nf new
 
 This repository provide multiples schematics, usable with Angular Devkit schematics.
 
-- `application` : Base of a Nanoforge app
-- `configuration` : Template of `nanoforge.config.json` with premade fields
-- `part-base` : Base of Nanoforge client or server
-- `part-main` : Client or server `main.ts` from a config
+- `workspace` : Root of a NanoForge monorepo (`nanoforge.config.ts`, `package.json`, tooling)
+- `project` : Client or server project under `apps/<part>`, including `main.ts`, example component/system, and an optional Dockerfile
 - `component` : ECS component class for a client or server part
 - `system` : ECS system function for a client or server part
-- `docker` : Dockerfile and `.dockerignore` tailored to your package manager
 
 ## Contributing
 

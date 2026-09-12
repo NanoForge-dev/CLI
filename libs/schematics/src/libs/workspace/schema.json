@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "SchematicsNanoForgeWorkspace",
+  "title": "NanoForge Workspace Options Schema",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The name of the workspace",
+      "default": "nanoforge-app"
+    },
+    "directory": {
+      "type": "string",
+      "description": "NanoForge workspace destination directory (defaults to the workspace name when omitted)"
+    },
+    "language": {
+      "type": "string",
+      "enum": ["ts", "js"],
+      "description": "NanoForge workspace language",
+      "default": "ts"
+    },
+    "strict": {
+      "type": "boolean",
+      "description": "With strict mode (TypeScript or JavaScript but only on compatible editor)",
+      "default": true
+    },
+    "packageManager": {
+      "type": "string",
+      "enum": ["npm", "yarn", "pnpm", "bun"],
+      "description": "NanoForge workspace package manager",
+      "default": "npm"
+    },
+    "allowBuilds": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Package names allowed to run install/build scripts, in addition to `bun` which is always allowed (@nanoforge-dev/cli depends on it and it has its own install script). Written to pnpm-workspace.yaml (pnpm), package.json's allowScripts (npm) or trustedDependencies (bun). Ignored for yarn.",
+      "default": []
+    },
+    "docker": {
+      "type": "boolean",
+      "description": "Generate a Dockerfile building every app in the workspace into one image",
+      "default": false
+    }
+  }
+}

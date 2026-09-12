@@ -1,0 +1,98 @@
+---
+title: Project
+description: Generate a NanoForge client or server project inside a workspace
+---
+
+import { Tooltip } from "mintlify/components";
+
+## Overview
+
+The `project` schematic generates a complete client or server project under `directory` (e.g. `apps/client`) inside a [`workspace`](./1-workspace): its own `package.json`, `nanoforge.config.ts`, `tsconfig.json`, example ECS component and system, `src/main.ts` entry point, and optionally a `Dockerfile` and lifecycle init functions. `directory` is the full destination path — it isn't appended with `part` automatically, so generating a client and a server side by side means passing e.g. `--directory=apps/client` and `--directory=apps/server` in two separate invocations.
+
+For a standalone project (`workspace: false`), engine dependency versions are pinned to the newest release published at least 48h ago, mirroring pnpm's own `minimumReleaseAge` supply-chain protection. `@nanoforge-dev/ecs` and `@nanoforge-dev/network` are resolved directly under those same names — no aliasing to a different registry package. A standalone project also generates its own `allowBuilds` config (`pnpm-workspace.yaml`'s `allowBuilds` map, `package.json`'s `allowScripts` or `trustedDependencies`, depending on `packageManager`) since it has no parent workspace root to provide one — see `allowBuilds` below.
+
+## Usage
+
+```bash
+schematics @nanoforge-dev/schematics:project --part=client --workspaceName=my-game --directory=apps/client
+```
+
+## Options
+
+| Option           | Type                                 | Default      | Description                                                                                                                                                                                                                                                                                                     |
+| ---------------- | ------------------------------------ | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `part`           | `"client" \| "server"`               | _(required)_ | <Tooltip tip="Determines which part of the game to scaffold. Affects dependencies, imports, and the generated main.ts.">The type of project to generate</Tooltip>                                                                                                                                               |
+| `workspaceName`  | `string`                             | _(required)_ | <Tooltip tip="Used to derive the project's package.json name, e.g. `<workspaceName>-<part>`.">Name of the parent workspace</Tooltip>                                                                                                                                                                            |
+| `directory`      | `string`                             | `apps`       | <Tooltip tip="e.g. apps/client, packages/player-client. Not appended with part automatically - include any part-specific segment yourself.">Full destination path for this project</Tooltip>                                                                                                                    |
+| `language`       | `"ts" \| "js"`                       | `ts`         | Language to use for generated source files                                                                                                                                                                                                                                                                      |
+| `strict`         | `boolean`                            | `true`       | Enable strict mode                                                                                                                                                                                                                                                                                              |
+| `packageManager` | `"npm" \| "yarn" \| "pnpm" \| "bun"` | `npm`        | <Tooltip tip="Affects dependency version ranges and, when docker is true, the generated Dockerfile.">Package manager to target</Tooltip>                                                                                                                                                                        |
+| `workspace`      | `boolean`                            | `true`       | <Tooltip tip="When true, @nanoforge-dev/* (and nanoforge) dependencies use the package manager's workspace-linking protocol (workspace:* for yarn/pnpm/bun, * for npm) instead of a pinned version.">Generated inside an existing NanoForge workspace</Tooltip>                                                 |
+| `initFunctions`  | `boolean`                            | `false`      | <Tooltip tip="Generates beforeInit, afterInit, beforeRegistryInit, afterRegistryInit, beforeRun and afterRun and wires them into main.ts.">Add lifecycle init function hooks</Tooltip>                                                                                                                          |
+| `hasServer`      | `boolean`                            | `false`      | <Tooltip tip="Only meaningful when part is client: whether the client syncs its entity position from a companion server instead of owning it locally. A server project always simulates and broadcasts its own position, regardless of this flag.">Sync the client's position with a companion server</Tooltip> |
+| `docker`         | `boolean`                            | `false`      | <Tooltip tip="Must be built from the workspace root, e.g. `docker build -f apps/client/Dockerfile .`">Generate a Dockerfile and .dockerignore</Tooltip>                                                                                                                                                         |
+| `editor`         | `boolean`                            | `false`      | Reserved for future editor build support                                                                                                                                                                                                                                                                        |
+| `libs`           | `string[]`                           | `[]`         | Relative paths to shared libs this project depends on, written into `nanoforge.config.ts`                                                                                                                                                                                                                       |
+| `allowBuilds`    | `string[]`                           | `[]`         | <Tooltip tip="Only applies when workspace: false — a project inside a workspace relies on the workspace root's own allowBuilds instead.">Packages allowed to run install/build scripts (standalone projects only)</Tooltip>                                                                                     |
+
+## Generated structure
+
+```
+<directory>/
+├── package.json
+├── tsconfig.json           # TypeScript only
+├── jsconfig.json           # JavaScript only
+├── nanoforge.config.ts     # (or .js)
+├── pnpm-workspace.yaml     # if !workspace && packageManager: pnpm && allowBuilds.length > 0
+├── Dockerfile              # if docker: true
+├── .dockerignore           # if docker: true
+├── src/
+│   ├── main.ts
+│   ├── components/
+│   │   ├── position-2d.component.ts             # both parts
+│   │   └── drawable-circle-2d.component.ts       # client only
+│   └── systems/
+│       ├── draw-2d.system.ts                     # client only
+│       ├── position-sync.system.ts               # client only, if hasServer: true
+│       └── move-2d.system.ts                     # server only
+└── assets/
+```
+
+## Examples
+
+**Generate a client project:**
+
+```bash
+schematics @nanoforge-dev/schematics:project --part=client --workspaceName=my-game --directory=apps/client
+```
+
+**Generate a server project with Docker, syncing position with the client:**
+
+```bash
+schematics @nanoforge-dev/schematics:project \
+  --part=server \
+  --workspaceName=my-game \
+  --directory=apps/server \
+  --docker=true
+```
+
+**Generate a client that syncs its position from that server:**
+
+```bash
+schematics @nanoforge-dev/schematics:project \
+  --part=client \
+  --workspaceName=my-game \
+  --directory=apps/client \
+  --hasServer=true
+```
+
+**Generate a JavaScript client depending on a shared lib:**
+
+```bash
+schematics @nanoforge-dev/schematics:project \
+  --part=client \
+  --workspaceName=my-game \
+  --directory=apps/client \
+  --language=js \
+  --libs=../../libs/shared
+```
