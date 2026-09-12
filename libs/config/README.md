@@ -62,6 +62,30 @@ const resolved = resolveConfig({ type: "client", dir: { assets: "static" } });
 
 Array fields (`packages`, `libs`) are replaced wholesale by an override rather than concatenated with the defaults.
 
+### Loading a config file
+
+`parseConfig` loads a `nanoforge.config.ts`/`.js` file from a given path, validates its default export, and resolves it against the defaults in one step:
+
+```ts
+import { parseConfig } from "@nanoforge-dev/config";
+
+const config = await parseConfig("./nanoforge.config.ts");
+```
+
+If the file is missing, fails to load, has no default export, or its default export isn't a recognizable `NanoforgeConfig`, `parseConfig` rejects with a `ConfigParseError` whose `code` (`"not-found" | "load-failed" | "no-default-export" | "invalid-type"`) identifies the failure:
+
+```ts
+import { ConfigParseError, parseConfig } from "@nanoforge-dev/config";
+
+try {
+  await parseConfig("./nanoforge.config.ts");
+} catch (error) {
+  if (error instanceof ConfigParseError && error.code === "not-found") {
+    // ...
+  }
+}
+```
+
 ## Links
 
 - [GitHub][source]

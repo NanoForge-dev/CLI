@@ -57,6 +57,10 @@
     "release": "cliff-jumper",
     "docs": "mint-tsdocs generate"
   },
+  "dependencies": {
+    "unrun": "catalog:libs",
+    "zod": "catalog:libs"
+  },
   "devDependencies": {
     "@favware/cliff-jumper": "catalog:ci",
     "@nanoforge-dev/utils-eslint-config": "catalog:lint",
@@ -66,7 +70,6 @@
     "prettier": "catalog:lint",
     "tsdown": "catalog:build",
     "typescript": "catalog:build",
-    "unrun": "catalog:build",
     "vitest": "catalog:test"
   },
   "packageManager": "pnpm@12.0.0",
