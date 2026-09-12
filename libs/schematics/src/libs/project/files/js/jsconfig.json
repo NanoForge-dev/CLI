@@ -1,0 +1,6 @@
+{
+  "$schema": "https://json.schemastore.org/jsconfig.json",
+  "extends": "../../jsconfig.json",
+  "include": ["src/**/*.js"],
+  "exclude": ["node_modules", "dist", "../../.nanoforge"]
+}

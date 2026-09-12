@@ -34,11 +34,8 @@ function createLibTsdownConfig(name: string) {
 
 export default [
   createTsdownConfig(),
-  createLibTsdownConfig("application"),
-  createLibTsdownConfig("configuration"),
-  createLibTsdownConfig("part-base"),
-  createLibTsdownConfig("part-main"),
-  createLibTsdownConfig("docker"),
+  createLibTsdownConfig("workspace"),
+  createLibTsdownConfig("project"),
   createLibTsdownConfig("component"),
   createLibTsdownConfig("system"),
 ];

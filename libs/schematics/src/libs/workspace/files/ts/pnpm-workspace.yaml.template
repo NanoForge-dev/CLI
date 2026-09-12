@@ -1,0 +1,6 @@
+packages:
+  - "apps/*"
+<% if (allowBuilds.length > 0) { %>
+allowBuilds:<% allowBuilds.forEach(function (pkg) { %>
+  <%= pkg %>: true<% }); %>
+<% } %>

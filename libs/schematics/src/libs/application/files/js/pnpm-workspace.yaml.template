@@ -1,3 +1,0 @@
-allowBuilds:
-  bun: true<% if (server) { %>
-  wrtc: true<% } %>

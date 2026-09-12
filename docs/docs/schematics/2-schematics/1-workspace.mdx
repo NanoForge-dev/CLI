@@ -1,0 +1,69 @@
+---
+title: Workspace
+description: Generate a NanoForge workspace (monorepo root)
+---
+
+import { Tooltip } from "mintlify/components";
+
+## Overview
+
+The `workspace` schematic creates the root of a NanoForge monorepo: the `nanoforge.config.ts` workspace declaration, `package.json`, and TypeScript or JavaScript base config. A workspace holds one or more projects generated with the [`project`](./2-project) schematic under `apps/`.
+
+`@nanoforge-dev/cli`, `nanoforge` and (for TypeScript) `typescript` are pinned to the newest registry version published at least 48h ago at generation time, mirroring pnpm's own `minimumReleaseAge` supply-chain protection so a freshly (and potentially compromised) published release isn't picked up immediately. Non-nanoforge packages like `typescript` are pinned to a specific version rather than a range; `typescript` is also kept on its `6.x` line rather than jumping to the `7.x` native rewrite.
+
+## Usage
+
+```bash
+schematics @nanoforge-dev/schematics:workspace --name=my-game
+```
+
+## Options
+
+| Option           | Type                                 | Default               | Description                                                                                                                                                                                                                                                                                                                            |
+| ---------------- | ------------------------------------ | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`           | `string`                             | `nanoforge-workspace` | <Tooltip tip="Used as the workspace folder name and package.json name field.">The name of the workspace</Tooltip>                                                                                                                                                                                                                      |
+| `directory`      | `string`                             | `name`                | <Tooltip tip="Defaults to the workspace name when not provided.">Destination directory for the generated files</Tooltip>                                                                                                                                                                                                               |
+| `language`       | `"ts" \| "js"`                       | `ts`                  | Language to use for generated source files                                                                                                                                                                                                                                                                                             |
+| `strict`         | `boolean`                            | `true`                | <Tooltip tip="Enables strict mode in tsconfig.json for TypeScript, or strict JSDoc checking in compatible editors for JavaScript.">Enable strict mode</Tooltip>                                                                                                                                                                        |
+| `packageManager` | `"npm" \| "yarn" \| "pnpm" \| "bun"` | `npm`                 | <Tooltip tip="pnpm gets a pnpm-workspace.yaml and workspace:* dependency ranges; npm, yarn and bun get a package.json 'workspaces' field and pinned ranges.">Package manager to target</Tooltip>                                                                                                                                       |
+| `allowBuilds`    | `string[]`                           | `[]`                  | <Tooltip tip="`bun` is always included (@nanoforge-dev/cli depends on it and it has its own install script). Written to pnpm-workspace.yaml's allowBuilds map (pnpm), package.json's allowScripts (npm) or trustedDependencies (bun). Ignored for yarn.">Packages allowed to run install/build scripts, in addition to `bun`</Tooltip> |
+
+## Generated structure
+
+```
+my-game/
+├── package.json
+├── tsconfig.json          # TypeScript only
+├── tsconfig.spec.json     # TypeScript only
+├── jsconfig.json          # JavaScript only
+├── pnpm-workspace.yaml    # if packageManager: pnpm — allowBuilds map
+├── nanoforge.config.ts    # (or .js)
+├── .gitignore
+├── README.md
+└── apps/                  # generated with the `project` schematic
+```
+
+## Examples
+
+**Minimal TypeScript workspace:**
+
+```bash
+schematics @nanoforge-dev/schematics:workspace --name=my-game
+```
+
+**pnpm workspace:**
+
+```bash
+schematics @nanoforge-dev/schematics:workspace \
+  --name=my-game \
+  --packageManager=pnpm
+```
+
+**pnpm workspace allowing an extra dependency's build scripts (bun is always allowed):**
+
+```bash
+schematics @nanoforge-dev/schematics:workspace \
+  --name=my-game \
+  --packageManager=pnpm \
+  --allowBuilds=esbuild
+```

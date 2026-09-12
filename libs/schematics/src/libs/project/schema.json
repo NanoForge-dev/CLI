@@ -1,0 +1,78 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "SchematicsNanoForgeProject",
+  "title": "NanoForge Project Options Schema",
+  "type": "object",
+  "properties": {
+    "part": {
+      "type": "string",
+      "enum": ["client", "server"],
+      "description": "The type of project to generate"
+    },
+    "workspaceName": {
+      "type": ["string", "null"],
+      "description": "Name of the parent workspace, used to derive the project package name",
+      "default": null
+    },
+    "directory": {
+      "type": "string",
+      "description": "Full destination path for this project (e.g. \"apps/client\", \"packages/player-client\"). The caller is responsible for including any part-specific segment - it is not appended automatically.",
+      "default": "apps"
+    },
+    "language": {
+      "type": "string",
+      "enum": ["ts", "js"],
+      "description": "NanoForge project language",
+      "default": "ts"
+    },
+    "strict": {
+      "type": "boolean",
+      "description": "With strict mode",
+      "default": true
+    },
+    "packageManager": {
+      "type": "string",
+      "enum": ["npm", "yarn", "pnpm", "bun"],
+      "description": "The used package manager",
+      "default": "npm"
+    },
+    "workspace": {
+      "type": "boolean",
+      "description": "Whether this project is generated inside an existing NanoForge workspace",
+      "default": true
+    },
+    "docker": {
+      "type": "boolean",
+      "description": "Generate a Dockerfile for the project. Ignored when `workspace` is true - a project inside a workspace is built and run by the workspace's own Dockerfile instead.",
+      "default": false
+    },
+    "initFunctions": {
+      "type": "boolean",
+      "description": "Add init functions to the project",
+      "default": false
+    },
+    "hasServer": {
+      "type": "boolean",
+      "description": "Only meaningful when part is \"client\": whether the client syncs its entity position from a companion server instead of owning it locally. A server project always simulates and broadcasts its own position, regardless of this flag.",
+      "default": false
+    },
+    "editor": {
+      "type": "boolean",
+      "description": "Add editor dependencies",
+      "default": false
+    },
+    "libs": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Relative paths to shared libs this project depends on",
+      "default": []
+    },
+    "allowBuilds": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Package names allowed to run install/build scripts. Only applies to a standalone project (workspace: false); ignored otherwise since the workspace root already handles it.",
+      "default": []
+    }
+  },
+  "required": ["part"]
+}

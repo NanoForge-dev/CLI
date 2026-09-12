@@ -1,0 +1,7 @@
+<% if (allowBuilds.length > 0) { %># Packages allowed to run their install/build scripts. pnpm blocks these by
+# default; add a dependency here (or run `pnpm approve-builds`) once you know
+# it needs one. Only relevant for a standalone project (workspace: false) —
+# a project generated inside a workspace uses the workspace root's own file.
+allowBuilds:<% allowBuilds.forEach(function (pkg) { %>
+  <%= pkg %>: true<% }); %>
+<% } %>
