@@ -10,6 +10,7 @@ export type {
   BuildableConfig,
   ContainLibConfig,
   EditorConfig,
+  LanguageConfig,
   SourceableConfig,
   TlsConfig,
 } from "./mixins.type";

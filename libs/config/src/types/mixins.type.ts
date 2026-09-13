@@ -17,6 +17,11 @@ export interface EditorConfig {
   };
 }
 
+export interface LanguageConfig {
+  /** Source language, used to pick `.ts`/`.js` component and system schematic templates. */
+  language?: "ts" | "js";
+}
+
 export interface TlsConfig {
   tls?:
     | {

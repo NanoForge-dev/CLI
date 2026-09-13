@@ -6,4 +6,5 @@ export default defineConfig({
   editor: {
     entryFile: "src/main.js",
   },
+  language: "js",
 });
