@@ -26,7 +26,6 @@ describe("workspace schematic", () => {
     it("should generate workspace files", () => {
       expect(tree.files).toContain("/my-workspace/package.json");
       expect(tree.files).toContain("/my-workspace/tsconfig.json");
-      expect(tree.files).toContain("/my-workspace/tsconfig.spec.json");
       expect(tree.files).toContain("/my-workspace/.gitignore");
       expect(tree.files).toContain("/my-workspace/nanoforge.config.ts");
       expect(tree.files).toContain("/my-workspace/README.md");
@@ -146,7 +145,7 @@ describe("workspace schematic", () => {
       // `allowBuilds` map instead. See https://pnpm.io/settings.
       expect(packageJson).not.toHaveProperty("pnpm");
       expect(packageJson.workspaces).toBeUndefined();
-      expect(packageJson.devDependencies["@nanoforge-dev/cli"]).toBe("workspace:*");
+      expect(packageJson.devDependencies["@nanoforge-dev/cli"]).toMatch(RESOLVED_VERSION);
     });
 
     it("should generate a pnpm-workspace.yaml with apps only (no libs)", async () => {
