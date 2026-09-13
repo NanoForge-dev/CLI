@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "<%= name %>",
+  "scripts": {
+    "dev": "nf dev -r",
+    "build": "nf build -r",
+    "start": "nf start -r"
+  },
+  "devDependencies": {
+    "@nanoforge-dev/cli": "<%= cliVersion %>",
+    "nanoforge": "<%= engineVersion %>"
+  },<% if (packageManager !== "pnpm") { %>
+  "workspaces": ["apps/*"],<% } %><% if (packageManager === "npm" && allowBuilds.length > 0) { %>
+  "allowScripts": {<% allowBuilds.forEach(function (pkg, i) { %>
+    "<%= pkg %>": true<% if (i < allowBuilds.length - 1) { %>,<% } %><% }); %>
+  },<% } %><% if (packageManager === "bun" && allowBuilds.length > 0) { %>
+  "trustedDependencies": [<% allowBuilds.forEach(function (pkg, i) { %>"<%= pkg %>"<% if (i < allowBuilds.length - 1) { %>, <% } %><% }); %>],<% } %>
+  "private": true
+}

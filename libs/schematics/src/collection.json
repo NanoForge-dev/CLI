@@ -1,30 +1,15 @@
 {
   "$schema": "../node_modules/@angular-devkit/schematics/collection-schema.json",
   "schematics": {
-    "application": {
-      "factory": "./libs/application/application.factory#main",
-      "description": "Create a NanoForge Base application.",
-      "schema": "./libs/application/schema.json"
+    "workspace": {
+      "factory": "./libs/workspace/workspace.factory#main",
+      "description": "Create a NanoForge workspace (monorepo root: config, tooling, package manifest).",
+      "schema": "./libs/workspace/schema.json"
     },
-    "configuration": {
-      "factory": "./libs/configuration/configuration.factory#main",
-      "description": "Create a NanoForge Configuration.",
-      "schema": "./libs/configuration/schema.json"
-    },
-    "part-base": {
-      "factory": "./libs/part-base/part-base.factory#main",
-      "description": "Create a NanoForge Base for client or server.",
-      "schema": "./libs/part-base/schema.json"
-    },
-    "part-main": {
-      "factory": "./libs/part-main/part-main.factory#main",
-      "description": "Create a Main file for client or server.",
-      "schema": "./libs/part-main/schema.json"
-    },
-    "docker": {
-      "factory": "./libs/docker/docker.factory#main",
-      "description": "Create a Dockerfile for the application.",
-      "schema": "./libs/docker/schema.json"
+    "project": {
+      "factory": "./libs/project/project.factory#main",
+      "description": "Create a NanoForge client or server project under apps/<part>.",
+      "schema": "./libs/project/schema.json"
     },
     "component": {
       "factory": "./libs/component/component.factory#main",
