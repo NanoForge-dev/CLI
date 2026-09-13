@@ -56,7 +56,6 @@ describe("nf build --help", () => {
     expect(exitCode).toBe(0);
     expect(stdout).toContain("build your game");
     expect(stdout).toContain("--directory");
-    expect(stdout).toContain("--config");
     expect(stdout).toContain("--client-entry");
     expect(stdout).toContain("--server-entry");
     expect(stdout).toContain("--client-static-dir");

@@ -25,6 +25,10 @@ const editorConfigShape = {
     .optional(),
 };
 
+const languageConfigShape = {
+  language: z.enum(["ts", "js"]).optional(),
+};
+
 const sslConfigShape = {
   ssl: z
     .union([
@@ -70,6 +74,7 @@ const clientConfigSchema = z.object({
   ...buildableConfigShape,
   ...containLibConfigShape,
   ...editorConfigShape,
+  ...languageConfigShape,
   ...sslConfigShape,
   port: z.string().optional(),
 });
@@ -80,6 +85,7 @@ const serverConfigSchema = z.object({
   ...buildableConfigShape,
   ...containLibConfigShape,
   ...editorConfigShape,
+  ...languageConfigShape,
 });
 
 const nanoforgeConfigSchema = z.discriminatedUnion("type", [
