@@ -1,7 +1,13 @@
+import { defaultClientConfig, defaultServerConfig } from "@nanoforge-dev/config";
 import { watch } from "chokidar";
-import { dirname, join } from "node:path";
+import { dirname, join, relative } from "node:path";
 
-import { type Config } from "@lib/config";
+import {
+  type ResolvedProject,
+  type WorkspaceConfig,
+  parseWorkspaceConfig,
+  resolveProjects,
+} from "@lib/config";
 import {
   type Input,
   getDirectoryInput,
@@ -16,14 +22,13 @@ import { copyFiles, resetFolder } from "@utils/files";
 import { getCwd } from "@utils/path";
 import { runSafe } from "@utils/run-safe";
 
-import { getConfig } from "~/action/common/config";
-
 import { AbstractAction, type HandleResult } from "../abstract.action";
 
 interface BuildTarget {
   name: string;
+  directory: string;
   entry: string;
-  static: string;
+  static?: string;
   output: string;
   platform: "browser" | "node";
 }
@@ -35,12 +40,12 @@ export class BuildAction extends AbstractAction {
 
   public async handle(_args: Input, options: Input): Promise<HandleResult> {
     const directory = getDirectoryInput(options);
-    const config = await getConfig(options, directory);
+    const workspaceConfig = await parseWorkspaceConfig(directory);
     const isEditor = getEditorInput(options);
     const isWatch = getWatchInput(options);
 
-    const targets = this.resolveTargets(config, options, isEditor);
-    const results = await this.buildAll(targets, directory, isWatch);
+    const targets = this.resolveTargets(workspaceConfig, directory, options, isEditor);
+    const results = await this.buildAll(targets, isWatch);
 
     if (isWatch) {
       return this.enterWatchMode();
@@ -49,85 +54,77 @@ export class BuildAction extends AbstractAction {
     return { success: results.every(Boolean) };
   }
 
-  private resolveTargets(config: Config, options: Input, isEditor: boolean): BuildTarget[] {
-    const targets: BuildTarget[] = [];
+  private resolveTargets(
+    workspaceConfig: WorkspaceConfig,
+    baseDirectory: string,
+    options: Input,
+    isEditor: boolean,
+  ): BuildTarget[] {
+    const projects = resolveProjects(workspaceConfig, baseDirectory);
 
-    if (config.client.enable)
-      targets.push(
-        this.createTarget(
-          "Client",
-
-          "browser",
-          getStringInputWithDefault(
-            options,
-            "clientEntry",
-            !isEditor ? config.client.build.entry : config.client.editor.entry,
-          ),
-          getStringInputWithDefault(options, "clientStaticDir", config.client.build.staticDir),
-          getStringInputWithDefault(options, "clientOutDir", config.client.outDir),
-        ),
-      );
-    if (config.server.enable)
-      targets.push(
-        this.createTarget(
-          "Server",
-          "node",
-          getStringInputWithDefault(
-            options,
-            "serverEntry",
-            !isEditor ? config.server.build.entry : config.server.editor.entry,
-          ),
-          getStringInputWithDefault(options, "serverStaticDir", config.server.build.staticDir),
-          getStringInputWithDefault(options, "serverOutDir", config.server.outDir),
-        ),
-      );
-
-    return targets;
+    return projects.map((project) =>
+      this.createTarget(project, baseDirectory, options, isEditor, projects.length > 1),
+    );
   }
 
   private createTarget(
-    name: string,
-    platform: "browser" | "node",
-    entryFile: string,
-    staticDir: string,
-    outDir: string,
+    project: ResolvedProject,
+    baseDirectory: string,
+    options: Input,
+    isEditor: boolean,
+    disambiguate: boolean,
   ): BuildTarget {
+    const isClient = project.config.type === "client";
+    const label = isClient ? "Client" : "Server";
+    const relativePath = relative(baseDirectory, project.directory);
+    const name = disambiguate && relativePath !== "" ? `${label} (${relativePath})` : label;
+    const defaults = isClient ? defaultClientConfig : defaultServerConfig;
+
+    const defaultEntry = isEditor
+      ? (project.config.editor?.entryFile ?? defaults.editor.entryFile)
+      : (project.config.entryFile ?? defaults.entryFile);
+
     return {
       name,
-      entry: entryFile,
-      static: staticDir,
-      output: outDir,
-      platform,
+      directory: project.directory,
+      entry: getStringInputWithDefault(
+        options,
+        isClient ? "clientEntry" : "serverEntry",
+        defaultEntry,
+      ),
+      static: getStringInputWithDefault(
+        options,
+        isClient ? "clientStaticDir" : "serverStaticDir",
+        project.config.dir?.assets ?? defaults.dir.assets,
+      ),
+      output: getStringInputWithDefault(
+        options,
+        isClient ? "clientOutDir" : "serverOutDir",
+        project.config.out?.dir ?? defaults.out.dir,
+      ),
+      platform: isClient ? "browser" : "node",
     };
   }
 
-  private async buildAll(
-    targets: BuildTarget[],
-    directory: string,
-    isWatch: boolean,
-  ): Promise<boolean[]> {
+  private async buildAll(targets: BuildTarget[], isWatch: boolean): Promise<boolean[]> {
     const results: boolean[] = [];
     for (const target of targets) {
-      const result = await this.buildTarget(target, directory, isWatch);
+      const result = await this.buildTarget(target, isWatch);
       results.push(result);
     }
     return results;
   }
 
-  private async buildTarget(
-    target: BuildTarget,
-    directory: string,
-    isWatch: boolean,
-  ): Promise<boolean> {
+  private async buildTarget(target: BuildTarget, isWatch: boolean): Promise<boolean> {
     const packageManager = PackageManagerFactory.create(PackageManagerName.LOCAL_BUN);
 
     const executeBuild = (rebuild = false) =>
       runSafe(() => {
-        this.resetOut(target.output, directory);
-        this.copyFiles(target, directory);
+        this.resetOut(target.output, target.directory);
+        this.copyFiles(target, target.directory);
         return packageManager.build(
           target.name,
-          directory,
+          target.directory,
           target.entry,
           target.output,
           ["--asset-naming", "[name].[ext]", "--target", target.platform],
@@ -136,7 +133,7 @@ export class BuildAction extends AbstractAction {
       }, false);
 
     if (isWatch) {
-      this.watchDirectory(directory, target.entry, () => executeBuild(true));
+      this.watchDirectory(target.directory, target.entry, () => executeBuild(true));
     }
 
     const result = await executeBuild();
@@ -160,6 +157,7 @@ export class BuildAction extends AbstractAction {
   }
 
   private copyFiles(target: BuildTarget, directory: string): void {
+    if (!target.static) return;
     const from = getCwd(join(directory, target.static));
     const to = getCwd(join(directory, target.output));
     copyFiles(from, to);
