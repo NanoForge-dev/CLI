@@ -7,7 +7,6 @@ import { AbstractCommand } from "../abstract.command";
 interface DevOptions {
   directory?: string;
   config?: string;
-  generate?: boolean;
   editor?: boolean;
 }
 
@@ -18,13 +17,11 @@ export class DevCommand extends AbstractCommand {
       .description("run your game in dev mode")
       .option("-d, --directory <directory>", "specify the working directory of the command")
       .option("-c, --config <config>", "path to the config file", CONFIG_FILE_NAME)
-      .option("--generate", "generate app from config", false)
       .option("-e, --editor", "run the editor", false)
       .action(async (rawOptions: DevOptions) => {
         const options = AbstractCommand.mapToInput({
           directory: rawOptions.directory,
           config: rawOptions.config,
-          generate: rawOptions.generate,
           editor: rawOptions.editor,
         });
 

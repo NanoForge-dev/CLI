@@ -18,22 +18,6 @@ Once a project exists, most of your time is spent in the develop-and-iterate loo
 
   </Step>
 
-  <Step title="Regenerate files after config changes">
-    When you change `nanoforge.config.json` - for example adding new component or system directories
-    - regenerate the project files. You can do this in a one-off run:
-
-    ```bash
-    nf generate
-    ```
-
-    Or have dev mode regenerate as it runs:
-
-    ```bash
-    nf dev --generate
-    ```
-
-  </Step>
-
   <Step title="Point at a different config or directory">
     Working in a monorepo or with multiple configs? Every command accepts `-d` and `-c`:
 

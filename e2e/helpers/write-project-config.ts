@@ -11,7 +11,7 @@ interface WriteProjectConfigOptions {
 /**
  * `nf new` still scaffolds a `nanoforge.config.json` (schematics is out of scope for this
  * change), but the CLI's config loader now only reads `.ts`/`.js` config modules. Tests that
- * scaffold a project and then run `build`/`generate`/`create` against it need a hand-written
+ * scaffold a project and then run `build`/`create` against it need a hand-written
  * `nanoforge.config.ts` alongside the scaffolded JSON — everything not set here falls back to
  * the CLI's own defaults, matching what the scaffolded JSON used to rely on too.
  */

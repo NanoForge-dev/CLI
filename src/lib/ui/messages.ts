@@ -57,12 +57,6 @@ export const Messages = {
   CREATE_FAILED: failure("Creation failed!"),
   CREATE_NAME_QUESTION: "What is the name of your component/system?",
 
-  // --- Generate ---
-  GENERATE_START: "NanoForge Generate",
-  GENERATE_SUCCESS: success("Generation succeeded!"),
-  GENERATE_FAILED: failure("Generation failed!"),
-  GENERATE_WATCH_START: "Watching for changes...",
-
   // --- Dev ---
   DEV_START: "NanoForge Dev Mode",
   DEV_SUCCESS: "Dev mode ended",

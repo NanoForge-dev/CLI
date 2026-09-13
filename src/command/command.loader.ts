@@ -8,7 +8,6 @@ import {
   CreateAction,
   DevAction,
   EditorAction,
-  GenerateAction,
   InstallAction,
   LoginAction,
   LogoutAction,
@@ -22,7 +21,6 @@ import { BuildCommand } from "./commands/build.command";
 import { CreateCommand } from "./commands/create.command";
 import { DevCommand } from "./commands/dev.command";
 import { EditorCommand } from "./commands/editor.command";
-import { GenerateCommand } from "./commands/generate.command";
 import { InstallCommand } from "./commands/install.command";
 import { LoginCommand } from "./commands/login.command";
 import { LogoutCommand } from "./commands/logout.command";
@@ -39,7 +37,6 @@ export class CommandLoader {
     new StartCommand(new StartAction()).load(program);
     new DevCommand(new DevAction()).load(program);
     new EditorCommand(new EditorAction()).load(program);
-    new GenerateCommand(new GenerateAction()).load(program);
     new CreateCommand(new CreateAction()).load(program);
     new LoginCommand(new LoginAction()).load(program);
     new LogoutCommand(new LogoutAction()).load(program);
