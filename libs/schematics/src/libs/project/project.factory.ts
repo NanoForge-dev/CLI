@@ -61,10 +61,15 @@ const transform = async (schema: ProjectSchema): Promise<ProjectOptions> => {
   const workspace = schema.workspace ?? true;
   const depVersions = await resolveDepVersions(schema.part);
 
+  const name = schema.name ?? schema.part;
+  const packageName = schema.workspaceName
+    ? `${toKebabCase(schema.workspaceName)}-${toKebabCase(name)}`
+    : toKebabCase(schema.name ?? DEFAULT_APP_NAME);
+
   return {
     part: schema.part,
     appClass: schema.part === "client" ? "NanoforgeClient" : "NanoforgeServer",
-    packageName: `${toKebabCase(schema.workspaceName ?? DEFAULT_APP_NAME)}-${schema.part}`,
+    packageName,
     language: schema.language ?? DEFAULT_LANGUAGE,
     strict: schema.strict ?? true,
     packageManager,

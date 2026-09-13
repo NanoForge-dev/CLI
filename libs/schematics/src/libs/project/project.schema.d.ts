@@ -5,9 +5,19 @@ export interface ProjectSchema {
   part: "client" | "server";
 
   /**
-   * Name of the parent workspace, used to derive the project package name
+   * Name of the parent workspace, used to derive the project package name.
+   * Optional - when omitted, `name` is used as the whole package name
+   * instead of being appended to the workspace name.
    */
-  workspaceName: string | null;
+  workspaceName?: string | null;
+
+  /**
+   * Name used to derive the project package name. When `workspaceName` is
+   * set, the package name is `${workspaceName}-${name}` (replacing the
+   * previous `${workspaceName}-${part}` suffix). When `workspaceName` is
+   * absent, `name` becomes the whole package name. Defaults to `part`.
+   */
+  name?: string | null;
 
   /**
    * Full destination path for this project (e.g. "apps/client",

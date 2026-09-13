@@ -118,6 +118,42 @@ describe("project schematic", () => {
     });
   });
 
+  describe("with a custom name", () => {
+    it("replaces part in the package name when workspaceName is set", async () => {
+      const tree = await runner.runSchematic("project", {
+        part: "client",
+        workspaceName: "my-workspace",
+        name: "frontend",
+        directory: "custom-name-apps/client",
+      });
+      const packageJson = JSON.parse(tree.readContent("/custom-name-apps/client/package.json"));
+      expect(packageJson.name).toBe("my-workspace-frontend");
+    });
+
+    it("becomes the whole package name when workspaceName is absent", async () => {
+      const tree = await runner.runSchematic("project", {
+        part: "client",
+        name: "standalone-app",
+        directory: "custom-name-standalone-apps/client",
+      });
+      const packageJson = JSON.parse(
+        tree.readContent("/custom-name-standalone-apps/client/package.json"),
+      );
+      expect(packageJson.name).toBe("standalone-app");
+    });
+
+    it("falls back to a default app name when neither workspaceName nor name is set", async () => {
+      const tree = await runner.runSchematic("project", {
+        part: "client",
+        directory: "custom-name-default-apps/client",
+      });
+      const packageJson = JSON.parse(
+        tree.readContent("/custom-name-default-apps/client/package.json"),
+      );
+      expect(packageJson.name).toBe("nanoforge-app");
+    });
+  });
+
   describe("with hasServer", () => {
     it("keeps the client's position local by default (hasServer omitted)", async () => {
       const tree = await runner.runSchematic("project", {

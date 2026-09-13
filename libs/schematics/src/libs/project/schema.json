@@ -11,7 +11,12 @@
     },
     "workspaceName": {
       "type": ["string", "null"],
-      "description": "Name of the parent workspace, used to derive the project package name",
+      "description": "Name of the parent workspace, used to derive the project package name. Optional - when omitted, `name` is used as the whole package name instead of being appended to the workspace name.",
+      "default": null
+    },
+    "name": {
+      "type": ["string", "null"],
+      "description": "Name used to derive the project package name. When `workspaceName` is set, the package name is `${workspaceName}-${name}` (replacing the previous `${workspaceName}-${part}` suffix). When `workspaceName` is absent, `name` becomes the whole package name. Defaults to `part`.",
       "default": null
     },
     "directory": {
