@@ -79,12 +79,10 @@ const transform = async (schema: ProjectSchema): Promise<ProjectOptions> => {
     inputVersion: depVersions.input,
     networkVersion: depVersions.network,
     nanoforgeVersion: depVersions.nanoforge,
-    initFunctions: schema.initFunctions ?? false,
-    hasServer: schema.hasServer ?? false,
+    hasServer: schema.hasServer,
     docker: schema.docker ?? false,
     editor: schema.editor ?? false,
-    libs: schema.libs ?? [],
-    allowBuilds: workspace ? [] : (schema.allowBuilds ?? []),
+    allowBuilds: workspace ? [] : ["bun"],
   };
 };
 

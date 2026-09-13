@@ -6,7 +6,6 @@ import {
   getDirectoryInput,
   getEditorInput,
   getNewDockerOrAsk,
-  getNewInitFunctionsWithDefault,
   getNewLanguageInputOrAsk,
   getNewLintInput,
   getNewNameInputOrAsk,
@@ -31,8 +30,7 @@ interface NewValues {
   packageManager: string;
   language: string;
   strict: boolean;
-  server: boolean;
-  initFunctions: boolean;
+  multiplayer: boolean;
   skipInstall: boolean;
   docker: boolean;
   lint: boolean;
@@ -71,8 +69,7 @@ export class NewAction extends AbstractAction {
       packageManager: await getNewPackageManagerInputOrAsk(inputs),
       language: await getNewLanguageInputOrAsk(inputs),
       strict: await getNewStrictOrAsk(inputs),
-      server: await getNewServerOrAsk(inputs),
-      initFunctions: getNewInitFunctionsWithDefault(inputs),
+      multiplayer: await getNewServerOrAsk(inputs),
       skipInstall: await getNewSkipInstallOrAsk(inputs),
       docker: await getNewDockerOrAsk(inputs),
       lint: getNewLintInput(inputs),
@@ -94,91 +91,63 @@ export class NewAction extends AbstractAction {
     console.info(Messages.NEW_GENERATION_START);
     console.info();
 
-    await this.generateApplication(collection, values);
-    await this.generateConfiguration(collection, values);
-    await this.generateClientParts(collection, values);
-    if (values.docker) await this.generateDocker(collection, values);
-
-    if (values.server) {
-      await this.generateServerParts(collection, values);
+    if (values.multiplayer) {
+      await this.generateWorkspace(collection, values);
+      await this.generateClientProject(collection, values);
+      await this.generateServerProject(collection, values);
+    } else {
+      await this.generateClientProject(collection, values);
     }
   }
 
-  private generateApplication(
+  private generateWorkspace(
     collection: ReturnType<typeof CollectionFactory.create>,
     values: NewValues,
   ) {
-    return executeSchematic("Application", collection, "application", {
+    return executeSchematic("Workspace", collection, "workspace", {
       name: values.name,
       directory: values.directory,
-      packageManager: values.packageManager,
       language: values.language,
       strict: values.strict,
-      server: values.server,
-      lint: values.lint,
-      editor: values.editor,
-    });
-  }
-
-  private generateConfiguration(
-    collection: ReturnType<typeof CollectionFactory.create>,
-    values: NewValues,
-  ) {
-    return executeSchematic("Configuration", collection, "configuration", {
-      name: values.name,
-      directory: values.directory,
-      server: values.server,
-      language: values.language,
-      initFunctions: values.initFunctions,
-    });
-  }
-
-  private async generateClientParts(
-    collection: ReturnType<typeof CollectionFactory.create>,
-    values: NewValues,
-  ) {
-    const partOptions = this.partOptions(values, "client");
-
-    await executeSchematic("Client base", collection, "part-base", {
-      ...partOptions,
-      server: values.server,
-    });
-    await executeSchematic("Client main file", collection, "part-main", {
-      ...partOptions,
-    });
-  }
-
-  private async generateServerParts(
-    collection: ReturnType<typeof CollectionFactory.create>,
-    values: NewValues,
-  ) {
-    const partOptions = this.partOptions(values, "server");
-
-    await executeSchematic("Server base", collection, "part-base", {
-      ...partOptions,
-      server: values.server,
-    });
-    await executeSchematic("Server main file", collection, "part-main", {
-      ...partOptions,
-    });
-  }
-
-  private async generateDocker(
-    collection: ReturnType<typeof CollectionFactory.create>,
-    values: NewValues,
-  ) {
-    await executeSchematic("Docker", collection, "docker", {
-      directory: values.directory,
       packageManager: values.packageManager,
+      docker: values.docker,
     });
   }
 
-  private partOptions(values: NewValues, part: "client" | "server") {
+  private generateClientProject(
+    collection: ReturnType<typeof CollectionFactory.create>,
+    values: NewValues,
+  ) {
+    return executeSchematic("Client project", collection, "project", {
+      ...this.projectOptions(values, "client"),
+      hasServer: values.multiplayer,
+    });
+  }
+
+  private generateServerProject(
+    collection: ReturnType<typeof CollectionFactory.create>,
+    values: NewValues,
+  ) {
+    return executeSchematic(
+      "Server project",
+      collection,
+      "project",
+      this.projectOptions(values, "server"),
+    );
+  }
+
+  private projectOptions(values: NewValues, part: "client" | "server") {
     return {
       part,
-      directory: values.directory,
+      workspaceName: values.multiplayer ? values.name : undefined,
+      name: values.multiplayer ? part : values.name,
+      directory: values.multiplayer ? join(values.directory, "apps", part) : values.directory,
       language: values.language,
-      initFunctions: values.initFunctions,
+      strict: values.strict,
+      packageManager: values.packageManager,
+      workspace: values.multiplayer,
+      docker: values.docker,
+      editor: values.editor,
     };
   }
 

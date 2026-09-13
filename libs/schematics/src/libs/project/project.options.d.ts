@@ -58,11 +58,6 @@ export interface ProjectOptions {
   nanoforgeVersion: string;
 
   /**
-   * Add init functions to the project
-   */
-  initFunctions: boolean;
-
-  /**
    * Only meaningful when `part` is "client": whether the client syncs its
    * entity position from a companion server instead of owning it locally.
    */
@@ -78,11 +73,6 @@ export interface ProjectOptions {
    * Add editor dependencies
    */
   editor: boolean;
-
-  /**
-   * Relative paths to shared libs this project depends on
-   */
-  libs: string[];
 
   /**
    * Package names allowed to run install/build scripts. Only rendered when
