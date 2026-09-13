@@ -16,7 +16,6 @@ body:
         - build
         - create
         - dev
-        - generate
         - help
         - install
         - login

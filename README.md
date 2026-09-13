@@ -78,7 +78,6 @@ Used to run your nanoforge project in dev mode.
 
 - `-d, --directory <directory>` specify the working directory of the command.
 - `-c, --config <config>` path to the config file.
-- `--generate` generate app files from config, like generate command in dev mode. (default: `false`)
 
 ### `editor`
 
@@ -88,15 +87,6 @@ Used to start the nanoforge editor.
 - `-d, --directory <directory>` specify the working directory of the command.
 - `--open` open the editor in the default web browser (default: `true` if path is specified, `false` otherwise).
 - `--no-open` do not open the editor in the default web browser.
-
-### `generate`
-
-Used to generate nanoforge project files from config.
-
-- `-d, --directory <directory>` specify the working directory of the command.
-- `-c, --config <config>` path to the config file.
-- `--editor` generate the editor main file.
-- `--watch` generate app in watching mode. (default: `false`)
 
 ### `install` or `add`
 

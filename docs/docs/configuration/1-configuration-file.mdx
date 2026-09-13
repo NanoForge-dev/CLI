@@ -1,96 +1,140 @@
 ---
 title: Configuration file
-description: The nanoforge.config.json file consumed by the CLI
+description: The nanoforge.config.ts (or .js) file consumed by the CLI
 ---
 
 import { Tooltip } from "mintlify/components";
 
 ## Overview
 
-Every NanoForge project has a `nanoforge.config.json` at its root. The CLI reads this file to know
-how to build, generate, and start your game. Commands accept `-c, --config <config>` to point at a
-different file, and most fields can be overridden per run with command flags.
+Every NanoForge workspace, project, or lib has a `nanoforge.config.ts` (or `.js`) at its root,
+exporting its configuration wrapped in `defineConfig` from `@nanoforge-dev/config`. The CLI reads
+this file to know how to build and start your game, and — for a workspace root — to discover the
+projects and libs it contains.
 
-## Top-level fields
+Commands accept `-c, --config <directory>` to point at a different directory to read the config
+from (default: the current directory). The CLI looks for `nanoforge.config.ts` in that directory
+first, falls back to `nanoforge.config.js` when no `.ts` file exists, and fails if neither is
+present.
 
-| Field           | Type           | Default         | Description                                                                                                                                 |
-| --------------- | -------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`          | `string`       | `nanoforge-app` | The name of the application.                                                                                                                |
-| `language`      | `"ts" \| "js"` | `ts`            | Language used in the project.                                                                                                               |
-| `initFunctions` | `boolean`      | `true`          | <Tooltip tip="Lifecycle hooks such as beforeInit, afterInit, beforeRun, etc.">Whether init function lifecycle hooks are wired up.</Tooltip> |
-| `client`        | `object`       | -               | Client configuration. See below.                                                                                                            |
-| `server`        | `object`       | -               | Server configuration. See below.                                                                                                            |
-| `ssl`           | `object`       | -               | Ssl configuration for the game. See below.                                                                                                  |
+## `type`
 
-## `client`
+A config's `type` field discriminates between four shapes:
 
-| Field             | Type      | Default                            | Description                            |
-| ----------------- | --------- | ---------------------------------- | -------------------------------------- |
-| `enable`          | `boolean` | `true`                             | Whether the client is enabled.         |
-| `port`            | `string`  | `3000`                             | Port the client listens on.            |
-| `outDir`          | `string`  | `.nanoforge/client`                | Build output directory for the client. |
-| `build.entry`     | `string`  | `client/main.ts`                   | Client entry file.                     |
-| `build.staticDir` | `string`  | `client/static`                    | Client static assets directory.        |
-| `editor.entry`    | `string`  | `.nanoforge/editor/client/main.ts` | Editor entry file for the client.      |
-| `editor.save`     | `string`  | `.nanoforge/client.save.json`      | Editor save file for the client.       |
-| `dirs.components` | `string`  | `client/components`                | Where client components live.          |
-| `dirs.systems`    | `string`  | `client/systems`                   | Where client systems live.             |
+- `workspace` — a monorepo root listing its `packages`.
+- `lib` — a shared library consumed by clients/servers.
+- `client` — a browser-side NanoForge app.
+- `server` — a server-side NanoForge app.
 
-## `server`
+The config at the root directory the CLI is pointed at must be a `workspace` or a `client`/`server`
+project — a bare `lib` config is not valid there. Inside a `workspace`, none of the packages it
+resolves may themselves be of type `workspace`; nesting workspaces isn't supported.
 
-The `server` block mirrors `client`, minus `port`. It is disabled by default.
+## Defining a config
 
-| Field             | Type      | Default                            | Description                            |
-| ----------------- | --------- | ---------------------------------- | -------------------------------------- |
-| `enable`          | `boolean` | `false`                            | Whether the server is enabled.         |
-| `outDir`          | `string`  | `.nanoforge/server`                | Build output directory for the server. |
-| `build.entry`     | `string`  | `server/main.ts`                   | Server entry file.                     |
-| `build.staticDir` | `string`  | `server/static`                    | Server static assets directory.        |
-| `editor.entry`    | `string`  | `.nanoforge/editor/server/main.ts` | Editor entry file for the server.      |
-| `editor.save`     | `string`  | `.nanoforge/server.save.json`      | Editor save file for the server.       |
-| `dirs.components` | `string`  | `server/components`                | Where server components live.          |
-| `dirs.systems`    | `string`  | `server/systems`                   | Where server systems live.             |
+Wrap your config in `defineConfig` to get type-checking and editor autocompletion on its fields:
 
-## `ssl`
+```ts
+import { defineConfig } from "@nanoforge-dev/config";
 
-| Field    | Type     | Default | Description                 |
-| -------- | -------- | ------- | --------------------------- |
-| `enable` | `boolean | `false` | Whether the ssl is enabled. |
-| `cert`   | `string` | -       | Certificate file.           |
-| `key`    | `string` | -       | Key file.                   |
-
-## Example
-
-```json
-{
-  "name": "my-game",
-  "language": "ts",
-  "initFunctions": true,
-  "client": {
-    "enable": true,
-    "port": "3000",
-    "outDir": ".nanoforge/client",
-    "build": { "entry": "client/main.ts", "staticDir": "client/static" },
-    "editor": {
-      "entry": ".nanoforge/editor/client/main.ts",
-      "save": ".nanoforge/client.save.json"
-    },
-    "dirs": { "components": "client/components", "systems": "client/systems" }
-  },
-  "server": {
-    "enable": false,
-    "outDir": ".nanoforge/server",
-    "build": { "entry": "server/main.ts", "staticDir": "server/static" },
-    "editor": {
-      "entry": ".nanoforge/editor/server/main.ts",
-      "save": ".nanoforge/server.save.json"
-    },
-    "dirs": { "components": "server/components", "systems": "server/systems" }
-  },
-  "ssl": {
-    "enable": true,
-    "cert": "path/to/cert",
-    "key": "path/to/key"
-  }
-}
+export default defineConfig({
+  type: "client",
+  entryFile: "src/main.ts",
+  libs: ["../../libs/my-lib"],
+});
 ```
+
+`defineConfig` is an identity function — it returns its argument unchanged.
+
+## `workspace`
+
+| Field      | Type       | Default | Description                                                                                                                                                                                                                            |
+| ---------- | ---------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `packages` | `string[]` | `[]`    | <Tooltip tip="e.g. apps/*, apps/**/client, or a literal path like apps/client.">Glob patterns matched against directories relative to the workspace root</Tooltip>, each expected to hold its own `client`, `server`, or `lib` config. |
+
+A directory matched by a pattern but missing a `nanoforge.config.ts`/`.js` is skipped without
+error. A pattern that matches no project or lib at all only logs a warning, rather than failing
+the whole resolution. A matched directory whose config is itself of type `workspace` throws.
+
+### Example
+
+```ts
+import { defineConfig } from "@nanoforge-dev/config";
+
+export default defineConfig({
+  type: "workspace",
+  packages: ["apps/*", "libs/*"],
+});
+```
+
+## `lib`
+
+| Field            | Type     | Default             | Description              |
+| ---------------- | -------- | ------------------- | ------------------------ |
+| `dir.assets`     | `string` | `assets`            | Where assets live.       |
+| `dir.shared`     | `string` | `shared`            | Where shared code lives. |
+| `dir.components` | `string` | `shared/components` | Used by the editor only. |
+| `dir.systems`    | `string` | `shared/systems`    | Used by the editor only. |
+| `dir.scenes`     | `string` | `shared/scenes`     | Used by the editor only. |
+
+### Example
+
+```ts
+import { defineConfig } from "@nanoforge-dev/config";
+
+export default defineConfig({ type: "lib" });
+```
+
+## `client` / `server`
+
+`client` and `server` share the exact same fields and defaults — `type` is the only thing that
+tells them apart.
+
+| Field            | Type       | Default          | Description                                            |
+| ---------------- | ---------- | ---------------- | ------------------------------------------------------ |
+| `entryFile`      | `string`   | `src/main.ts`    | Entry file.                                            |
+| `out.dir`        | `string`   | `dist`           | Build output directory.                                |
+| `out.mainFile`   | `string`   | `main.js`        | Build output entry file name.                          |
+| `dir.assets`     | `string`   | `assets`         | Where assets live.                                     |
+| `dir.packages`   | `string`   | `nf_modules`     | Where downloaded package dependencies are installed.   |
+| `dir.components` | `string`   | `src/components` | Used by the editor only.                               |
+| `dir.systems`    | `string`   | `src/systems`    | Used by the editor only.                               |
+| `dir.scenes`     | `string`   | `src/scenes`     | Used by the editor only.                               |
+| `libs`           | `string[]` | `[]`             | Relative paths to shared libs this project depends on. |
+
+### Example
+
+```ts
+import { defineConfig } from "@nanoforge-dev/config";
+
+export default defineConfig({
+  type: "server",
+  entryFile: "src/main.ts",
+  dir: { assets: "static" },
+  libs: ["../../libs/shared"],
+});
+```
+
+## Resolving defaults
+
+Missing fields are filled in with the defaults for the config's `type`, deep-merging nested
+objects like `dir` and `out`:
+
+```ts
+import { resolveConfig } from "@nanoforge-dev/config";
+
+const resolved = resolveConfig({ type: "client", dir: { assets: "static" } });
+// resolved.dir.assets === "static"
+// resolved.dir.packages === "nf_modules" (default, not overridden)
+```
+
+Array fields (`packages`, `libs`) are replaced wholesale by an override rather than concatenated
+with the defaults.
+
+## Errors
+
+- `ConfigNotFoundError` — thrown by the CLI when neither `nanoforge.config.ts` nor
+  `nanoforge.config.js` exists in the directory it was pointed at.
+- `ConfigParseError` (from `@nanoforge-dev/config`) — thrown while loading or validating a config
+  file's default export. Its `code` identifies the failure: `not-found`, `load-failed`,
+  `no-default-export`, or `invalid-type`.

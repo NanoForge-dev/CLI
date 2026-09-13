@@ -10,7 +10,6 @@ describe("nf --help", () => {
     expect(stdout).toContain("Usage: nf <command> [options]");
     expect(stdout).toContain("build");
     expect(stdout).toContain("dev");
-    expect(stdout).toContain("generate");
     expect(stdout).toContain("install|add");
     expect(stdout).toContain("new");
     expect(stdout).toContain("start");
@@ -69,18 +68,6 @@ describe("nf build --help", () => {
   });
 });
 
-describe("nf generate --help", () => {
-  it("should display generate command options", async () => {
-    const { stdout, exitCode } = await runCli(["generate", "--help"]);
-
-    expect(exitCode).toBe(0);
-    expect(stdout).toContain("generate nanoforge files from config");
-    expect(stdout).toContain("--directory");
-    expect(stdout).toContain("--config");
-    expect(stdout).toContain("--watch");
-  });
-});
-
 describe("nf install --help", () => {
   it("should display install command options", async () => {
     const { stdout, exitCode } = await runCli(["install", "--help"]);
@@ -113,7 +100,6 @@ describe("nf dev --help", () => {
     expect(exitCode).toBe(0);
     expect(stdout).toContain("run your game in dev mode");
     expect(stdout).toContain("--directory");
-    expect(stdout).toContain("--generate");
     expect(stdout).toContain("--editor");
   });
 });

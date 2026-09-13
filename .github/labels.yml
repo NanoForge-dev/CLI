@@ -54,10 +54,6 @@
   description: "Related to dev command"
   color: "aaa3dc"
 
-- name: "command:generate"
-  description: "Related to generate command"
-  color: "aaa3dc"
-
 - name: "command:help"
   description: "Related to help command"
   color: "aaa3dc"
