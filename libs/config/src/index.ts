@@ -21,6 +21,7 @@ export type {
   ClientConfig,
   ContainLibConfig,
   EditorConfig,
+  LanguageConfig,
   LibConfig,
   NanoforgeConfig,
   ServerConfig,
