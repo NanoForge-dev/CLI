@@ -33,7 +33,7 @@ export const defaultClientConfig: DeepRequired<Omit<ClientConfig, "type">> = {
   },
 
   editor: {
-    entryFile: "src/editor.ts",
+    entryFile: "src/main.ts",
   },
 
   port: "3000",
@@ -61,7 +61,7 @@ export const defaultServerConfig: DeepRequired<Omit<ServerConfig, "type">> = {
   },
 
   editor: {
-    entryFile: "src/editor.ts",
+    entryFile: "src/main.ts",
   },
 
   libs: [],
