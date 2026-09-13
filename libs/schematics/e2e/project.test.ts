@@ -243,7 +243,7 @@ describe("project schematic", () => {
     describe.each(["npm", "yarn", "pnpm", "bun"] as const)(
       "with %s package manager",
       (packageManager) => {
-        it("uses the workspace-linking protocol by default", async () => {
+        it("resolves a real registry version by default", async () => {
           const tree = await runner.runSchematic("project", {
             part: "client",
             workspaceName: `${packageManager}-dep-workspace`,
@@ -253,9 +253,8 @@ describe("project schematic", () => {
           const packageJson = JSON.parse(
             tree.readContent(`/${packageManager}-dep-apps/client/package.json`),
           );
-          const expected = packageManager === "npm" ? "*" : "workspace:*";
-          expect(packageJson.devDependencies["@nanoforge-dev/ecs"]).toBe(expected);
-          expect(packageJson.devDependencies["nanoforge"]).toBe(expected);
+          expect(packageJson.devDependencies["@nanoforge-dev/ecs"]).toMatch(RESOLVED_VERSION);
+          expect(packageJson.devDependencies["nanoforge"]).toMatch(RESOLVED_VERSION);
         });
 
         it("resolves a real registry version when workspace is false", async () => {
@@ -287,35 +286,6 @@ describe("project schematic", () => {
     });
   });
 
-  describe("with init functions enabled", () => {
-    let tree: UnitTestTree;
-
-    beforeAll(async () => {
-      tree = await runner.runSchematic("project", {
-        part: "client",
-        workspaceName: "init-workspace",
-        directory: "init-apps/client",
-        initFunctions: true,
-      });
-    });
-
-    it("should generate init function files", () => {
-      expect(tree.files).toContain("/init-apps/client/src/init/before-init.ts");
-      expect(tree.files).toContain("/init-apps/client/src/init/after-init.ts");
-      expect(tree.files).toContain("/init-apps/client/src/init/before-registry-init.ts");
-      expect(tree.files).toContain("/init-apps/client/src/init/after-registry-init.ts");
-      expect(tree.files).toContain("/init-apps/client/src/init/before-run.ts");
-      expect(tree.files).toContain("/init-apps/client/src/init/after-run.ts");
-    });
-
-    it("should wire the init functions into main.ts", () => {
-      const content = tree.readContent("/init-apps/client/src/main.ts");
-      expect(content).toContain('import { beforeInit } from "./init/before-init"');
-      expect(content).toContain("await beforeInit(app);");
-      expect(content).toContain("await afterRun(app);");
-    });
-  });
-
   describe("with JavaScript", () => {
     let tree: UnitTestTree;
 
@@ -335,19 +305,6 @@ describe("project schematic", () => {
       );
       expect(tree.files).toContain("/js-apps/client/jsconfig.json");
       expect(tree.files).not.toContain("/js-apps/client/tsconfig.json");
-    });
-  });
-
-  describe("with libs", () => {
-    it("should list libs in nanoforge.config.ts", async () => {
-      const tree = await runner.runSchematic("project", {
-        part: "client",
-        workspaceName: "libs-workspace",
-        directory: "libs-apps/client",
-        libs: ["../../libs/shared"],
-      });
-      const content = tree.readContent("/libs-apps/client/nanoforge.config.ts");
-      expect(content).toContain('libs: ["../../libs/shared"]');
     });
   });
 

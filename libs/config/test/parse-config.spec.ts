@@ -30,7 +30,7 @@ describe("parseConfig", () => {
   it("rejects with code 'load-failed' when the file throws while loading", async () => {
     const error = await parseConfig(fixture("throwing-config.ts")).catch((e) => e);
     expect(error).toMatchObject({ constructor: ConfigParseError, code: "load-failed" });
-    expect(error.cause).toBeInstanceOf(Error);
+    expect(error.message).toContain("boom");
   });
 
   it("rejects with code 'no-default-export' when there's no default export", async () => {

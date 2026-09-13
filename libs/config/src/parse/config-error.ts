@@ -8,7 +8,7 @@ export class ConfigParseError extends Error {
     public readonly path: string,
     options?: { cause?: unknown },
   ) {
-    super(message, options);
+    super(`${message}${options?.cause ? `\n${options?.cause}` : ""}`);
     this.name = "ConfigParseError";
   }
 }
