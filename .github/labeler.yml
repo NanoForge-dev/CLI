@@ -16,12 +16,6 @@ command:dev:
           - src/command/commands/dev.command.ts
           - src/action/actions/dev.action.ts
 
-command:generate:
-  - changed-files:
-      - any-glob-to-any-file:
-          - src/command/commands/generate.command.ts
-          - src/action/actions/generate.action.ts
-
 command:install:
   - changed-files:
       - any-glob-to-any-file:

@@ -7,7 +7,6 @@ export * from "./server.input";
 export * from "./watch.input";
 
 export * from "./create";
-export * from "./dev";
 export * from "./editor";
 export * from "./install";
 export * from "./login-out";

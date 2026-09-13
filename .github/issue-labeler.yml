@@ -10,10 +10,6 @@ command:dev:
   - "### Which command is this (bug
     report|feature request) for\\?\\n\\ndev\\n"
 
-command:generate:
-  - "### Which command is this (bug
-    report|feature request) for\\?\\n\\ngenerate\\n"
-
 command:help:
   - "### Which command is this (bug
     report|feature request) for\\?\\n\\nhelp\\n"

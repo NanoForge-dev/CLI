@@ -1,4 +1,4 @@
-import { type Input, getDevGenerateInput, getDirectoryInput, getEditorInput } from "@lib/input";
+import { type Input, getDirectoryInput, getEditorInput } from "@lib/input";
 import { PackageManagerFactory } from "@lib/package-manager";
 import { Messages } from "@lib/ui";
 
@@ -13,22 +13,17 @@ export class DevAction extends AbstractAction {
 
   public async handle(_args: Input, options: Input): Promise<HandleResult> {
     const directory = getDirectoryInput(options);
-    const generate = getDevGenerateInput(options);
 
     const editor = getEditorInput(options);
-    const tasks = this.buildTaskList(directory, generate, editor);
+    const tasks = this.buildTaskList(directory, editor);
     await Promise.all(tasks);
 
     return { keepAlive: true };
   }
 
-  private buildTaskList(directory: string, generate: boolean, editor: boolean): Promise<void>[] {
+  private buildTaskList(directory: string, editor: boolean): Promise<void>[] {
     const tasks: Promise<void>[] = [];
     const extraFlags = editor ? ["--editor"] : [];
-
-    if (generate) {
-      tasks.push(this.runSubCommand("generate", directory, { silent: true, extraFlags }));
-    }
 
     tasks.push(this.runSubCommand("build", directory, { silent: true, extraFlags }));
     tasks.push(this.runSubCommand("start", directory, { silent: false }));
