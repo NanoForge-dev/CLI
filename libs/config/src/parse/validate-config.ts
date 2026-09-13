@@ -17,6 +17,23 @@ const containLibConfigShape = {
   libs: z.array(z.string()).optional(),
 };
 
+const editorConfigShape = {
+  editor: z
+    .object({
+      entryFile: z.string().optional(),
+    })
+    .optional(),
+};
+
+const sslConfigShape = {
+  ssl: z
+    .union([
+      z.object({ enable: z.literal(false).optional() }),
+      z.object({ enable: z.literal(true), cert: z.string(), key: z.string() }),
+    ])
+    .optional(),
+};
+
 const sourceableConfigShape = {
   dir: z
     .object({
@@ -52,6 +69,9 @@ const clientConfigSchema = z.object({
   ...sourceableConfigShape,
   ...buildableConfigShape,
   ...containLibConfigShape,
+  ...editorConfigShape,
+  ...sslConfigShape,
+  port: z.string().optional(),
 });
 
 const serverConfigSchema = z.object({
@@ -59,6 +79,7 @@ const serverConfigSchema = z.object({
   ...sourceableConfigShape,
   ...buildableConfigShape,
   ...containLibConfigShape,
+  ...editorConfigShape,
 });
 
 const nanoforgeConfigSchema = z.discriminatedUnion("type", [

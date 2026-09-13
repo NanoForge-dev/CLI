@@ -61,6 +61,8 @@
     "@angular-devkit/schematics": "catalog:schematics",
     "@angular-devkit/schematics-cli": "catalog:schematics",
     "@inquirer/prompts": "catalog:cli",
+    "@nanoforge-dev/config": "workspace:*",
+    "@nanoforge-dev/editor": "catalog:core",
     "@nanoforge-dev/loader-client": "catalog:loader",
     "@nanoforge-dev/loader-server": "catalog:loader",
     "@nanoforge-dev/schematics": "workspace:*",
@@ -96,9 +98,6 @@
     "turbo": "catalog:build",
     "typescript": "catalog:build",
     "vitest": "catalog:test"
-  },
-  "optionalDependencies": {
-    "@nanoforge-dev/editor": "catalog:core"
   },
   "packageManager": "pnpm@12.0.0",
   "engines": {

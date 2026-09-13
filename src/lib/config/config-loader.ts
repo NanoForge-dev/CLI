@@ -1,54 +1,26 @@
-import { plainToInstance } from "class-transformer";
-import { validate } from "class-validator";
-import { existsSync, readFileSync } from "node:fs";
+import { type NanoforgeConfig, parseConfig } from "@nanoforge-dev/config";
+import { existsSync } from "node:fs";
 import { join } from "node:path";
 
-import { CONFIG_FILE_NAME } from "@lib/constants";
+import { ConfigNotFoundError } from "@utils/errors";
 
-import { CLIError, ConfigNotFoundError, FileSystemError } from "@utils/errors";
-import { deepMerge } from "@utils/object";
+const CONFIG_BASE_NAME = "nanoforge.config";
+const CONFIG_EXTENSIONS = ["ts", "js"];
 
-import { CONFIG_DEFAULTS } from "./config-defaults";
-import { Config } from "./config.type";
-
-let config: Config | null;
-
-const getConfigPath = (directory: string, name?: string) => {
-  if (name) {
-    return join(directory, name);
-  } else {
-    for (const n of [CONFIG_FILE_NAME]) {
-      const path = join(directory, n);
-      if (existsSync(path)) return path;
-    }
-    throw new ConfigNotFoundError(join(directory, CONFIG_FILE_NAME));
+const getConfigPath = (directory: string): string => {
+  for (const ext of CONFIG_EXTENSIONS) {
+    const path = join(directory, `${CONFIG_BASE_NAME}.${ext}`);
+    if (existsSync(path)) return path;
   }
+  throw new ConfigNotFoundError(join(directory, `${CONFIG_BASE_NAME}.ts`));
 };
 
-export const loadConfig = async (
-  directory: string,
-  name?: string,
-  noThrow: boolean = false,
-): Promise<Config> => {
-  if (config) return config;
-
-  let rawData;
-
-  const path = getConfigPath(directory, name);
-  try {
-    rawData = deepMerge(CONFIG_DEFAULTS, JSON.parse(readFileSync(path, "utf-8")));
-  } catch {
-    rawData = noThrow ? CONFIG_DEFAULTS : null;
-  }
-  if (!rawData) throw new FileSystemError("read config file", path);
-
-  const data = plainToInstance(Config, rawData, {
-    excludeExtraneousValues: true,
-  });
-  const errors = await validate(data);
-  if (errors.length > 0)
-    throw new CLIError(`Invalid config:\n${errors.toString().replace(/,/g, "\n")}`);
-
-  config = data;
-  return config;
+/**
+ * Looks up a `nanoforge.config.ts` file in `directory`, falling back to
+ * `nanoforge.config.js` when no `.ts` file exists. Throws a
+ * `ConfigNotFoundError` when neither is present.
+ */
+export const loadConfig = async (directory: string): Promise<NanoforgeConfig> => {
+  const path = getConfigPath(directory);
+  return parseConfig(path);
 };
