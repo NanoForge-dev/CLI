@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { runCli } from "./helpers/run-cli";
+import { writeProjectConfig } from "./helpers/write-project-config";
 
 const tmpDir = resolve(__dirname, "../.tmp-e2e-build");
 
@@ -38,6 +39,8 @@ describe("nf build (TypeScript, no server)", () => {
       "-d",
       projectDir,
     ]);
+
+    writeProjectConfig(appDir, { name: "build-app", language: "ts", server: false });
   });
 
   it("should run the build command", async () => {
@@ -145,6 +148,8 @@ describe("nf build (TypeScript, with server)", () => {
       "-d",
       projectDir,
     ]);
+
+    writeProjectConfig(appDir, { name: "build-server-app", language: "ts", server: true });
   });
 
   it("should run the build command with server enabled", async () => {

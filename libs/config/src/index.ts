@@ -20,9 +20,11 @@ export type {
   BuildableConfig,
   ClientConfig,
   ContainLibConfig,
+  EditorConfig,
   LibConfig,
   NanoforgeConfig,
   ServerConfig,
   SourceableConfig,
+  SslConfig,
   WorkspaceConfig,
 } from "./types";

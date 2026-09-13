@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { runCli } from "./helpers/run-cli";
+import { writeProjectConfig } from "./helpers/write-project-config";
 
 const tmpDir = resolve(__dirname, "../.tmp-e2e-create");
 
@@ -38,6 +39,8 @@ describe("nf create (TypeScript, client component)", () => {
       "-d",
       projectDir,
     ]);
+
+    writeProjectConfig(appDir, { name: "create-app", language: "ts", server: false });
   });
 
   it("should create a component successfully", async () => {
@@ -133,6 +136,8 @@ describe("nf create (TypeScript, server component)", () => {
       "-d",
       projectDir,
     ]);
+
+    writeProjectConfig(appDir, { name: "create-server-app", language: "ts", server: true });
   });
 
   it("should create a server component successfully", async () => {
@@ -213,6 +218,8 @@ describe("nf create (JavaScript)", () => {
       "-d",
       projectDir,
     ]);
+
+    writeProjectConfig(appDir, { name: "create-js-app", language: "js", server: false });
   });
 
   it("should create a JavaScript component successfully", async () => {
