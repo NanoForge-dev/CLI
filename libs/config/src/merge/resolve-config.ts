@@ -11,24 +11,25 @@ import type {
   ServerConfig,
   WorkspaceConfig,
 } from "../types";
+import type { DeepRequired } from "../types/utils.type";
 import { deepMerge } from "./deep-merge";
 
-export const resolveWorkspaceConfig = (config: WorkspaceConfig): WorkspaceConfig => ({
+export const resolveWorkspaceConfig = (config: WorkspaceConfig): DeepRequired<WorkspaceConfig> => ({
   ...deepMerge(defaultWorkspaceConfig, config),
   type: "workspace",
 });
 
-export const resolveLibConfig = (config: LibConfig): LibConfig => ({
+export const resolveLibConfig = (config: LibConfig): DeepRequired<LibConfig> => ({
   ...deepMerge(defaultLibConfig, config),
   type: "lib",
 });
 
-export const resolveClientConfig = (config: ClientConfig): ClientConfig => ({
+export const resolveClientConfig = (config: ClientConfig): DeepRequired<ClientConfig> => ({
   ...deepMerge(defaultClientConfig, config),
   type: "client",
 });
 
-export const resolveServerConfig = (config: ServerConfig): ServerConfig => ({
+export const resolveServerConfig = (config: ServerConfig): DeepRequired<ServerConfig> => ({
   ...deepMerge(defaultServerConfig, config),
   type: "server",
 });
@@ -37,7 +38,7 @@ export const resolveServerConfig = (config: ServerConfig): ServerConfig => ({
  * Merges a `nanoforge.config.ts` config against the defaults matching its
  * `type`.
  */
-export const resolveConfig = (config: NanoforgeConfig): NanoforgeConfig => {
+export const resolveConfig = (config: NanoforgeConfig): DeepRequired<NanoforgeConfig> => {
   switch (config.type) {
     case "workspace":
       return resolveWorkspaceConfig(config);

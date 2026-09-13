@@ -10,6 +10,25 @@ export interface BuildableConfig {
   };
 }
 
+export interface EditorConfig {
+  editor?: {
+    /** Entry point used to build/run this project in editor mode (`--editor`). */
+    entryFile?: string;
+  };
+}
+
+export interface SslConfig {
+  ssl?:
+    | {
+        enable?: false;
+      }
+    | {
+        enable: true;
+        cert: string;
+        key: string;
+      };
+}
+
 export interface SourceableConfig {
   dir?: {
     assets?: string;

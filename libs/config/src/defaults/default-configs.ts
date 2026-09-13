@@ -1,10 +1,11 @@
 import type { ClientConfig, LibConfig, ServerConfig, WorkspaceConfig } from "../types";
+import type { DeepRequired } from "../types/utils.type";
 
-export const defaultWorkspaceConfig: Omit<WorkspaceConfig, "type"> = {
+export const defaultWorkspaceConfig: DeepRequired<Omit<WorkspaceConfig, "type">> = {
   packages: [],
 };
 
-export const defaultLibConfig: Omit<LibConfig, "type"> = {
+export const defaultLibConfig: DeepRequired<Omit<LibConfig, "type">> = {
   dir: {
     assets: "assets",
     shared: "shared",
@@ -15,7 +16,7 @@ export const defaultLibConfig: Omit<LibConfig, "type"> = {
   },
 };
 
-export const defaultClientConfig: Omit<ClientConfig, "type"> = {
+export const defaultClientConfig: DeepRequired<Omit<ClientConfig, "type">> = {
   entryFile: "src/main.ts",
   out: {
     dir: "dist",
@@ -29,12 +30,21 @@ export const defaultClientConfig: Omit<ClientConfig, "type"> = {
     components: "src/components",
     systems: "src/systems",
     scenes: "src/scenes",
+  },
+
+  editor: {
+    entryFile: "src/editor.ts",
+  },
+
+  port: "3000",
+  ssl: {
+    enable: false,
   },
 
   libs: [],
 };
 
-export const defaultServerConfig: Omit<ServerConfig, "type"> = {
+export const defaultServerConfig: DeepRequired<Omit<ServerConfig, "type">> = {
   entryFile: "src/main.ts",
   out: {
     dir: "dist",
@@ -48,6 +58,10 @@ export const defaultServerConfig: Omit<ServerConfig, "type"> = {
     components: "src/components",
     systems: "src/systems",
     scenes: "src/scenes",
+  },
+
+  editor: {
+    entryFile: "src/editor.ts",
   },
 
   libs: [],

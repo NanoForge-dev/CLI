@@ -1,105 +1,49 @@
-import { plainToInstance } from "class-transformer";
-import { validate } from "class-validator";
-import { existsSync, readFileSync } from "node:fs";
+import { parseConfig } from "@nanoforge-dev/config";
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+
+import { getConfig } from "./config-loader";
 
 vi.mock("node:fs", () => ({
   existsSync: vi.fn(),
-  readFileSync: vi.fn(),
 }));
 
-vi.mock("class-transformer", () => ({
-  plainToInstance: vi.fn(),
-  Expose: () => () => {},
-  Type: () => () => {},
+vi.mock("@nanoforge-dev/config", () => ({
+  parseConfig: vi.fn(),
 }));
 
-vi.mock("class-validator", () => ({
-  validate: vi.fn(),
-  IsBoolean: () => () => {},
-  IsEnum: () => () => {},
-  IsNotEmpty: () => () => {},
-  IsPort: () => () => {},
-  IsString: () => () => {},
-  ValidateNested: () => () => {},
-}));
-
-describe("loadConfig", () => {
+describe("getConfig", () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    vi.resetModules();
   });
 
-  it("should load config from a named file", async () => {
-    const rawConfig = { name: "test-app", language: "ts" };
-    vi.mocked(readFileSync).mockReturnValue(JSON.stringify(rawConfig));
-    vi.mocked(plainToInstance).mockReturnValue(rawConfig as any);
-    vi.mocked(validate).mockResolvedValue([]);
+  it("loads nanoforge.config.ts when it exists", async () => {
+    vi.mocked(existsSync).mockImplementation((path) => String(path).endsWith(".ts"));
+    const resolved = { type: "client" as const };
+    vi.mocked(parseConfig).mockResolvedValue(resolved);
 
-    const { loadConfig: freshLoad } = await import("./config-loader");
-    const result = await freshLoad("/project", "custom.json");
+    const result = await getConfig("/project");
 
-    expect(readFileSync).toHaveBeenCalledWith("/project/custom.json", "utf-8");
-    expect(result).toEqual(rawConfig);
+    expect(parseConfig).toHaveBeenCalledWith(join("/project", "nanoforge.config.ts"));
+    expect(result).toBe(resolved);
   });
 
-  it("should search for nanoforge.config.json when no name provided", async () => {
-    const rawConfig = { name: "my-app" };
-    vi.mocked(existsSync).mockReturnValue(true);
-    vi.mocked(readFileSync).mockReturnValue(JSON.stringify(rawConfig));
-    vi.mocked(plainToInstance).mockReturnValue(rawConfig as any);
-    vi.mocked(validate).mockResolvedValue([]);
+  it("falls back to nanoforge.config.js when no .ts file exists", async () => {
+    vi.mocked(existsSync).mockImplementation((path) => String(path).endsWith(".js"));
+    const resolved = { type: "server" as const };
+    vi.mocked(parseConfig).mockResolvedValue(resolved);
 
-    const { loadConfig: freshLoad } = await import("./config-loader");
-    const result = await freshLoad("/project");
+    const result = await getConfig("/project");
 
-    expect(existsSync).toHaveBeenCalled();
-    expect(result).toEqual(rawConfig);
+    expect(parseConfig).toHaveBeenCalledWith(join("/project", "nanoforge.config.js"));
+    expect(result).toBe(resolved);
   });
 
-  it("should throw when no config file is found", async () => {
+  it("throws when neither nanoforge.config.ts nor .js exists", async () => {
     vi.mocked(existsSync).mockReturnValue(false);
 
-    const { loadConfig: freshLoad } = await import("./config-loader");
-
-    await expect(freshLoad("/project")).rejects.toThrow("Configuration file not found at path:");
-  });
-
-  it("should throw when config file cannot be parsed", async () => {
-    vi.mocked(readFileSync).mockReturnValue("invalid json");
-    vi.mocked(existsSync).mockReturnValue(true);
-
-    const { loadConfig: freshLoad } = await import("./config-loader");
-
-    await expect(freshLoad("/project")).rejects.toThrow("File System Error [read config file]");
-  });
-
-  it("should throw on validation errors", async () => {
-    const rawConfig = { name: "" };
-    vi.mocked(existsSync).mockReturnValue(true);
-    vi.mocked(readFileSync).mockReturnValue(JSON.stringify(rawConfig));
-    vi.mocked(plainToInstance).mockReturnValue(rawConfig as any);
-    vi.mocked(validate).mockResolvedValue([
-      { property: "name", toString: () => "name must not be empty" } as any,
-    ]);
-
-    const { loadConfig: freshLoad } = await import("./config-loader");
-
-    await expect(freshLoad("/project")).rejects.toThrow("Invalid config");
-  });
-
-  it("should cache config after first load", async () => {
-    const rawConfig = { name: "cached-app" };
-    vi.mocked(existsSync).mockReturnValue(true);
-    vi.mocked(readFileSync).mockReturnValue(JSON.stringify(rawConfig));
-    vi.mocked(plainToInstance).mockReturnValue(rawConfig as any);
-    vi.mocked(validate).mockResolvedValue([]);
-
-    const { loadConfig: freshLoad } = await import("./config-loader");
-
-    await freshLoad("/project");
-    await freshLoad("/project");
-
-    expect(readFileSync).toHaveBeenCalledTimes(1);
+    await expect(getConfig("/project")).rejects.toThrow("Configuration file not found at path:");
+    expect(parseConfig).not.toHaveBeenCalled();
   });
 });
