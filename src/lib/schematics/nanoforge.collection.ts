@@ -14,29 +14,14 @@ export interface Schematic {
 export class NanoforgeCollection extends AbstractCollection {
   private static schematics: Schematic[] = [
     {
-      name: "application",
-      alias: "application",
-      description: "Generate a new application",
+      name: "project",
+      alias: "project",
+      description: "Generate a new project",
     },
     {
-      name: "configuration",
-      alias: "config",
-      description: "Generate a CLI configuration file",
-    },
-    {
-      name: "part-base",
-      alias: "base",
-      description: "Generate a NanoForge Part Base",
-    },
-    {
-      name: "part-main",
-      alias: "main",
-      description: "Generate a NanoForge Part Main file",
-    },
-    {
-      name: "docker",
-      alias: "docker",
-      description: "Generate a Dockerfile for the application",
+      name: "workspace",
+      alias: "workspace",
+      description: "Generate a new workspace",
     },
     {
       name: "component",

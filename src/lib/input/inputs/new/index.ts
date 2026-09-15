@@ -1,5 +1,4 @@
 export * from "./docker.input";
-export * from "./init-functions.input";
 export * from "./language.input";
 export * from "./lint.input";
 export * from "./package-manager.input";

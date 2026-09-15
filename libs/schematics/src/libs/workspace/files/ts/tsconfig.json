@@ -36,5 +36,5 @@
     "target": "ESNext",
     "useDefineForClassFields": true,
   },
-  "exclude": ["node_modules", ".nanoforge"]
+  "exclude": ["node_modules", ".nanoforge", "dist"]
 }
