@@ -1,10 +1,7 @@
-<% if (packageManager === "bun") { %>
-FROM oven/bun:1.3 AS base
-<% } else if (packageManager === "pnpm") { %>
-FROM ghcr.io/pnpm/pnpm:12 AS base
+<% if (packageManager === "bun") { %>FROM oven/bun:1.3 AS base
+<% } else if (packageManager === "pnpm") { %>FROM ghcr.io/pnpm/pnpm:12 AS base
 RUN pnpm runtime set node 26 -g
-<% } else { %>
-FROM node:26-slim AS base
+<% } else { %>FROM node:26-slim AS base
 <% } %><% if (packageManager === "yarn") { %>
 RUN npm install -g yarn
 <% } %>

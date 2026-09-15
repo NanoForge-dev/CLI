@@ -1,5 +1,6 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig.json",
+  "$schema": "https://json.schemastore.org/tsconfig.json",<% if (workspace) { %>
+  "extends": "../../tsconfig.json",<% } else { %>
   // Mapped from https://www.typescriptlang.org/tsconfig
   "compilerOptions": {
     // Type Checking
@@ -35,7 +36,7 @@
     "lib": ["ESNext", "esnext.disposable", "DOM"],
     "target": "ESNext",
     "useDefineForClassFields": true,
-  },
+  },<% } %>
   "include": ["src"],
-  "exclude": ["node_modules", ".nanoforge"]
+  "exclude": ["node_modules", ".nanoforge", "dist"]
 }

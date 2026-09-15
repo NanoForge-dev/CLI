@@ -76,7 +76,7 @@ export const fetchTrustedVersion = async (
       .map(([version]) => version)
       .sort(compareVersions);
 
-    return eligible.at(-1) ?? fallback;
+    return eligible.at(-1) ? `^${eligible.at(-1)}` : fallback;
   } catch {
     return fallback;
   } finally {

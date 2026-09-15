@@ -53,11 +53,6 @@ export interface ProjectSchema {
   docker: boolean;
 
   /**
-   * Add init functions to the project
-   */
-  initFunctions: boolean;
-
-  /**
    * Only meaningful when `part` is "client": whether the client syncs its
    * entity position from a companion server instead of owning it locally.
    * A server project always simulates and broadcasts its own position,
@@ -69,19 +64,4 @@ export interface ProjectSchema {
    * Add editor dependencies
    */
   editor: boolean;
-
-  /**
-   * Relative paths to shared libs this project depends on
-   */
-  libs: string[];
-
-  /**
-   * Package names allowed to run install/build scripts. Only applies to a
-   * standalone project (workspace: false) — a project generated inside a
-   * workspace relies on the workspace root's own `allowBuilds` instead.
-   * Written to pnpm-workspace.yaml's `allowBuilds` map (pnpm), package.json's
-   * `allowScripts` map (npm) or `trustedDependencies` array (bun). Ignored
-   * for yarn.
-   */
-  allowBuilds: string[];
 }
