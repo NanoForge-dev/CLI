@@ -22,8 +22,8 @@ export class StartCommand extends AbstractCommand {
       .option("--client-dir <clientDirectory>", "specify the output directory of the client")
       .option("--server-dir <serverDirectory>", "specify the output directory of the server")
       .option("--watch", "run app in watching mode", false)
-      .option("--cert <cert>", "path to the SSL certificate for HTTPS")
-      .option("--key <key>", "path to the SSL key for HTTPS")
+      .option("--cert <cert>", "path to the TLS certificate for HTTPS")
+      .option("--key <key>", "path to the TLS key for HTTPS")
       .action(async (rawOptions: StartOptions) => {
         const options = AbstractCommand.mapToInput({
           directory: rawOptions.directory,

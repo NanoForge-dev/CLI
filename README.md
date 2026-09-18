@@ -154,8 +154,8 @@ Used to start your nanoforge project.
 - `--client-dir <clientDirectory>` specify the directory of the client.
 - `--server-dir <serverDirectory>` specify the directory of the server.
 - `--watch` run app in watching mode. (default: `false`)
-- `--cert <cert>` path to the SSL certificate for HTTPS.
-- `--key <key>` path to the SSL key for HTTPS.
+- `--cert <cert>` path to the TLS certificate for HTTPS.
+- `--key <key>` path to the TLS key for HTTPS.
 
 ### `unpublish`
 

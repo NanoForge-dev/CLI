@@ -25,6 +25,6 @@ export type {
   NanoforgeConfig,
   ServerConfig,
   SourceableConfig,
-  SslConfig,
+  TlsConfig,
   WorkspaceConfig,
 } from "./types";

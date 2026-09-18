@@ -24,7 +24,7 @@ import { runSafe } from "@utils/run-safe";
 
 import { AbstractAction, type HandleResult } from "../abstract.action";
 
-interface SSLOptions {
+interface TLSOptions {
   cert: string;
   key: string;
 }
@@ -39,7 +39,7 @@ interface ClientStartTarget {
   outDir: string;
   platform: "client";
   port: string;
-  ssl?: SSLOptions;
+  tls?: TLSOptions;
 }
 
 interface ServerStartTarget {
@@ -83,29 +83,29 @@ export class StartAction extends AbstractAction {
     return { keepAlive: true };
   }
 
-  private resolveSSL(options: Input, config: ClientConfig): SSLOptions | undefined {
+  private resolveTLS(options: Input, config: ClientConfig): TLSOptions | undefined {
     const cliCert = getStringInput(options, "cert");
     const cliKey = getStringInput(options, "key");
-    const ssl = config.ssl;
-    const configSsl = ssl && ssl.enable ? ssl : undefined;
-    const isSslRequested = Boolean(cliCert || cliKey || configSsl);
+    const tls = config.tls;
+    const configTls = tls && tls.enable ? tls : undefined;
+    const isTlsRequested = Boolean(cliCert || cliKey || configTls);
 
-    if (!isSslRequested) return undefined;
+    if (!isTlsRequested) return undefined;
 
-    const cert = cliCert ?? configSsl?.cert;
-    const key = cliKey ?? configSsl?.key;
+    const cert = cliCert ?? configTls?.cert;
+    const key = cliKey ?? configTls?.key;
 
     if (!cert) {
       throw new CLIError(
-        "No certificate found for SSL.",
-        "Please provide a certificate path with --cert or configure 'ssl.cert' in your nanoforge.config.",
+        "No certificate found for TLS.",
+        "Please provide a certificate path with --cert or configure 'tls.cert' in your nanoforge.config.ts",
       );
     }
 
     if (!key) {
       throw new CLIError(
-        "No key found for SSL.",
-        "Please provide a key path with --key or configure 'ssl.key' in your nanoforge.config.",
+        "No key found for TLS.",
+        "Please provide a key path with --key or configure 'tls.key' in your nanoforge.config.ts",
       );
     }
 
@@ -147,7 +147,7 @@ export class StartAction extends AbstractAction {
         "port",
         project.config.port ?? defaultClientConfig.port,
       ),
-      ssl: this.resolveSSL(options, project.config),
+      tls: this.resolveTLS(options, project.config),
     };
   }
 
@@ -209,9 +209,9 @@ export class StartAction extends AbstractAction {
       }
     }
 
-    if (target.ssl) {
-      params["--cert"] = target.ssl.cert;
-      params["--key"] = target.ssl.key;
+    if (target.tls) {
+      params["--cert"] = target.tls.cert;
+      params["--key"] = target.tls.key;
     }
 
     return this.buildParams(params);

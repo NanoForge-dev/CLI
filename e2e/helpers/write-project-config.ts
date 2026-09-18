@@ -26,7 +26,7 @@ export const writeProjectConfig = (
       initFunctions,
       client: { type: "client", enable: true },
       server: { type: "server", enable: server },
-      ssl: { enable: false },
+      tls: { enable: false },
     },
     null,
     2,

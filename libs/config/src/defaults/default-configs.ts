@@ -37,7 +37,7 @@ export const defaultClientConfig: DeepRequired<Omit<ClientConfig, "type">> = {
   },
 
   port: "3000",
-  ssl: {
+  tls: {
     enable: false,
   },
 
