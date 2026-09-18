@@ -1,18 +1,20 @@
+import { defaultClientConfig, defaultServerConfig } from "@nanoforge-dev/config";
+
+import { parseWorkspaceConfig } from "@lib/config";
 import {
   type Input,
   getCreateNameInputOrAsk,
   getCreateTypeInput,
   getDirectoryInput,
   getPathInputWithDefault,
-  getServerInput,
 } from "@lib/input";
 import { Collection, CollectionFactory } from "@lib/schematics";
 import { Messages } from "@lib/ui";
 
+import { CLIError } from "@utils/errors";
 import { capitalize } from "@utils/formatting";
 
 import { AbstractAction, type HandleResult } from "../abstract.action";
-import { getConfig } from "../common/config";
 import { executeSchematic } from "../common/schematics";
 
 interface CreateValues {
@@ -29,22 +31,33 @@ export class CreateAction extends AbstractAction {
 
   public async handle(args: Input, options: Input): Promise<HandleResult> {
     const directory = getDirectoryInput(options);
-    const config = await getConfig(options, directory, true);
+    const workspaceConfig = await parseWorkspaceConfig(directory);
+
+    if (workspaceConfig.type === "workspace") {
+      throw new CLIError(
+        `Cannot run 'create' at a workspace root ('${directory}').`,
+        "Run it from within a specific client/server project directory instead (-d <project-directory>).",
+      );
+    }
+
+    const { config } = workspaceConfig;
+    const isClient = config.type === "client";
+    const defaults = isClient ? defaultClientConfig : defaultServerConfig;
 
     const type = getCreateTypeInput(args);
 
     const name = await getCreateNameInputOrAsk(options);
-    const isServer = getServerInput(options);
     const path = getPathInputWithDefault(
       options,
-      config[isServer ? "server" : "client"].dirs[type === "component" ? "components" : "systems"],
+      config.dir?.[type === "component" ? "components" : "systems"] ??
+        defaults.dir[type === "component" ? "components" : "systems"],
     );
 
     await this.generateElement(directory, type, {
       name,
       directory: path,
-      part: isServer ? "server" : "client",
-      language: config.language,
+      part: config.type,
+      language: config.language ?? defaults.language,
     });
 
     return {};
