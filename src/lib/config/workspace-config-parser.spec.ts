@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ConfigNotFoundError } from "@utils/errors";
 
-import { getConfig } from "./config-loader";
+import { loadConfig } from "./config-loader";
 import { parseWorkspaceConfig } from "./workspace-config-parser";
 
 vi.mock("node:fs", () => ({
@@ -18,7 +18,7 @@ vi.mock("node:fs/promises", () => ({
 }));
 
 vi.mock("./config-loader", () => ({
-  getConfig: vi.fn(),
+  loadConfig: vi.fn(),
 }));
 
 const asDirectory = () => ({ isDirectory: () => true });
@@ -38,7 +38,7 @@ describe("parseWorkspaceConfig", () => {
 
   it("resolves a root project config", async () => {
     const config = { type: "client" as const };
-    vi.mocked(getConfig).mockResolvedValue(config);
+    vi.mocked(loadConfig).mockResolvedValue(config);
 
     const result = await parseWorkspaceConfig("/app");
 
@@ -46,7 +46,7 @@ describe("parseWorkspaceConfig", () => {
   });
 
   it("throws when the root config is a lib", async () => {
-    vi.mocked(getConfig).mockResolvedValue({ type: "lib" as const });
+    vi.mocked(loadConfig).mockResolvedValue({ type: "lib" as const });
 
     await expect(parseWorkspaceConfig("/app")).rejects.toThrow(
       "the root config cannot be of type 'lib'",
@@ -61,7 +61,7 @@ describe("parseWorkspaceConfig", () => {
     vi.mocked(glob).mockReturnValue(
       asyncIterableOf(["apps/client", "apps/foo-lib"]) as ReturnType<typeof glob>,
     );
-    vi.mocked(getConfig).mockImplementation(async (directory: string) => {
+    vi.mocked(loadConfig).mockImplementation(async (directory: string) => {
       if (directory === "/app") return workspaceConfig;
       if (directory === join("/app", "apps/client")) return clientConfig;
       if (directory === join("/app", "apps/foo-lib")) return libConfig;
@@ -87,7 +87,7 @@ describe("parseWorkspaceConfig", () => {
     vi.mocked(glob).mockReturnValue(
       asyncIterableOf(["apps/client", "apps/empty"]) as ReturnType<typeof glob>,
     );
-    vi.mocked(getConfig).mockImplementation(async (directory: string) => {
+    vi.mocked(loadConfig).mockImplementation(async (directory: string) => {
       if (directory === "/app") return workspaceConfig;
       if (directory === join("/app", "apps/client")) return clientConfig;
       throw new ConfigNotFoundError(join(directory, "nanoforge.config.ts"));
@@ -109,7 +109,7 @@ describe("parseWorkspaceConfig", () => {
     const workspaceConfig = { type: "workspace" as const, packages: ["apps/*"] };
 
     vi.mocked(glob).mockReturnValue(asyncIterableOf([]) as ReturnType<typeof glob>);
-    vi.mocked(getConfig).mockResolvedValue(workspaceConfig);
+    vi.mocked(loadConfig).mockResolvedValue(workspaceConfig);
 
     const result = await parseWorkspaceConfig("/app");
 
@@ -121,7 +121,7 @@ describe("parseWorkspaceConfig", () => {
     const workspaceConfig = { type: "workspace" as const, packages: ["apps/*"] };
 
     vi.mocked(glob).mockReturnValue(asyncIterableOf(["apps/nested"]) as ReturnType<typeof glob>);
-    vi.mocked(getConfig).mockImplementation(async (directory: string) => {
+    vi.mocked(loadConfig).mockImplementation(async (directory: string) => {
       if (directory === "/app") return workspaceConfig;
       return { type: "workspace" as const };
     });
