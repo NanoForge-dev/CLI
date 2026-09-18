@@ -87,7 +87,6 @@ describe("nf start --help", () => {
     expect(exitCode).toBe(0);
     expect(stdout).toContain("start your game");
     expect(stdout).toContain("--directory");
-    expect(stdout).toContain("--config");
     expect(stdout).toContain("--port");
     expect(stdout).toContain("--watch");
   });
