@@ -4,7 +4,7 @@ import type {
   ContainLibConfig,
   EditorConfig,
   SourceableConfig,
-  SslConfig,
+  TlsConfig,
 } from "./mixins.type";
 
 export interface ClientConfig
@@ -14,7 +14,7 @@ export interface ClientConfig
     BuildableConfig,
     ContainLibConfig,
     EditorConfig,
-    SslConfig {
+    TlsConfig {
   /** Port the client dev-server loader listens on. */
   port?: string;
 }

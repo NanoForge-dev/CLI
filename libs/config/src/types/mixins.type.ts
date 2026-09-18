@@ -17,8 +17,8 @@ export interface EditorConfig {
   };
 }
 
-export interface SslConfig {
-  ssl?:
+export interface TlsConfig {
+  tls?:
     | {
         enable?: false;
       }

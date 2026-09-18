@@ -2,7 +2,7 @@ import { defineConfig } from "nanoforge/config";
 
 export default defineConfig({
   type: "<%= part %>",
-  entryFile: "src/main.js",<% if (libs.length) { %>
+  entryFile: "src/main.js",
   editor: {
     entryFile: "src/main.js",
   },
