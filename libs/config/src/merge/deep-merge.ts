@@ -1,3 +1,5 @@
+import type { DeepPartial } from "../types/utils.type";
+
 const isPlainObject = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value);
 
@@ -31,5 +33,5 @@ const mergeUnknown = (
  */
 export const deepMerge = <T extends Record<string, unknown>>(
   defaults: T,
-  override: Partial<T>,
+  override: DeepPartial<T>,
 ): T => mergeUnknown(defaults, override as Record<string, unknown>) as T;

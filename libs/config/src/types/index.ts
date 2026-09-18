@@ -6,7 +6,13 @@ import type { WorkspaceConfig } from "./workspace-config.type";
 export type { BaseConfig } from "./base-config.type";
 export type { ClientConfig } from "./client-config.type";
 export type { LibConfig } from "./lib-config.type";
-export type { BuildableConfig, ContainLibConfig, SourceableConfig } from "./mixins.type";
+export type {
+  BuildableConfig,
+  ContainLibConfig,
+  EditorConfig,
+  SourceableConfig,
+  SslConfig,
+} from "./mixins.type";
 export type { ServerConfig } from "./server-config.type";
 export type { WorkspaceConfig } from "./workspace-config.type";
 
