@@ -11,7 +11,7 @@ export type {
   ContainLibConfig,
   EditorConfig,
   SourceableConfig,
-  SslConfig,
+  TlsConfig,
 } from "./mixins.type";
 export type { ServerConfig } from "./server-config.type";
 export type { WorkspaceConfig } from "./workspace-config.type";

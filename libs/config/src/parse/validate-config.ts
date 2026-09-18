@@ -25,8 +25,8 @@ const editorConfigShape = {
     .optional(),
 };
 
-const sslConfigShape = {
-  ssl: z
+const tlsConfigShape = {
+  tls: z
     .union([
       z.object({ enable: z.literal(false).optional() }),
       z.object({ enable: z.literal(true), cert: z.string(), key: z.string() }),
@@ -70,7 +70,7 @@ const clientConfigSchema = z.object({
   ...buildableConfigShape,
   ...containLibConfigShape,
   ...editorConfigShape,
-  ...sslConfigShape,
+  ...tlsConfigShape,
   port: z.string().optional(),
 });
 
