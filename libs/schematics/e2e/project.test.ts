@@ -48,6 +48,12 @@ describe("project schematic", () => {
       expect(packageJson.devDependencies["@nanoforge-dev/input"]).toBeDefined();
     });
 
+    it("should declare network as a dev dependency", () => {
+      const packageJson = JSON.parse(tree.readContent("/apps/client/package.json"));
+      expect(packageJson.devDependencies["@nanoforge-dev/network"]).toBeDefined();
+      expect(packageJson).not.toHaveProperty("dependencies");
+    });
+
     it("should declare a client-typed nanoforge.config.ts", () => {
       const content = tree.readContent("/apps/client/nanoforge.config.ts");
       expect(content).toContain('type: "client"');
@@ -96,6 +102,12 @@ describe("project schematic", () => {
       const packageJson = JSON.parse(tree.readContent("/apps/server/package.json"));
       expect(packageJson.devDependencies["@nanoforge-dev/graphics-2d"]).toBeUndefined();
       expect(packageJson.devDependencies["@nanoforge-dev/input"]).toBeUndefined();
+    });
+
+    it("should declare network as a runtime dependency", () => {
+      const packageJson = JSON.parse(tree.readContent("/apps/server/package.json"));
+      expect(packageJson.dependencies["@nanoforge-dev/network"]).toBeDefined();
+      expect(packageJson.devDependencies["@nanoforge-dev/network"]).toBeUndefined();
     });
 
     it("should generate a server entry point", () => {
@@ -337,7 +349,7 @@ describe("project schematic", () => {
         server.readContent("/ecs-alias-server-apps/server/package.json"),
       );
       expect(serverPackageJson.devDependencies["@nanoforge-dev/ecs"]).toMatch(RESOLVED_VERSION);
-      expect(serverPackageJson.devDependencies["@nanoforge-dev/network"]).toMatch(RESOLVED_VERSION);
+      expect(serverPackageJson.dependencies["@nanoforge-dev/network"]).toMatch(RESOLVED_VERSION);
     });
   });
 
