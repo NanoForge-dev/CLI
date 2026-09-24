@@ -3,6 +3,14 @@ name: Alpha Release
 on:
   workflow_dispatch:
     inputs:
+      package:
+        description: "The published name of a single package to release"
+        type: choice
+        required: true
+        options:
+          - "@nanoforge-dev/cli"
+          - "@nanoforge-dev/config"
+          - "@nanoforge-dev/schematics"
       dry_run:
         description: Perform a dry run?
         type: boolean
@@ -16,7 +24,7 @@ jobs:
   alpha-release:
     name: Alpha release
     runs-on: ubuntu-latest
-    if: github.repository_owner == 'NanoForge-dev' && github.ref_name != 'main' && github.ref_name != 'master'
+    if: github.repository_owner == 'NanoForge-dev'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -27,7 +35,7 @@ jobs:
       - name: Release alpha
         uses: ./node_modules/@nanoforge-dev/actions/actions/release-dev
         with:
-          package: "@nanoforge-dev/cli"
+          package: ${{ inputs.package }}
           tag: alpha
           dry: ${{ inputs.dry_run }}
         env:

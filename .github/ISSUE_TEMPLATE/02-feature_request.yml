@@ -7,6 +7,16 @@ body:
       value: |
         Thank you for submitting an idea !
   - type: dropdown
+    id: package
+    attributes:
+      label: Which package is this feature request for?
+      options:
+        - "@nanoforge-dev/cli"
+        - "@nanoforge-dev/config"
+        - "@nanoforge-dev/schematics"
+    validations:
+      required: true
+  - type: dropdown
     id: command
     attributes:
       label: Which command is this feature request for?
@@ -14,6 +24,7 @@ body:
         - build
         - create
         - dev
+        - editor
         - help
         - install
         - login

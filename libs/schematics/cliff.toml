@@ -76,4 +76,4 @@ sort_commits = "newest"
 
 [remote.github]
 owner = "NanoForge-dev"
-repo = "schematics"
+repo = "CLI"

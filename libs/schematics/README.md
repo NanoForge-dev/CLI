@@ -16,7 +16,7 @@
 
 ## About
 
-This repository contains the Schematics of NanoForge. Check [releases][github-releases] to see versions of the Schematics. Nanoforge is a powerful game engine for web browser.
+This package contains the Schematics of NanoForge, used by the [CLI][cli-source] to generate project files. Check [releases][github-releases] to see versions of the Schematics. Nanoforge is a powerful game engine for web browser.
 
 ## Usage
 

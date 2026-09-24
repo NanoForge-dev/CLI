@@ -15,7 +15,7 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    if: github.repository_owner == 'NanoForge-dev' && github.event.pull_request.merged == true && startsWith(github.head_ref, 'releases/')
+    if: github.repository_owner == 'NanoForge-dev' && github.event.pull_request.merged == true && startsWith(github.head_ref, 'releases/cli@')
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -26,29 +26,9 @@ jobs:
       - name: Release packages
         uses: ./node_modules/@nanoforge-dev/actions/actions/release-packages
         with:
-          packages: "@nanoforge-dev/cli"
+          packages: "@nanoforge-dev/config,@nanoforge-dev/schematics,@nanoforge-dev/cli"
           tag-format: "{version}"
           latest: true
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  beta-release:
-    name: Beta release
-    runs-on: ubuntu-latest
-    if: github.repository_owner == 'NanoForge-dev' && github.event.pull_request.merged == true && !startsWith(github.head_ref, 'releases/')
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v7
-
-      - name: Prepare
-        uses: ./.github/actions/prepare
-
-      - name: Release beta
-        uses: ./node_modules/@nanoforge-dev/actions/actions/release-dev
-        with:
-          package: "@nanoforge-dev/cli"
-          tag: beta
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
