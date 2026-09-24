@@ -47,8 +47,8 @@ catalogs:
     eslint: ^10.9.1
     prettier: ^3.9.6
   loader:
-    '@nanoforge-dev/loader-client': ^1.5.0
-    '@nanoforge-dev/loader-server': ^1.5.0
+    '@nanoforge-dev/loader-client': ^1.5.1
+    '@nanoforge-dev/loader-server': ^1.5.1
   schematics:
     '@angular-devkit/core': ^22.0.4
     '@angular-devkit/schematics': ^22.1.6
@@ -57,3 +57,8 @@ catalogs:
   test:
     '@vitest/coverage-v8': ^4.1.11
     vitest: ^4.1.11
+
+minimumReleaseAgeExclude:
+  - '@nanoforge-dev/loader-client@1.5.1'
+  - '@nanoforge-dev/loader-server@1.5.1'
+  - '@nanoforge-dev/loader-website@1.5.1'
