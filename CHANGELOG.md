@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+# [2.0.0](https://github.com/NanoForge-dev/cli/compare/1.6.2...2.0.0) - (2026-09-24)
+
+## Documentation
+
+- Update links (#212) ([be9f483](https://github.com/NanoForge-dev/cli/commit/be9f483c76ba841cb9edccfc477fb2b1904c1f5f)) by @Exeloo
+
 # [1.6.2](https://github.com/NanoForge-dev/cli/compare/1.6.1...1.6.2) - (2026-07-07)
 
 ## Bug Fixes
