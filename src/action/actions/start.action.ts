@@ -15,7 +15,7 @@ import {
   getStringInputWithDefault,
   getWatchInput,
 } from "@lib/input";
-import { PackageManagerFactory } from "@lib/package-manager";
+import { type PackageManager, PackageManagerFactory } from "@lib/package-manager";
 import { Messages } from "@lib/ui";
 
 import { CLIError } from "@utils/errors";
@@ -77,7 +77,8 @@ export class StartAction extends AbstractAction {
     }
 
     const env = this.parseEnv(directory);
-    const tasks = this.buildStartTasks(serverTargets, clientTargets, watch, env);
+    const packageManager = await PackageManagerFactory.find(directory);
+    const tasks = this.buildStartTasks(packageManager, serverTargets, clientTargets, watch, env);
     await Promise.all(tasks);
 
     return { keepAlive: true };
@@ -152,6 +153,7 @@ export class StartAction extends AbstractAction {
   }
 
   private buildStartTasks(
+    packageManager: PackageManager,
     serverTargets: ServerStartTarget[],
     clientTargets: ClientStartTarget[],
     watch: boolean,
@@ -160,17 +162,18 @@ export class StartAction extends AbstractAction {
     const tasks: Promise<void>[] = [];
 
     for (const target of serverTargets) {
-      tasks.push(this.startServer(target, watch, env));
+      tasks.push(this.startServer(packageManager, target, watch, env));
     }
 
     for (const target of clientTargets) {
-      tasks.push(this.startClient(target, { watch, serverTargets }, env));
+      tasks.push(this.startClient(packageManager, target, { watch, serverTargets }, env));
     }
 
     return tasks;
   }
 
   private async startClient(
+    packageManager: PackageManager,
     target: ClientStartTarget,
     options: { watch: boolean; serverTargets: ServerStartTarget[] },
     env: FullEnv,
@@ -178,10 +181,11 @@ export class StartAction extends AbstractAction {
     const loaderPath = getModulePath("@nanoforge-dev/loader-client/package.json", true);
 
     const params = this.buildClientParams(target, options);
-    await this.runLoader("Client", loaderPath, params, env.client);
+    await this.runLoader(packageManager, "Client", loaderPath, params, env.client);
   }
 
   private async startServer(
+    packageManager: PackageManager,
     target: ServerStartTarget,
     watch: boolean,
     env: FullEnv,
@@ -189,7 +193,7 @@ export class StartAction extends AbstractAction {
     const loaderPath = getModulePath("@nanoforge-dev/loader-server/package.json", true);
 
     const params = this.buildServerParams(target, watch);
-    await this.runLoader("Server", loaderPath, params, env.server);
+    await this.runLoader(packageManager, "Server", loaderPath, params, env.server);
   }
 
   private buildClientParams(
@@ -263,13 +267,13 @@ export class StartAction extends AbstractAction {
   }
 
   private async runLoader(
+    packageManager: PackageManager,
     name: string,
     directory: string,
     params: string[],
     env: Record<string, string>,
   ): Promise<void> {
     await runSafe(async () => {
-      const packageManager = await PackageManagerFactory.find(directory);
       await packageManager.run(name, directory, "start", params, env, [], true);
     });
   }
