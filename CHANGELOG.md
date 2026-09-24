@@ -2,6 +2,247 @@
 
 All notable changes to this project will be documented in this file.
 
+# [2.3.0](https://github.com/NanoForge-dev/CLI/compare/1.6.2...2.3.0) - (2026-09-24)
+
+> NanoForge v2 changes **how a game is structured**. In v1 a game was one folder split into
+> `client/` and `server/`, and the CLI rebuilt its entry files from JSON "save" files. In v2 a
+> game is a set of standalone **projects** (client, server, and shared libs). Each project has
+> its own typed `nanoforge.config.ts`, and a **workspace** can group them in one monorepo. Entry
+> files are normal source code that you own. Nothing regenerates them.
+>
+> The CLI repository is now a monorepo, and this release is shared by three packages. Each
+> library has its own changelog with the details:
+>
+> - **[`@nanoforge-dev/config` changelog](https://github.com/NanoForge-dev/CLI/blob/main/libs/config/CHANGELOG.md)**:
+>   the new `nanoforge.config.ts` format, its four types, defaults, validation, and the
+>   field-by-field migration from `nanoforge.config.json`.
+> - **[`@nanoforge-dev/schematics` changelog](https://github.com/NanoForge-dev/CLI/blob/main/libs/schematics/CHANGELOG.md)**:
+>   the generated game in v1 vs v2, the new `workspace` / `project` schematics, the engine v2
+>   entry file, the demo game and dependency versions.
+>
+> This section covers what changed in the `nf` CLI itself.
+
+## Why 2.3.0 (and not 2.0.0)
+
+The CLI, `@nanoforge-dev/config` and `@nanoforge-dev/schematics` now share **one version
+number** and are released together. That shared version must be higher than the latest
+published version of every package. Schematics was already at **2.2.1** (last release from its
+old repository), so all three packages are **aligned to the schematics version** and released
+as **2.3.0**. The CLI goes from 1.6.2 straight to 2.3.0. There are no CLI 2.0.0, 2.1.x or 2.2.x
+releases.
+
+## Game architecture in short
+
+| Concern          | v1                                            | v2                                                                      |
+| ---------------- | --------------------------------------------- | ----------------------------------------------------------------------- |
+| Unit of the game | One app with a `client` and a `server` part   | Independent `client` / `server` projects (plus libs), grouped by a workspace |
+| Config           | One `nanoforge.config.json`                   | One `nanoforge.config.ts` / `.js` per project, lib and workspace        |
+| Entry file       | Regenerated from `.nanoforge/*.save.json`     | `src/main.ts`, scaffolded once, then yours                              |
+| Output / assets  | `.nanoforge/<part>`, `<part>/static`          | `dist/`, `assets/` inside each project                                  |
+| Several apps     | Not possible                                  | Every project matched by the workspace's `packages` is built and started |
+
+`nf new` creates either a single `client` project (single-player) or a workspace with
+`apps/client` and `apps/server` (multiplayer). The schematics changelog has the full generated
+trees.
+
+## How the CLI reads configs
+
+The CLI no longer ships its own JSON config loader (`class-validator` defaults, `-c` file name).
+It uses `@nanoforge-dev/config` to load the config in the command's directory
+(`nanoforge.config.ts`, or `.js` if there's no `.ts`). If neither file exists, the command
+fails with `ConfigNotFoundError`.
+
+On top of that, the CLI resolves the workspace (`parseWorkspaceConfig`, `resolveProjects`):
+
+- **Root is `client` / `server`:** that project is the only target.
+- **Root is `workspace`:** each `packages` glob is expanded from the root:
+  - a matched directory without a config is skipped
+  - a glob that matches nothing logs a warning
+  - a nested `workspace` throws
+- **Root is `lib`:** error. A lib can't be an entry point.
+
+The result is a list of `{ directory, config }` for every client and server project. Libs are
+left out. `build` and `start` loop over this list, and `create` uses it to find its target.
+
+## Code is no longer generated from save files
+
+In v1, `main.ts` was build output: the CLI regenerated it from `.nanoforge/<part>.save.json`
+with `nf generate` or `nf dev --generate`. In v2 you write `main.ts` yourself, so the CLI
+drops everything that supported regeneration (#217):
+
+- the `generate` command, its action, messages, docs page and e2e suite
+- the `--generate` option of `nf dev`
+- the `initFunctions` input of `nf new`
+
+`build --editor` now builds the project's `editor.entryFile`. It defaults to the same
+`src/main.ts`, and nothing editor-specific is added to it any more. In v1, a separate
+generated entry added `Graphics2DEditorLibrary`.
+
+## Command changes
+
+### `nf new` (#218)
+
+- The "server?" question now means **multiplayer**, and it decides the architecture:
+  - **No:** a single `client` project is generated directly in the target directory.
+  - **Yes:** a `workspace` is generated, plus `apps/client` (`hasServer: true`) and
+    `apps/server`. Package names become `<name>-client` / `<name>-server`.
+- It calls the new `workspace` and `project` schematics instead of the old chain
+  (`application` → `configuration` → `part-base` → `part-main` → `docker`).
+- It forwards `strict`, `packageManager`, `docker` and `editor` to each project.
+
+### `nf build` (#219)
+
+- It builds **every client/server project** found in the workspace, instead of looking at
+  `client.enable` / `server.enable`.
+- Each target builds, copies assets, resets its output and watches files **inside its own
+  project directory**.
+- If there is more than one project, logs show the project path, e.g. `Client (apps/client)`.
+- `--client-entry`, `--client-static-dir`, `--client-out-dir` and their `--server-*`
+  equivalents still work. They now override `entryFile`, `dir.assets` and `out.dir` of each
+  project of that type.
+- If no assets directory is set, the asset copy step is skipped.
+
+### `nf start` (#220, #224)
+
+- It starts **every server project, then every client project**. If it finds no project, it
+  fails with a hint to check `packages` or run `nf new`.
+- Each client uses its own `port` and its own `tls` config. `--port`, `--cert` and `--key`
+  still override them.
+- `--watch-server-dir` is passed to the client loader only when there is **exactly one**
+  server project.
+- `--client-dir` / `--server-dir` now mean **output** directories. They override `out.dir`.
+- Wording changed from SSL to **TLS** in flags, errors and docs. Errors now point to
+  `tls.cert` / `tls.key` in `nanoforge.config.ts`.
+- The package manager is detected **once**, from the directory the command runs in (the
+  workspace root), not once per loader (#224).
+
+### `nf create` (#222)
+
+- It reads the project config to find where to put the file (`dir.components` / `dir.systems`)
+  and which language to use.
+- **Client or server is now inferred** from the project's `type`, so `-s, --server` is removed.
+- Running it at a **workspace root** is refused. Run it inside a project, or pass
+  `-d apps/client`.
+
+### `nf dev` (#217)
+
+- `--generate` is removed. `dev` now just runs `build --watch` (plus `--editor` when asked) and
+  `start --watch` side by side.
+
+### `nf generate` (#217)
+
+- **Removed.**
+
+## Breaking changes
+
+- `nanoforge.config.json` is **no longer read**. Use one `nanoforge.config.ts` / `.js` per
+  project. The key mapping is in the
+  [config changelog](https://github.com/NanoForge-dev/CLI/blob/main/libs/config/CHANGELOG.md).
+- `nf generate` and `nf dev --generate` are removed.
+- `nf create -s/--server` is removed. The side now comes from the project config.
+- `-c, --config` is removed from `build`, `start` and `create`.
+- `--client-dir` / `--server-dir` on `nf start` now point to **output** directories.
+- `nf new` generates the v2 layout and engine v2 code. See the
+  [schematics changelog](https://github.com/NanoForge-dev/CLI/blob/main/libs/schematics/CHANGELOG.md).
+- The CLI now declares `engines.node: "26"`, so **users need Node 26**.
+
+## Migrating a v1 game
+
+1. **Choose the shape.**
+   - Client only: keep a single project at the root.
+   - Client + server: create a workspace root with `packages: ["apps/*"]`, then move
+     `client/` to `apps/client/src/` and `server/` to `apps/server/src/`.
+2. **Replace `nanoforge.config.json`** with one `nanoforge.config.ts` per project. The
+   field-by-field table is in the
+   [config changelog](https://github.com/NanoForge-dev/CLI/blob/main/libs/config/CHANGELOG.md).
+3. **Make `main.ts` yours.** Copy the last generated `client/main.ts` / `server/main.ts` to
+   `src/main.ts`. Then remove `.nanoforge/*.save.json` and `.nanoforge/editor/`.
+4. **Inline init hooks.** Move the contents of `init/before-*.ts` / `after-*.ts` into `main.ts`
+   around `app.init()` / `app.run()`.
+5. **Update engine imports.** For example `@nanoforge-dev/ecs-client` →
+   `@nanoforge-dev/ecs/client`, and `Context` from `@nanoforge-dev/common` → `nanoforge`. The
+   [schematics changelog](https://github.com/NanoForge-dev/CLI/blob/main/libs/schematics/CHANGELOG.md)
+   shows a full v2 entry file.
+6. **Split dependencies** into a `package.json` per project, and set up your package manager's
+   workspace (`pnpm-workspace.yaml` or `"workspaces"`).
+7. **Move static files** into `assets/`, or set `dir.assets`.
+8. **Update scripts.** Drop `nf generate` and `--generate`. Instead of `nf create --server`,
+   run `nf create` inside the server project.
+
+## Known issues
+
+CLI issues:
+
+- **Leftover `-c, --config` on `nf dev`.** Its default is still `nanoforge.config.json`, and the
+  value is never passed on to `build` / `start`. The configuration docs, `dev.mdx` and the README
+  still mention `-c`.
+- **`build` / `start` ignore libs.** `libs` and `lib` configs are discovered but not built or
+  linked yet.
+
+Issues in the generated code, which users will hit through `nf new` / `nf create` (details in
+the [schematics changelog](https://github.com/NanoForge-dev/CLI/blob/main/libs/schematics/CHANGELOG.md)):
+
+- The generated workspace scripts run `nf dev -r`, `nf build -r` and `nf start -r`, but no
+  command defines `-r`.
+- `nf create` templates still use v1 imports, so created components and systems don't compile
+  in a v2 project.
+- Generated configs import `nanoforge/config`, and the engine v2 packages aren't published yet.
+
+## Repository, tooling & CI
+
+- **Monorepo** (#197): a pnpm workspace (`.`, `libs/*`) run by **Turborepo** (`turbo.json`
+  with `build`, `build:dev`, `lint`, `format`, `test:unit` and `test:e2e`, remote cache on).
+  New root scripts `repo:build`, `repo:lint`, `repo:format`, `repo:test`, `repo:test:unit` and
+  `repo:test:e2e`. The Husky pre-push hook runs the `repo:*` versions.
+- **Packages:** `@nanoforge-dev/cli` (root), `@nanoforge-dev/config` (`libs/config`) and
+  `@nanoforge-dev/schematics` (`libs/schematics`, previously its own repository). The CLI uses
+  both libraries through `workspace:*`. All three share one version and release together.
+- **Releases** (#225): release branches are now named `releases/cli@<version>`. The Release
+  workflow publishes config → schematics → cli. The automatic beta release on every merged PR
+  is gone. Alpha releases of a single package are still triggered by hand. CONTRIBUTING explains
+  the flow.
+- **Commit scopes** `cli`, `config` and `schematics` are documented, and the labels and
+  issue/labeler configs were updated for the new packages.
+- **Runtime:** Node **25 → 26** (`.nvmrc`, `engines`), pnpm **11.10 → 12.0**.
+- **Build:** tsdown no longer uses `skipNodeModulesBundle`, because its package-name check also
+  matched the `@lib/*` / `@utils/*` path aliases and left them unresolved in the output.
+- **Dependencies:** `@nanoforge-dev/editor` moved from `optionalDependencies` to
+  `dependencies`. Loaders went to `^1.5.1` (#227). Vitest 5, tsdown 0.23, Angular DevKit 22.1,
+  dotenv 18 and others were bumped (#230). The pnpm catalog `tests` was renamed to `test`.
+- **Docs:** new *Schematics* section. The configuration page was rewritten for the typed
+  multi-config model. The `generate` page was removed and the command pages renumbered.
+- **Tests:** the e2e suites for `new`, `build`, `create`, `install` and `new-config` were
+  rewritten for the new layout, and `cli-generate` was removed. New unit tests cover the
+  workspace config parser and the config loader.
+- **Contributors** list updated (#229).
+
+## Commits
+
+### Bug Fixes
+
+- **start:** Change path for detecting package manager (#224) ([ddbed0a](https://github.com/NanoForge-dev/CLI/commit/ddbed0a6bd39383f48b2e4fc71ba015e4df856ae)) by @Exeloo
+- Remove generate command as it's no longer usefull (#217) ([a07acd7](https://github.com/NanoForge-dev/CLI/commit/a07acd7ee01afd9dd17eb15051c15e24dbb19c84)) by @Exeloo
+  - **BREAKING CHANGE:** The `generate` command no longer exist
+
+### Documentation
+
+- Update links (#212) ([be9f483](https://github.com/NanoForge-dev/CLI/commit/be9f483c76ba841cb9edccfc477fb2b1904c1f5f)) by @Exeloo
+
+### Features
+
+- Put network lib in dependencies (#226) ([e2dde26](https://github.com/NanoForge-dev/CLI/commit/e2dde2607736949caf85a057135c23fed8408861)) by @Exeloo
+- Add new project and workspace schematics and remove old ones (#216) ([f551392](https://github.com/NanoForge-dev/CLI/commit/f551392a843d592b1efc70cf4613f98f616999b0)) by @Exeloo
+- Add config parser (#214) ([cde54ab](https://github.com/NanoForge-dev/CLI/commit/cde54abba3a8b8385e6441bff8a39365dffde90c)) by @Exeloo
+- Add schematics (#200) ([330b9be](https://github.com/NanoForge-dev/CLI/commit/330b9bee1084c911aad8291c25aa591f0eb0d340)) by @Exeloo
+- Add config lib and monorepo config files (#197) ([197a75c](https://github.com/NanoForge-dev/CLI/commit/197a75c82699f8a90c14be03208bd6313f53886d)) by @Exeloo
+
+### Refactor
+
+- **cli:** Change create command to fit the new architecture (#222) ([3afb463](https://github.com/NanoForge-dev/CLI/commit/3afb463c96d7e511e492a6c8cbe82b686d837a08)) by @Exeloo
+- **cli:** Change start command to fit the new architecture (#220) ([3acb4a1](https://github.com/NanoForge-dev/CLI/commit/3acb4a1e214426a1f5e953774859eba38ca49ffa)) by @Exeloo
+- Change build cmd to new archi (#219) ([6700f71](https://github.com/NanoForge-dev/CLI/commit/6700f71e9d500efea0eb80aaad655623415f489b)) by @Exeloo
+- **cli:** Change new cmd to new archi (#218) ([a2e0d1f](https://github.com/NanoForge-dev/CLI/commit/a2e0d1ffe60063d3f5ae22ed78718e7592fe0f72)) by @Exeloo
+
 # [1.6.2](https://github.com/NanoForge-dev/cli/compare/1.6.1...1.6.2) - (2026-07-07)
 
 ## Bug Fixes

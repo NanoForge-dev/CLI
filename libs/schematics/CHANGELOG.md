@@ -2,6 +2,233 @@
 
 All notable changes to this project will be documented in this file.
 
+# [2.3.0](https://github.com/NanoForge-dev/CLI/compare/1.6.2...2.3.0) - (2026-09-24)
+
+> `@nanoforge-dev/schematics` now lives in the CLI monorepo (`libs/schematics`) and is released
+> together with `@nanoforge-dev/cli` and `@nanoforge-dev/config`. In this release the
+> collection was rewritten for the NanoForge v2 game architecture. The generated game changed
+> shape, and entry files are no longer regenerated from save files.
+
+## Why 2.3.0
+
+`@nanoforge-dev/cli`, `@nanoforge-dev/config` and `@nanoforge-dev/schematics` now share **one
+version number** and are released together. The shared version must be higher than the latest
+published version of every package. Schematics had the highest number of the three: **2.2.1**,
+its last release from the old `NanoForge-dev/schematics` repository. So every package is
+aligned on the schematics line, and this release is the next minor version, **2.3.0**.
+
+For schematics, this is the normal next release after 2.2.1. The other packages jump to catch
+up: CLI 1.6.2 → 2.3.0, config 1.4.2 → 2.3.0. From now on, the three packages always have the
+same version.
+
+## The generated game: v1 vs v2
+
+### v1: one app, two parts, entry files built from save files
+
+```
+my-game/
+├── nanoforge.config.json        # one config for client + server
+├── .nanoforge/
+│   ├── client.save.json         # libraries / components / systems / entities
+│   ├── server.save.json
+│   └── editor/<part>/main.ts    # generated editor entry
+├── client/
+│   ├── main.ts                  # GENERATED from client.save.json (part-main)
+│   ├── init/                    # before-/after- init, registry-init and run hooks
+│   ├── components/example.component.ts
+│   └── systems/example.system.ts
+└── server/                      # same layout, only with a server
+```
+
+It took five schematics to build this: `application` → `configuration` → `part-base` →
+`part-main` → `docker`. `part-main` read `.nanoforge/<part>.save.json` and wrote `main.ts`
+again every time `nf generate` ran.
+
+### v2: standalone projects, grouped by a workspace
+
+A single-player game is **one `client` project**:
+
+```
+my-game/
+├── nanoforge.config.ts          # { type: "client" }
+├── package.json                 # nf dev / nf build / nf start
+├── tsconfig.json | jsconfig.json
+├── assets/
+└── src/
+    ├── main.ts                  # scaffolded once, then yours
+    ├── components/  position-2d, drawable-circle-2d
+    └── systems/     draw-2d
+```
+
+A multiplayer game is a **workspace** plus one project per app:
+
+```
+my-game/
+├── nanoforge.config.ts          # { type: "workspace", packages: ["apps/*"] }
+├── package.json                 # workspace root
+├── pnpm-workspace.yaml          # pnpm only
+├── .env                         # client ↔ server networking
+├── Dockerfile / .dockerignore   # optional: one image for every app
+└── apps/
+    ├── client/                  # { type: "client" }: draw-2d + position-sync
+    └── server/                  # { type: "server" }: move-2d
+```
+
+| Concern            | v1                                              | v2                                                              |
+| ------------------ | ----------------------------------------------- | --------------------------------------------------------------- |
+| Unit of generation | One app with `client/` and `server/` parts      | A `workspace` and independent `project`s (`part: client/server`) |
+| Config             | One `nanoforge.config.json`                     | One `nanoforge.config.ts/.js` per workspace and per project      |
+| Entry file         | Regenerated from `.nanoforge/*.save.json`       | Scaffolded once, then owned by the developer                    |
+| Lifecycle hooks    | `init/*.ts` files (`initFunctions`)             | Removed. Write the code in `main.ts` around `init()` / `run()`  |
+| Dependencies       | One `package.json`                              | One per project, each with only the libraries it needs          |
+| Docker             | `docker` schematic                              | `docker` option on `workspace` or on a standalone `project`     |
+
+## Collection
+
+| Schematic   | Status      | Purpose                                                                                     |
+| ----------- | ----------- | ------------------------------------------------------------------------------------------- |
+| `workspace` | **New**     | Monorepo root: config, `package.json`, TS/JS config, `.env`, `.gitignore`, README, Docker   |
+| `project`   | **New**     | A `client` or `server` project: config, `package.json`, `src/main`, demo game, Docker       |
+| `component` | Kept        | A single ECS component with its editor manifest                                             |
+| `system`    | Kept        | A single ECS system with its editor manifest                                                |
+| `application`, `configuration`, `part-base`, `part-main`, `docker` | **Removed** | Replaced by `workspace` + `project` |
+
+With `part-main` gone, the save-file format, the save → `main.ts` code generator, the editor
+entry variant (`Graphics2DEditorLibrary`) and the `init/` hook templates are all removed too.
+
+## `workspace` schematic
+
+- Options: `name`, `directory` (defaults to `name`), `language`, `strict`, `packageManager`,
+  `allowBuilds`, `docker`.
+- Writes a root `nanoforge.config` with `{ type: "workspace", packages: ["apps/*"] }`, and
+  workspace wiring for the chosen package manager: `pnpm-workspace.yaml` for pnpm,
+  `"workspaces": ["apps/*"]` for the others.
+- Root `devDependencies`: `@nanoforge-dev/cli`, `nanoforge`, `typescript` (limited to major 6).
+- `bun` is always allowed to run its install script, because `@nanoforge-dev/cli` depends on
+  it. The allow-list goes into `allowBuilds` (pnpm), `allowScripts` (npm) or
+  `trustedDependencies` (bun).
+- `.env` sets the default networking values:
+  `NANOFORGE_CLIENT_SERVER_{TCP,UDP}_PORT=4444/4445`, `NANOFORGE_CLIENT_SERVER_ADDRESS=127.0.0.1`
+  and `NANOFORGE_SERVER_LISTENING_{TCP,UDP}_PORT=4444/4445`.
+- With `docker`, it writes one multi-stage `Dockerfile` that builds every app, tuned for each
+  package manager: `pnpm fetch` + offline install, `npm ci`, or a Bun image. Node 26,
+  port 3000.
+
+## `project` schematic
+
+- Options:
+  - `part` (`client` | `server`, required)
+  - `name` / `workspaceName`: the package name becomes `<workspace>-<name>`, or just `<name>`
+    for a standalone project
+  - `directory`: the full destination path, with nothing appended
+  - `workspace`, `hasServer`, `docker`, `strict`, `language`, `packageManager`
+  - `editor`: for now it only adds an `nf editor` section to the README
+- `docker` is ignored inside a workspace, because the workspace's own Dockerfile builds the
+  project.
+
+### Generated entry file
+
+```ts
+import { NanoforgeFactory, type ClientRunOptions } from "nanoforge";
+import { EcsLibrary } from "@nanoforge-dev/ecs/client";
+import { Graphics2DLibrary } from "@nanoforge-dev/graphics-2d";
+import { InputLibrary } from "@nanoforge-dev/input";
+import { NetworkClientLibrary } from "@nanoforge-dev/network/client";
+
+export const main = async (options: ClientRunOptions): Promise<void> => {
+  const app = NanoforgeFactory.createClient({ tickRate: 60 });
+
+  const ecs = new EcsLibrary();
+  app.use(ecs);
+  app.use(new Graphics2DLibrary());
+  app.use(new InputLibrary());
+  app.use(new NetworkClientLibrary());
+
+  await app.init(options);
+  // spawn entities, add systems…
+  await app.run();
+};
+```
+
+- It targets the **engine v2 API**: the `nanoforge` meta-package with `NanoforgeFactory`,
+  run-option types and `Context`, and libraries added with `app.use(...)`.
+- Client/server variants now use **subpath exports**: `@nanoforge-dev/ecs/<part>` and
+  `@nanoforge-dev/network/<part>`, instead of `@nanoforge-dev/ecs-client` / `ecs-server`.
+- `Registry` and the editor manifest types come from `@nanoforge-dev/ecs`. `Context` comes from
+  `nanoforge`, no longer from `@nanoforge-dev/common`.
+- Default libraries: the client gets ECS, Graphics 2D, Input and Network. The server gets ECS
+  and Network. The v1 default save also included AssetManager and Music.
+
+### Demo game: the server owns the state
+
+The v1 placeholder (`ExampleComponent` / `exampleSystem`, which stopped the app after a
+countdown) is replaced by a small multiplayer loop:
+
+| Project | Components                        | Systems                                                                            |
+| ------- | --------------------------------- | ---------------------------------------------------------------------------------- |
+| client  | `Position2D`, `DrawableCircle2D`  | `draw2D`: draws every drawable at its position                                     |
+| client  | —                                 | `positionSync` (only with `hasServer`): applies positions received over TCP        |
+| server  | `Position2D`                      | `move2D`: moves the entity and broadcasts `{x, y}` with `network.tcp.sendToEverybody` |
+
+Components and systems still export an editor manifest and a default export of their name,
+the same as in v1.
+
+### Dependencies
+
+- client `devDependencies`: `nanoforge`, `@nanoforge-dev/ecs`, `@nanoforge-dev/graphics-2d`,
+  `@nanoforge-dev/input`, `@nanoforge-dev/network`.
+- server: `@nanoforge-dev/network` is a runtime **`dependency`** (#226). `nanoforge` and
+  `@nanoforge-dev/ecs` are `devDependencies`.
+- **Version lookup at generation time** (`fetchTrustedVersion(s)`): the npm registry is
+  queried, and only stable versions published **at least 48 hours ago** are picked (the same
+  idea as pnpm's `minimumReleaseAge`). Lookups time out after 3 s. If a lookup fails, engine
+  packages fall back to `^2`, the CLI to `latest` and TypeScript to `6.0.3`.
+
+## Breaking changes
+
+- The `application`, `configuration`, `part-base`, `part-main` and `docker` schematics are
+  removed. Use `workspace` + `project`.
+- Save files (`.nanoforge/*.save.json`) are no longer generated or read. Entry files are
+  scaffolded once.
+- `init/` hook files and the `initFunctions` behaviour are removed.
+- Generated configs are `nanoforge.config.ts` / `.js` (`@nanoforge-dev/config` format), no
+  longer `nanoforge.config.json`.
+- Generated code targets the engine v2 packages.
+
+## Tests & docs
+
+- E2E suites for `workspace`, `project`, `component` and `system`, and unit tests for the
+  registry, naming, formatting and object helpers.
+- New docs section *Schematics*: overview, workspace, project, component, system.
+- Built with tsdown and part of the Turborepo pipeline. Requires Node 26.
+
+## Known issues
+
+- **`component` / `system` templates still use v1 imports:** `@nanoforge-dev/ecs-<part>` and
+  `@nanoforge-dev/common`. The system template also imports `../components/example.component`,
+  which v2 projects don't have. Code generated by `nf create` in a v2 project won't compile.
+- **The workspace `package.json` scripts run `nf dev -r`, `nf build -r` and `nf start -r`,**
+  but the CLI has no `-r` option.
+- **`project` declares options it ignores:** `libs`, `allowBuilds` (hardcoded to
+  `workspace ? [] : ["bun"]`) and `initFunctions`, which is left over from v1.
+- Generated configs import `defineConfig` from `nanoforge/config`, and the entry file imports
+  the engine v2 packages. Neither is published yet.
+
+## Commits
+
+### Features
+
+- Put network lib in dependencies (#226) ([e2dde26](https://github.com/NanoForge-dev/CLI/commit/e2dde2607736949caf85a057135c23fed8408861)) by @Exeloo
+- Add new project and workspace schematics and remove old ones (#216) ([f551392](https://github.com/NanoForge-dev/CLI/commit/f551392a843d592b1efc70cf4613f98f616999b0)) by @Exeloo
+- Add schematics (#200) ([330b9be](https://github.com/NanoForge-dev/CLI/commit/330b9bee1084c911aad8291c25aa591f0eb0d340)) by @Exeloo
+
+### Refactor
+
+- **cli:** Change create command to fit the new architecture (#222) ([3afb463](https://github.com/NanoForge-dev/CLI/commit/3afb463c96d7e511e492a6c8cbe82b686d837a08)) by @Exeloo
+- **cli:** Change start command to fit the new architecture (#220) ([3acb4a1](https://github.com/NanoForge-dev/CLI/commit/3acb4a1e214426a1f5e953774859eba38ca49ffa)) by @Exeloo
+- Change build cmd to new archi (#219) ([6700f71](https://github.com/NanoForge-dev/CLI/commit/6700f71e9d500efea0eb80aaad655623415f489b)) by @Exeloo
+- **cli:** Change new cmd to new archi (#218) ([a2e0d1f](https://github.com/NanoForge-dev/CLI/commit/a2e0d1ffe60063d3f5ae22ed78718e7592fe0f72)) by @Exeloo
+
 # [2.2.0](https://github.com/NanoForge-dev/schematics/compare/2.1.4...2.2.0) - (2026-06-30)
 
 ## Features

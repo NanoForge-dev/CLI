@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@nanoforge-dev/config",
-  "version": "1.4.2",
+  "version": "2.3.0",
   "description": "NanoForge CLI - Config",
   "keywords": [
     "nanoforge",
