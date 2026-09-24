@@ -2,10 +2,28 @@ import { existsSync, mkdirSync, rmSync } from "node:fs";
 import { resolve } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
+import { stripDefineConfig } from "./helpers/project-fixtures";
 import { runCli } from "./helpers/run-cli";
-import { writeProjectConfig } from "./helpers/write-project-config";
 
 const tmpDir = resolve(__dirname, "../.tmp-e2e-create");
+
+const newProject = (name: string, directory: string, language: "ts" | "js", server: boolean) =>
+  runCli([
+    "new",
+    "--name",
+    name,
+    "--language",
+    language,
+    "--package-manager",
+    "npm",
+    "--no-strict",
+    server ? "--server" : "--no-server",
+    "--skip-install",
+    "--no-docker",
+    "--no-git",
+    "-d",
+    directory,
+  ]);
 
 beforeAll(() => {
   mkdirSync(tmpDir, { recursive: true });
@@ -15,32 +33,14 @@ afterAll(() => {
   rmSync(tmpDir, { recursive: true, force: true });
 });
 
-describe("nf create (TypeScript, client component)", () => {
+describe("nf create (TypeScript, client project)", () => {
   const projectDir = resolve(tmpDir, "create-ts-client");
   const appDir = resolve(projectDir, "create-app");
 
   beforeAll(async () => {
     mkdirSync(projectDir, { recursive: true });
-
-    await runCli([
-      "new",
-      "--name",
-      "create-app",
-      "--language",
-      "ts",
-      "--package-manager",
-      "npm",
-      "--strict",
-      "--no-server",
-      "--no-init-functions",
-      "--skip-install",
-      "--no-docker",
-      "--no-git",
-      "-d",
-      projectDir,
-    ]);
-
-    writeProjectConfig(appDir, { name: "create-app", language: "ts", server: false });
+    await newProject("create-app", projectDir, "ts", false);
+    stripDefineConfig(appDir);
   });
 
   it("should create a component successfully", async () => {
@@ -58,8 +58,8 @@ describe("nf create (TypeScript, client component)", () => {
     expect(stdout).toContain("Element successfully created");
   });
 
-  it("should generate a component file in client/components", () => {
-    expect(existsSync(resolve(appDir, "client/components/player.component.ts"))).toBe(true);
+  it("should generate a component file in src/components", () => {
+    expect(existsSync(resolve(appDir, "src/components/player.component.ts"))).toBe(true);
   });
 
   it("should create a system successfully", async () => {
@@ -76,23 +76,8 @@ describe("nf create (TypeScript, client component)", () => {
     expect(stdout).toContain("Element successfully created");
   });
 
-  it("should generate a system file in client/systems", () => {
-    expect(existsSync(resolve(appDir, "client/systems/movement.system.ts"))).toBe(true);
-  });
-
-  it("should accept --config option", async () => {
-    const { exitCode } = await runCli([
-      "create",
-      "component",
-      "--name",
-      "health",
-      "--config",
-      "nanoforge.config.json",
-      "-d",
-      appDir,
-    ]);
-
-    expect(exitCode).toBe(0);
+  it("should generate a system file in src/systems", () => {
+    expect(existsSync(resolve(appDir, "src/systems/movement.system.ts"))).toBe(true);
   });
 
   it("should create a component with a custom path via --path", async () => {
@@ -102,42 +87,26 @@ describe("nf create (TypeScript, client component)", () => {
       "--name",
       "custom",
       "--path",
-      "client/custom-components",
+      "src/custom-components",
       "-d",
       appDir,
     ]);
 
     expect(exitCode).toBe(0);
-    expect(existsSync(resolve(appDir, "client/custom-components/custom.component.ts"))).toBe(true);
+    expect(existsSync(resolve(appDir, "src/custom-components/custom.component.ts"))).toBe(true);
   });
 });
 
-describe("nf create (TypeScript, server component)", () => {
+describe("nf create (TypeScript, server project in a workspace)", () => {
   const projectDir = resolve(tmpDir, "create-ts-server");
-  const appDir = resolve(projectDir, "create-server-app");
+  const workspaceDir = resolve(projectDir, "create-server-app");
+  const serverDir = resolve(workspaceDir, "apps/server");
 
   beforeAll(async () => {
     mkdirSync(projectDir, { recursive: true });
-
-    await runCli([
-      "new",
-      "--name",
-      "create-server-app",
-      "--language",
-      "ts",
-      "--package-manager",
-      "npm",
-      "--no-strict",
-      "--server",
-      "--no-init-functions",
-      "--skip-install",
-      "--no-docker",
-      "--no-git",
-      "-d",
-      projectDir,
-    ]);
-
-    writeProjectConfig(appDir, { name: "create-server-app", language: "ts", server: true });
+    await newProject("create-server-app", projectDir, "ts", true);
+    stripDefineConfig(workspaceDir);
+    stripDefineConfig(serverDir);
   });
 
   it("should create a server component successfully", async () => {
@@ -145,52 +114,34 @@ describe("nf create (TypeScript, server component)", () => {
       "create",
       "component",
       "--name",
-      "enemy",
-      "--server",
+      "network",
       "-d",
-      appDir,
+      serverDir,
     ]);
 
     expect(exitCode).toBe(0);
-  });
-
-  it("should generate a component file in server/components", () => {
-    expect(existsSync(resolve(appDir, "server/components/enemy.component.ts"))).toBe(true);
+    expect(existsSync(resolve(serverDir, "src/components/network.component.ts"))).toBe(true);
   });
 
   it("should create a server system successfully", async () => {
-    const { exitCode } = await runCli([
-      "create",
-      "system",
-      "--name",
-      "physics",
-      "--server",
-      "-d",
-      appDir,
-    ]);
+    const { exitCode } = await runCli(["create", "system", "--name", "sync", "-d", serverDir]);
 
     expect(exitCode).toBe(0);
+    expect(existsSync(resolve(serverDir, "src/systems/sync.system.ts"))).toBe(true);
   });
 
-  it("should generate a system file in server/systems", () => {
-    expect(existsSync(resolve(appDir, "server/systems/physics.system.ts"))).toBe(true);
-  });
-
-  it("should create a server component with a custom path via --path", async () => {
+  it("should fail when run at the workspace root", async () => {
     const { exitCode } = await runCli([
       "create",
       "component",
       "--name",
-      "network",
-      "--server",
-      "--path",
-      "server/custom-components",
+      "root",
       "-d",
-      appDir,
+      workspaceDir,
     ]);
 
-    expect(exitCode).toBe(0);
-    expect(existsSync(resolve(appDir, "server/custom-components/network.component.ts"))).toBe(true);
+    expect(exitCode).not.toBe(0);
+    expect(existsSync(resolve(workspaceDir, "src/components/root.component.ts"))).toBe(false);
   });
 });
 
@@ -200,46 +151,26 @@ describe("nf create (JavaScript)", () => {
 
   beforeAll(async () => {
     mkdirSync(projectDir, { recursive: true });
-
-    await runCli([
-      "new",
-      "--name",
-      "create-js-app",
-      "--language",
-      "js",
-      "--package-manager",
-      "npm",
-      "--no-strict",
-      "--no-server",
-      "--no-init-functions",
-      "--skip-install",
-      "--no-docker",
-      "--no-git",
-      "-d",
-      projectDir,
-    ]);
-
-    writeProjectConfig(appDir, { name: "create-js-app", language: "js", server: false });
+    await newProject("create-js-app", projectDir, "js", false);
+    stripDefineConfig(appDir);
   });
 
   it("should create a JavaScript component successfully", async () => {
     const { exitCode } = await runCli(["create", "component", "--name", "sprite", "-d", appDir]);
-
     expect(exitCode).toBe(0);
   });
 
   it("should generate a .js component file", () => {
-    expect(existsSync(resolve(appDir, "client/components/sprite.component.js"))).toBe(true);
+    expect(existsSync(resolve(appDir, "src/components/sprite.component.js"))).toBe(true);
   });
 
   it("should create a JavaScript system successfully", async () => {
     const { exitCode } = await runCli(["create", "system", "--name", "render", "-d", appDir]);
-
     expect(exitCode).toBe(0);
   });
 
   it("should generate a .js system file", () => {
-    expect(existsSync(resolve(appDir, "client/systems/render.system.js"))).toBe(true);
+    expect(existsSync(resolve(appDir, "src/systems/render.system.js"))).toBe(true);
   });
 });
 
@@ -253,16 +184,12 @@ describe("nf create (error cases)", () => {
       "-d",
       resolve(tmpDir, "nonexistent"),
     ]);
-
     expect(exitCode).not.toBe(0);
   });
 
   it("should fail with an invalid type", async () => {
-    const projectDir = resolve(tmpDir, "create-ts-client");
-    const appDir = resolve(projectDir, "create-app");
-
+    const appDir = resolve(tmpDir, "create-ts-client/create-app");
     const { exitCode } = await runCli(["create", "invalid-type", "--name", "test", "-d", appDir]);
-
     expect(exitCode).not.toBe(0);
   });
 });

@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readFileSync, rmSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
@@ -18,26 +18,14 @@ describe("nf install (with existing project)", () => {
   const projectDir = resolve(tmpDir, "install-project");
   const appDir = resolve(projectDir, "install-app");
 
-  beforeAll(async () => {
-    mkdirSync(projectDir, { recursive: true });
-
-    await runCli([
-      "new",
-      "--name",
-      "install-app",
-      "--language",
-      "ts",
-      "--package-manager",
-      "npm",
-      "--strict",
-      "--no-server",
-      "--no-init-functions",
-      "--no-skip-install",
-      "--no-docker",
-      "--no-git",
-      "-d",
-      projectDir,
-    ]);
+  beforeAll(() => {
+    // `install -l` only needs a package.json: a generated project cannot be used until the
+    // engine v2 packages it depends on are published on npm.
+    mkdirSync(appDir, { recursive: true });
+    writeFileSync(
+      resolve(appDir, "package.json"),
+      JSON.stringify({ name: "install-app", private: true }, null, 2),
+    );
   });
 
   it("should run the install command with a library name", async () => {
@@ -124,7 +112,6 @@ describe("nf install (without library name)", () => {
       "npm",
       "--strict",
       "--no-server",
-      "--no-init-functions",
       "--skip-install",
       "--no-docker",
       "--no-git",

@@ -213,11 +213,11 @@ catalogs:
       version: 3.9.6
   loader:
     '@nanoforge-dev/loader-client':
-      specifier: ^1.5.0
-      version: 1.5.0
+      specifier: ^1.5.1
+      version: 1.5.1
     '@nanoforge-dev/loader-server':
-      specifier: ^1.5.0
-      version: 1.5.0
+      specifier: ^1.5.1
+      version: 1.5.1
   schematics:
     '@angular-devkit/core':
       specifier: ^22.0.4
@@ -260,10 +260,10 @@ importers:
         version: 0.1.4
       '@nanoforge-dev/loader-client':
         specifier: catalog:loader
-        version: 1.5.0
+        version: 1.5.1
       '@nanoforge-dev/loader-server':
         specifier: catalog:loader
-        version: 1.5.0
+        version: 1.5.1
       '@nanoforge-dev/schematics':
         specifier: workspace:*
         version: link:libs/schematics
@@ -879,17 +879,17 @@ packages:
     resolution: {integrity: sha512-bqbrH8ulFSiZz1iisJHtHeEzj1RV/70uErCYHeW4DIhVPsWbBfWKFvg/ghAbmPk5vsj0YnhDX6DSpik4S1QoiQ==}
     engines: {node: '25'}
 
-  '@nanoforge-dev/loader-client@1.5.0':
-    resolution: {integrity: sha512-FUcrfXlcaG4dsjya7fUUFkr5zwKB0nCihYeEOC1K54gl4XV6S1lgNnAfdkl4jZfzyyw4jcZUB+73t4ymBhz08g==}
-    engines: {node: '25'}
+  '@nanoforge-dev/loader-client@1.5.1':
+    resolution: {integrity: sha512-1PueGpj8DbjRcZTVVCKAkKi4A8gyBaFTkfp78fFrW47J0HZcfS8pq+AaNaBjEUOozn0E7L+U8zGf/5laxTRe1A==}
+    engines: {node: '26'}
 
-  '@nanoforge-dev/loader-server@1.5.0':
-    resolution: {integrity: sha512-1rly9IgunGz8Ux6lGDugUXgmNbnNjWGM8ABy7EsdrKWV74gyj7cuU6X69UolO28XUPCdbeISNcBEZV5hLK8Rlg==}
-    engines: {node: '25'}
+  '@nanoforge-dev/loader-server@1.5.1':
+    resolution: {integrity: sha512-RNqA0zpEhUXENKu5chJ+vQOhr8qK+a7z6XePmiCJygpSScJ8p1dlWquFYNwu9dBLHBP8BhK9dSFvXjPvHAYBxQ==}
+    engines: {node: '26'}
 
-  '@nanoforge-dev/loader-website@1.5.0':
-    resolution: {integrity: sha512-X37wlYyoL/q8ZPk5I8W3z01novfDSopizVQXbk/sw0dRXoONtIb6xnZLlN3z4jkDkPOy6IVes0bLGr8h4aFOcA==}
-    engines: {node: '25'}
+  '@nanoforge-dev/loader-website@1.5.1':
+    resolution: {integrity: sha512-Ugu5CvfbsCK2wG8RXBHkkVlNHkSlXz2xXxfqglID7Cb4E8PHO0p1hbE6e7+1fWXAdFhEivGQHSI1POIvgyP1Qg==}
+    engines: {node: '26'}
 
   '@nanoforge-dev/utils-eslint-config@1.0.2':
     resolution: {integrity: sha512-hIsVGGpVIW3RvPZocWEf15Y5eqmIxTtLfWI66wqx+AO6PHcatUBhEi4sk1i54Qb2yGFueRBS/dSXj0kxG4Rbcw==}
@@ -3560,17 +3560,18 @@ snapshots:
       tar: 7.5.22
       typescript: 6.0.3
 
-  '@nanoforge-dev/loader-client@1.5.0':
+  '@nanoforge-dev/loader-client@1.5.1':
     dependencies:
-      '@nanoforge-dev/loader-website': 1.5.0
+      '@nanoforge-dev/loader-website': 1.5.1
       bun: 1.4.0
       commander: 15.0.0
 
-  '@nanoforge-dev/loader-server@1.5.0':
+  '@nanoforge-dev/loader-server@1.5.1':
     dependencies:
+      bun: 1.4.0
       commander: 15.0.0
 
-  '@nanoforge-dev/loader-website@1.5.0': {}
+  '@nanoforge-dev/loader-website@1.5.1': {}
 
   '@nanoforge-dev/utils-eslint-config@1.0.2(@types/eslint@9.6.1)(eslint@10.9.1(jiti@2.6.1)(supports-color@10.2.2))(prettier@3.9.6)(supports-color@10.2.2)(typescript@6.0.3)':
     dependencies:

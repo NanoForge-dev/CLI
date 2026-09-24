@@ -64,13 +64,13 @@ describe("workspace schematic", () => {
       expect(packageJson.devDependencies["typescript"]).toMatch(RESOLVED_VERSION);
     });
 
-    it("pins typescript to a specific version, not a range", () => {
-      expect(packageJson.devDependencies["typescript"]).toMatch(/^\d+\.\d+\.\d+$/);
+    it("resolves typescript to a caret range (or the exact fallback version)", () => {
+      expect(packageJson.devDependencies["typescript"]).toMatch(/^\^?\d+\.\d+\.\d+$/);
     });
 
     it("does not jump typescript to its major-7 native rewrite", () => {
       const version = packageJson.devDependencies["typescript"] as string;
-      expect(version.split(".")[0]).toBe("6");
+      expect(version.replace(/^\^/, "").split(".")[0]).toBe("6");
     });
 
     it("should declare a workspace-typed nanoforge.config.ts with apps only (no libs)", () => {
