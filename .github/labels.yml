@@ -54,6 +54,10 @@
   description: "Related to dev command"
   color: "aaa3dc"
 
+- name: "command:editor"
+  description: "Related to editor command"
+  color: "aaa3dc"
+
 - name: "command:help"
   description: "Related to help command"
   color: "aaa3dc"
@@ -85,6 +89,14 @@
 - name: "command:unpublish"
   description: "Related to unpublish command"
   color: "aaa3dc"
+
+- name: "lib:config"
+  description: "Related to the @nanoforge-dev/config library"
+  color: "c5def5"
+
+- name: "lib:schematics"
+  description: "Related to the @nanoforge-dev/schematics library"
+  color: "c5def5"
 
 - name: "question"
   description: "Further information is requested"

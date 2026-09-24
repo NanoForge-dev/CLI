@@ -8,8 +8,8 @@
     "game",
     "schematics"
   ],
-  "homepage": "https://github.com/NanoForge-dev/schematics#readme",
-  "bugs": "https://github.com/NanoForge-dev/schematics/issues",
+  "homepage": "https://github.com/NanoForge-dev/CLI#readme",
+  "bugs": "https://github.com/NanoForge-dev/CLI/issues",
   "license": "MIT",
   "contributors": [
     "Bill <timothe.jacquot@epitech.eu>",
@@ -44,9 +44,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/NanoForge-dev/schematics.git"
+    "url": "git+https://github.com/NanoForge-dev/CLI.git",
+    "directory": "libs/schematics"
   },
-  "funding": "https://github.com/NanoForge-dev/schematics?sponsor",
+  "funding": "https://github.com/NanoForge-dev/CLI?sponsor",
   "scripts": {
     "build": "tsc --noEmit && tsdown",
     "postbuild": "pnpm run copy:collection && pnpm run copy:lib",
@@ -55,7 +56,7 @@
     "lint": "prettier --check . && eslint --format=pretty src",
     "format": "prettier --write . && eslint --fix --format=pretty src",
     "prepack": "pnpm run build && pnpm run lint",
-    "changelog": "git cliff --prepend ./CHANGELOG.md -u -c ./cliff.toml -r . --include-path 'libs/schematics/*'",
+    "changelog": "git cliff --prepend ./CHANGELOG.md -u -c ./cliff.toml -r ../../ --include-path 'libs/schematics/*'",
     "release": "cliff-jumper",
     "test": "pnpm run test:unit && pnpm run test:e2e",
     "test:unit": "vitest run -c vitest.config.ts",
@@ -89,7 +90,7 @@
     "typescript": "catalog:build",
     "vitest": "catalog:test"
   },
-  "packageManager": "pnpm@11.9.0",
+  "packageManager": "pnpm@12.0.0",
   "engines": {
     "node": "26"
   },

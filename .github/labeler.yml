@@ -16,6 +16,12 @@ command:dev:
           - src/command/commands/dev.command.ts
           - src/action/actions/dev.action.ts
 
+command:editor:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/command/commands/editor.command.ts
+          - src/action/actions/editor.action.ts
+
 command:install:
   - changed-files:
       - any-glob-to-any-file:
@@ -63,3 +69,15 @@ documentation:
       - any-glob-to-any-file:
           - docs/*
           - docs/**/*
+
+lib:config:
+  - changed-files:
+      - any-glob-to-any-file:
+          - libs/config/*
+          - libs/config/**/*
+
+lib:schematics:
+  - changed-files:
+      - any-glob-to-any-file:
+          - libs/schematics/*
+          - libs/schematics/**/*

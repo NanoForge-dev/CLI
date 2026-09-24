@@ -8,7 +8,7 @@ inputs:
     description: Install pnpm depedencies
     default: "true"
   build:
-    description: Build packages
+    description: Build all workspace packages
     default: "true"
 runs:
   using: composite
@@ -17,7 +17,7 @@ runs:
       name: Install Node.js
       uses: actions/setup-node@v6
       with:
-        node-version: 25
+        node-version-file: .nvmrc
         package-manager-cache: false
         registry-url: https://registry.npmjs.org
 
@@ -28,4 +28,4 @@ runs:
     - if: inputs.build == 'true'
       name: Build packages
       shell: bash
-      run: pnpm run build
+      run: pnpm run repo:build

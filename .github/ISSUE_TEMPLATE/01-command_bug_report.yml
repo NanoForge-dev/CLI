@@ -7,7 +7,17 @@ body:
       value: |
         Thank you for filing an issue! If you are here to ask a question, don't hesitate to open a discussion instead: https://github.com/NanoForge-dev/CLI/discussions.
 
-        This issue form is for Nanoforge CLI.
+        This issue form is for the Nanoforge CLI and its libraries (`@nanoforge-dev/config`, `@nanoforge-dev/schematics`). If the issue is not related to a CLI command, pick `other` as the command.
+  - type: dropdown
+    id: package
+    attributes:
+      label: Which package is this bug report for?
+      options:
+        - "@nanoforge-dev/cli"
+        - "@nanoforge-dev/config"
+        - "@nanoforge-dev/schematics"
+    validations:
+      required: true
   - type: dropdown
     id: command
     attributes:
@@ -16,6 +26,7 @@ body:
         - build
         - create
         - dev
+        - editor
         - help
         - install
         - login
