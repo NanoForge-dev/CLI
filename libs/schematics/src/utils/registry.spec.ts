@@ -35,7 +35,7 @@ describe("fetchTrustedVersion", () => {
     });
 
     const version = await fetchTrustedVersion("some-pkg", "0.0.0");
-    expect(version).toBe("1.1.0");
+    expect(version).toBe("^1.1.0");
   });
 
   it("excludes prerelease and non-semver tags", async () => {
@@ -45,7 +45,7 @@ describe("fetchTrustedVersion", () => {
     });
 
     const version = await fetchTrustedVersion("some-pkg", "0.0.0");
-    expect(version).toBe("1.0.0");
+    expect(version).toBe("^1.0.0");
   });
 
   it("restricts to a requested major version", async () => {
@@ -55,7 +55,7 @@ describe("fetchTrustedVersion", () => {
     });
 
     const version = await fetchTrustedVersion("typescript", "6.0.0", { major: 6 });
-    expect(version).toBe("6.0.3");
+    expect(version).toBe("^6.0.3");
   });
 
   it("falls back when every version is too fresh", async () => {
@@ -101,6 +101,6 @@ describe("fetchTrustedVersions", () => {
       "pkg-b": { fallback: "0.0.1" },
     });
 
-    expect(versions).toEqual({ "pkg-a": "2.5.0", "pkg-b": "2.5.0" });
+    expect(versions).toEqual({ "pkg-a": "^2.5.0", "pkg-b": "^2.5.0" });
   });
 });

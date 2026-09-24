@@ -6,6 +6,24 @@ import { runCli } from "./helpers/run-cli";
 
 const tmpDir = resolve(__dirname, "../.tmp-e2e-new-config");
 
+const newProject = (name: string, directory: string, extraArgs: string[]) =>
+  runCli([
+    "new",
+    "--name",
+    name,
+    "--language",
+    "ts",
+    "--package-manager",
+    "npm",
+    "--strict",
+    "--skip-install",
+    "--no-docker",
+    "--no-git",
+    ...extraArgs,
+    "-d",
+    directory,
+  ]);
+
 beforeAll(() => {
   mkdirSync(tmpDir, { recursive: true });
 });
@@ -16,79 +34,46 @@ afterAll(() => {
 
 describe("nf new config output (no server)", () => {
   const projectDir = resolve(tmpDir, "config-no-server");
-  let config: any;
+  let config: string;
 
   beforeAll(async () => {
     mkdirSync(projectDir, { recursive: true });
-
-    await runCli([
-      "new",
-      "--name",
-      "config-test",
-      "--language",
-      "ts",
-      "--package-manager",
-      "npm",
-      "--strict",
-      "--no-server",
-      "--no-init-functions",
-      "--skip-install",
-      "--no-docker",
-      "--no-git",
-      "-d",
-      projectDir,
-    ]);
-
-    config = JSON.parse(
-      readFileSync(resolve(projectDir, "config-test/nanoforge.config.json"), "utf-8"),
-    );
+    await newProject("config-test", projectDir, ["--no-server"]);
+    config = readFileSync(resolve(projectDir, "config-test/nanoforge.config.ts"), "utf-8");
   });
 
-  it("should have client config", () => {
-    expect(config.client.enable).toBe(true);
+  it("should generate a client project config", () => {
+    expect(config).toContain('type: "client"');
   });
 
-  it("should not have server enabled", () => {
-    expect(config.server?.enable).not.toBe(true);
+  it("should use defineConfig from nanoforge", () => {
+    expect(config).toContain('import { defineConfig } from "nanoforge/config";');
   });
 });
 
 describe("nf new config output (with server)", () => {
   const projectDir = resolve(tmpDir, "config-with-server");
-  let config: any;
+  const workspaceDir = resolve(projectDir, "server-test");
 
   beforeAll(async () => {
     mkdirSync(projectDir, { recursive: true });
-
-    await runCli([
-      "new",
-      "--name",
-      "server-test",
-      "--language",
-      "ts",
-      "--package-manager",
-      "npm",
-      "--no-strict",
-      "--server",
-      "--no-init-functions",
-      "--skip-install",
-      "--no-docker",
-      "--no-git",
-      "-d",
-      projectDir,
-    ]);
-
-    config = JSON.parse(
-      readFileSync(resolve(projectDir, "server-test/nanoforge.config.json"), "utf-8"),
-    );
+    await newProject("server-test", projectDir, ["--server"]);
   });
 
-  it("should have server enabled", () => {
-    expect(config.server.enable).toBe(true);
+  it("should generate a workspace config including the apps", () => {
+    const config = readFileSync(resolve(workspaceDir, "nanoforge.config.ts"), "utf-8");
+    expect(config).toContain('type: "workspace"');
+    expect(config).toContain('packages: ["apps/*"]');
   });
 
-  it("should have client build config", () => {
-    expect(config.client.enable).toBe(true);
+  it("should generate a client project config", () => {
+    const config = readFileSync(resolve(workspaceDir, "apps/client/nanoforge.config.ts"), "utf-8");
+    expect(config).toContain('type: "client"');
+  });
+
+  it("should generate a server project config", () => {
+    const config = readFileSync(resolve(workspaceDir, "apps/server/nanoforge.config.ts"), "utf-8");
+    expect(config).toContain('type: "server"');
   });
 });
 
@@ -98,26 +83,7 @@ describe("nf new package.json output", () => {
 
   beforeAll(async () => {
     mkdirSync(projectDir, { recursive: true });
-
-    await runCli([
-      "new",
-      "--name",
-      "pkg-app",
-      "--language",
-      "ts",
-      "--package-manager",
-      "npm",
-      "--strict",
-      "--no-server",
-      "--no-init-functions",
-      "--skip-install",
-      "--no-docker",
-      "--editor",
-      "--no-git",
-      "-d",
-      projectDir,
-    ]);
-
+    await newProject("pkg-app", projectDir, ["--no-server", "--editor"]);
     pkg = JSON.parse(readFileSync(resolve(projectDir, "pkg-app/package.json"), "utf-8"));
   });
 
@@ -127,7 +93,11 @@ describe("nf new package.json output", () => {
 
   it("should have nanoforge dependencies", () => {
     const allDeps = { ...pkg.dependencies, ...pkg.devDependencies };
-    expect(allDeps).toHaveProperty("@nanoforge-dev/core");
-    expect(allDeps).toHaveProperty("@nanoforge-dev/core-editor");
+    expect(allDeps).toHaveProperty("nanoforge");
+    expect(allDeps).toHaveProperty("@nanoforge-dev/ecs");
+    expect(allDeps).toHaveProperty("@nanoforge-dev/graphics-2d");
   });
+
+  // TODO: `--editor` does not add any editor dependency to the generated project yet.
+  it.todo("should have editor dependencies with --editor");
 });

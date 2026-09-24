@@ -356,13 +356,12 @@ describe("project schematic", () => {
   });
 
   describe("allowBuilds (standalone projects are their own root)", () => {
-    it("is ignored when generated inside a workspace, even if passed", async () => {
+    it("is empty when generated inside a workspace", async () => {
       const tree = await runner.runSchematic("project", {
         part: "server",
         workspaceName: "in-workspace-allow-builds",
         directory: "in-workspace-allow-builds-apps/server",
         packageManager: "pnpm",
-        allowBuilds: ["wrtc"],
       });
       expect(tree.files).not.toContain(
         "/in-workspace-allow-builds-apps/server/pnpm-workspace.yaml",
@@ -374,48 +373,33 @@ describe("project schematic", () => {
       expect(packageJson).not.toHaveProperty("trustedDependencies");
     });
 
-    it("writes a pnpm-workspace.yaml allowBuilds map for a standalone pnpm project", async () => {
-      const tree = await runner.runSchematic("project", {
-        part: "server",
-        workspaceName: "standalone-allow-builds",
-        directory: "standalone-allow-builds-apps/server",
-        workspace: false,
-        packageManager: "pnpm",
-        allowBuilds: ["wrtc"],
-      });
-      const pnpmWorkspaceYaml = tree.readContent(
-        "/standalone-allow-builds-apps/server/pnpm-workspace.yaml",
-      );
-      expect(pnpmWorkspaceYaml).toContain("allowBuilds:");
-      expect(pnpmWorkspaceYaml).toContain("wrtc: true");
-    });
-
-    it("does not generate pnpm-workspace.yaml for a standalone pnpm project with no allowBuilds", async () => {
+    it("always allows bun in a pnpm-workspace.yaml for a standalone pnpm project", async () => {
       const tree = await runner.runSchematic("project", {
         part: "client",
-        workspaceName: "standalone-no-allow-builds",
-        directory: "standalone-no-allow-builds-apps/client",
+        workspaceName: "standalone-allow-builds",
+        directory: "standalone-allow-builds-apps/client",
         workspace: false,
         packageManager: "pnpm",
       });
-      expect(tree.files).not.toContain(
-        "/standalone-no-allow-builds-apps/client/pnpm-workspace.yaml",
+      const pnpmWorkspaceYaml = tree.readContent(
+        "/standalone-allow-builds-apps/client/pnpm-workspace.yaml",
       );
+      expect(pnpmWorkspaceYaml).toContain("allowBuilds:");
+      expect(pnpmWorkspaceYaml).toContain("bun: true");
     });
 
-    it("writes allowScripts/trustedDependencies for a standalone npm/bun project", async () => {
+    it("always allows bun in allowScripts/trustedDependencies for a standalone npm/bun project", async () => {
       const npmTree = await runner.runSchematic("project", {
         part: "server",
         workspaceName: "standalone-npm-allow-builds",
         directory: "standalone-npm-allow-builds-apps/server",
         workspace: false,
         packageManager: "npm",
-        allowBuilds: ["wrtc"],
       });
       const npmPackageJson = JSON.parse(
         npmTree.readContent("/standalone-npm-allow-builds-apps/server/package.json"),
       );
-      expect(npmPackageJson.allowScripts).toEqual({ wrtc: true });
+      expect(npmPackageJson.allowScripts).toEqual({ bun: true });
 
       const bunTree = await runner.runSchematic("project", {
         part: "server",
@@ -423,12 +407,11 @@ describe("project schematic", () => {
         directory: "standalone-bun-allow-builds-apps/server",
         workspace: false,
         packageManager: "bun",
-        allowBuilds: ["wrtc"],
       });
       const bunPackageJson = JSON.parse(
         bunTree.readContent("/standalone-bun-allow-builds-apps/server/package.json"),
       );
-      expect(bunPackageJson.trustedDependencies).toEqual(["wrtc"]);
+      expect(bunPackageJson.trustedDependencies).toEqual(["bun"]);
     });
   });
 });
