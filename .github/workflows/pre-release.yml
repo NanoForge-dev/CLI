@@ -34,8 +34,10 @@ jobs:
       - name: Create release PR
         uses: ./node_modules/@nanoforge-dev/actions/actions/create-packages-release-pr
         with:
-          packages: "@nanoforge-dev/cli"
+          packages: "@nanoforge-dev/config,@nanoforge-dev/schematics,@nanoforge-dev/cli"
           version: ${{ inputs.version }}
+          branch-format: "releases/cli@{version}"
+          commit-format: "chore: release @nanoforge-dev/cli@{version}"
           dry: ${{ inputs.dry_run }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

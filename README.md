@@ -183,7 +183,7 @@ Variables are scoped by prefix:
 
 > **Note:** Prefixes are stripped before the variable is exposed to libraries.
 
-For full documentation on how libraries consume these variables, see [@nanoforge-dev/config](https://github.com/NanoForge-dev/Engine/tree/main/packages/config).
+For full documentation on how libraries consume these variables, see [@nanoforge-dev/config](https://github.com/NanoForge-dev/CLI/tree/main/libs/config).
 
 ## Contributing
 
