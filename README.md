@@ -20,7 +20,7 @@ This repository contains the CLI of NanoForge. Check [releases][github-releases]
 
 ## Usage
 
-To use Nanoforge CLI, please refer to the [CLI documentation][cli-source] !
+To use Nanoforge CLI, please refer to the [CLI documentation](https://nanoforge-dev.github.io/docs/cli/) !
 
 First, install the CLI :
 
