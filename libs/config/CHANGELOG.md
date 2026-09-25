@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file.
 
+# [2.3.1](https://github.com/NanoForge-dev/CLI/compare/2.3.0...2.3.1) - (2026-09-25)
+
 # [2.3.0](https://github.com/NanoForge-dev/CLI/compare/1.6.2...2.3.0) - (2026-09-24)
 
 > First release of `@nanoforge-dev/config` from the CLI monorepo (`libs/config`). Earlier 1.x
