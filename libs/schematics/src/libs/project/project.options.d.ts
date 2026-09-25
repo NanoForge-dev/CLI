@@ -54,8 +54,14 @@ export interface ProjectOptions {
    */
   networkVersion: string;
 
-  /** Resolved version/protocol for the nanoforge engine package */
-  nanoforgeVersion: string;
+  /**
+   * Resolved version/protocol shared by the engine packages
+   * (@nanoforge-dev/core, common, config, asset, env)
+   */
+  engineVersion: string;
+
+  /** Resolved version/protocol for @nanoforge-dev/cli */
+  cliVersion: string;
 
   /**
    * Only meaningful when `part` is "client": whether the client syncs its

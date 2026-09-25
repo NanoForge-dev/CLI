@@ -1,5 +1,5 @@
+import type { Context } from "@nanoforge-dev/common";
 import type { EditorSystemManifest, Registry } from "@nanoforge-dev/ecs";
-import { type Context } from "nanoforge";
 
 import { Position2D } from "../components/position-2d.component";
 

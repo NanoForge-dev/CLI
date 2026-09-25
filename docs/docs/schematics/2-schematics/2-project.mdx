@@ -11,7 +11,7 @@ The `project` schematic generates a complete client or server project under `dir
 
 For a standalone project (`workspace: false`), engine dependency versions are pinned to the newest release published at least 48h ago, mirroring pnpm's own `minimumReleaseAge` supply-chain protection. `@nanoforge-dev/ecs` and `@nanoforge-dev/network` are resolved directly under those same names — no aliasing to a different registry package. A standalone project also generates its own `allowBuilds` config (`pnpm-workspace.yaml`'s `allowBuilds` map, `package.json`'s `allowScripts` or `trustedDependencies`, depending on `packageManager`) since it has no parent workspace root to provide one — see `allowBuilds` below.
 
-Engine packages are declared as `devDependencies`, except `@nanoforge-dev/network` on a server project, which is declared in `dependencies` because the server needs it at runtime. A client project gets `@nanoforge-dev/graphics-2d`, `@nanoforge-dev/input` and `@nanoforge-dev/network` in addition to `@nanoforge-dev/ecs` and `nanoforge`.
+Engine packages are declared as `devDependencies`, except `@nanoforge-dev/network` on a server project, which is declared in `dependencies` because the server needs it at runtime. Every project gets `@nanoforge-dev/cli`, `@nanoforge-dev/core`, `@nanoforge-dev/common`, `@nanoforge-dev/config`, `@nanoforge-dev/asset` and `@nanoforge-dev/ecs`; a client project additionally gets `@nanoforge-dev/env`, `@nanoforge-dev/graphics-2d`, `@nanoforge-dev/input` and `@nanoforge-dev/network`. The engine packages (`core`, `common`, `config`, `asset`, `env`) share a single version, resolved from `@nanoforge-dev/core`.
 
 ## Usage
 

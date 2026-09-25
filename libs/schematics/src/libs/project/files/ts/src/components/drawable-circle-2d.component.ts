@@ -1,6 +1,6 @@
+import type { NfFile } from "@nanoforge-dev/common";
 import type { EditorComponentManifest } from "@nanoforge-dev/ecs";
 import { Circle, type Layer } from "@nanoforge-dev/graphics-2d";
-import type { NfFile } from "nanoforge";
 
 export class DrawableCircle2D {
   public readonly name: string = this.constructor.name;

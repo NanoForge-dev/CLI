@@ -16,6 +16,8 @@ import { fetchTrustedVersion } from "@utils/registry";
 
 import {
   DEFAULT_APP_NAME,
+  DEFAULT_CLI_DEPENDENCY_VERSION,
+  DEFAULT_ENGINE_VERSION,
   DEFAULT_LANGUAGE,
   DEFAULT_NANOFORGE_DEPENDENCY_VERSION,
   DEFAULT_PACKAGE_MANAGER,
@@ -29,14 +31,16 @@ interface DepVersions {
   graphics2d: string;
   input: string;
   network: string;
-  nanoforge: string;
+  engine: string;
+  cli: string;
 }
 
 const resolveDepVersions = async (part: ProjectSchema["part"]): Promise<DepVersions> => {
   const isClient = part === "client";
 
-  const [nanoforge, ecs, network, graphics2d, input] = await Promise.all([
-    fetchTrustedVersion("nanoforge", DEFAULT_NANOFORGE_DEPENDENCY_VERSION),
+  const [engine, cli, ecs, network, graphics2d, input] = await Promise.all([
+    fetchTrustedVersion("@nanoforge-dev/core", DEFAULT_ENGINE_VERSION),
+    fetchTrustedVersion("@nanoforge-dev/cli", DEFAULT_CLI_DEPENDENCY_VERSION),
     fetchTrustedVersion("@nanoforge-dev/ecs", DEFAULT_NANOFORGE_DEPENDENCY_VERSION),
     fetchTrustedVersion("@nanoforge-dev/network", DEFAULT_NANOFORGE_DEPENDENCY_VERSION),
     isClient
@@ -52,7 +56,8 @@ const resolveDepVersions = async (part: ProjectSchema["part"]): Promise<DepVersi
     graphics2d,
     input,
     network,
-    nanoforge,
+    engine,
+    cli,
   };
 };
 
@@ -78,7 +83,8 @@ const transform = async (schema: ProjectSchema): Promise<ProjectOptions> => {
     graphics2dVersion: depVersions.graphics2d,
     inputVersion: depVersions.input,
     networkVersion: depVersions.network,
-    nanoforgeVersion: depVersions.nanoforge,
+    engineVersion: depVersions.engine,
+    cliVersion: depVersions.cli,
     hasServer: schema.hasServer,
     docker: schema.docker ?? false,
     editor: schema.editor ?? false,

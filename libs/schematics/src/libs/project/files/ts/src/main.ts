@@ -1,4 +1,5 @@
-import { NanoforgeFactory, type <%= part === "client" ? "ClientRunOptions" : "ServerRunOptions" %> } from "nanoforge";
+import { type <%= part === "client" ? "ClientRunOptions" : "ServerRunOptions" %> } from "@nanoforge-dev/common";
+import { NanoforgeFactory } from "@nanoforge-dev/core";
 import { EcsLibrary } from "@nanoforge-dev/ecs/<%= part %>";<% if (part === "client") { %>
 import { Graphics2DLibrary } from "@nanoforge-dev/graphics-2d";
 import { InputLibrary } from "@nanoforge-dev/input";<% } %>

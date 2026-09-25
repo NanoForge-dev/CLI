@@ -1,7 +1,7 @@
 /**
+ * @typedef {import("@nanoforge-dev/common").NfFile} NfFile
  * @typedef {import("@nanoforge-dev/ecs").EditorComponentManifest} EditorComponentManifest
  * @typedef {import("@nanoforge-dev/graphics-2d").Layer} Layer
- * @typedef {import("nanoforge").NfFile} NfFile
  */
 
 import { Circle } from "@nanoforge-dev/graphics-2d";
