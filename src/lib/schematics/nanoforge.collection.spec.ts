@@ -1,8 +1,8 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { NanoforgeCollection } from "./nanoforge.collection";
 
-const mockRunner = { run: async () => null, rawFullCommand: () => "" } as any;
+const mockRunner = { run: vi.fn(async () => null), rawFullCommand: () => "" } as any;
 
 describe("NanoforgeCollection", () => {
   const collection = new NanoforgeCollection(mockRunner);
@@ -34,6 +34,13 @@ describe("NanoforgeCollection", () => {
 
     it("should accept a valid schematic alias", async () => {
       await expect(collection.execute("workspace", [])).resolves.not.toThrow();
+    });
+
+    it("should wrap the collection path in portable double quotes", async () => {
+      await collection.execute("project", []);
+
+      const args = mockRunner.run.mock.calls.at(-1)?.[0];
+      expect(args[3]).toMatch(/^".*:project"$/);
     });
 
     it("should reject an invalid schematic name", async () => {

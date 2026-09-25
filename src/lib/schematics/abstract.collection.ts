@@ -36,7 +36,7 @@ export abstract class AbstractCollection {
   ): string[] {
     return [
       ...flags,
-      `'${getModulePath(this.collection + "/collection.json")}:${name}'`,
+      `"${getModulePath(this.collection + "/collection.json")}:${name}"`,
       ...this.serializeOptions(options),
     ];
   }
