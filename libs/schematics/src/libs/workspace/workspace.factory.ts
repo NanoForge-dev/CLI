@@ -36,13 +36,13 @@ const transform = async (schema: WorkspaceSchema): Promise<WorkspaceOptions> => 
 
   const versions = await fetchTrustedVersions({
     "@nanoforge-dev/cli": { fallback: DEFAULT_CLI_DEPENDENCY_VERSION },
-    nanoforge: { fallback: DEFAULT_ENGINE_VERSION },
+    "@nanoforge-dev/core": { fallback: DEFAULT_ENGINE_VERSION },
     typescript: { fallback: DEFAULT_TYPESCRIPT_VERSION, major: 6 },
   });
 
   return {
     name: schema.name,
-    engineVersion: versions.nanoforge,
+    engineVersion: versions["@nanoforge-dev/core"],
     cliVersion: versions["@nanoforge-dev/cli"],
     typescriptVersion: versions.typescript,
     language: schema.language,

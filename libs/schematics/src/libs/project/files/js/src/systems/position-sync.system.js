@@ -1,7 +1,7 @@
 /**
+ * @typedef {import("@nanoforge-dev/common").Context} Context
  * @typedef {import("@nanoforge-dev/ecs").EditorSystemManifest} EditorSystemManifest
  * @typedef {import("@nanoforge-dev/ecs").Registry} Registry
- * @typedef {import("nanoforge").Context} Context
  */
 
 import { Position2D } from "../components/position-2d.component";

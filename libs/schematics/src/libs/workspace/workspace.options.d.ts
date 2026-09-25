@@ -5,7 +5,7 @@ export interface WorkspaceOptions {
   name: string;
 
   /**
-   * Version of engine packages (nanoforge, @nanoforge-dev/cli),
+   * Version of engine packages (@nanoforge-dev/core, common, config, asset, env),
    * resolved to the newest registry release that respects MIN_RELEASE_AGE_HOURS.
    */
   engineVersion: string;

@@ -10,11 +10,16 @@
     "@nanoforge-dev/network": "<%= networkVersion %>"
   },<% } %>
   "devDependencies": {
-    "@nanoforge-dev/ecs": "<%= ecsVersion %>",<% if (part === "client") { %>
+    "@nanoforge-dev/asset": "<%= engineVersion %>",
+    "@nanoforge-dev/cli": "<%= cliVersion %>",
+    "@nanoforge-dev/common": "<%= engineVersion %>",
+    "@nanoforge-dev/core": "<%= engineVersion %>",
+    "@nanoforge-dev/config": "<%= engineVersion %>",
+    "@nanoforge-dev/ecs": "<%= ecsVersion %>"<% if (part === "client") { %>,
+    "@nanoforge-dev/env": "<%= engineVersion %>",
     "@nanoforge-dev/graphics-2d": "<%= graphics2dVersion %>",
     "@nanoforge-dev/input": "<%= inputVersion %>",
-    "@nanoforge-dev/network": "<%= networkVersion %>",<% } %>
-    "nanoforge": "<%= nanoforgeVersion %>"
+    "@nanoforge-dev/network": "<%= networkVersion %>"<% } %>
   },<% if (packageManager === "npm" && allowBuilds.length > 0) { %>
   "allowScripts": {<% allowBuilds.forEach(function (pkg, i) { %>
     "<%= pkg %>": true<% if (i < allowBuilds.length - 1) { %>,<% } %><% }); %>

@@ -2,7 +2,6 @@ import { existsSync, mkdirSync, rmSync } from "node:fs";
 import { resolve } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { stripDefineConfig } from "./helpers/project-fixtures";
 import { runCli } from "./helpers/run-cli";
 
 const tmpDir = resolve(__dirname, "../.tmp-e2e-create");
@@ -40,7 +39,6 @@ describe("nf create (TypeScript, client project)", () => {
   beforeAll(async () => {
     mkdirSync(projectDir, { recursive: true });
     await newProject("create-app", projectDir, "ts", false);
-    stripDefineConfig(appDir);
   });
 
   it("should create a component successfully", async () => {
@@ -105,8 +103,6 @@ describe("nf create (TypeScript, server project in a workspace)", () => {
   beforeAll(async () => {
     mkdirSync(projectDir, { recursive: true });
     await newProject("create-server-app", projectDir, "ts", true);
-    stripDefineConfig(workspaceDir);
-    stripDefineConfig(serverDir);
   });
 
   it("should create a server component successfully", async () => {
@@ -152,7 +148,6 @@ describe("nf create (JavaScript)", () => {
   beforeAll(async () => {
     mkdirSync(projectDir, { recursive: true });
     await newProject("create-js-app", projectDir, "js", false);
-    stripDefineConfig(appDir);
   });
 
   it("should create a JavaScript component successfully", async () => {

@@ -50,17 +50,20 @@ describe("workspace schematic", () => {
       expect(packageJson.workspaces).toEqual(["apps/*"]);
     });
 
-    it("does not include @nanoforge-dev/core", () => {
-      expect(packageJson.devDependencies["@nanoforge-dev/core"]).toBeUndefined();
+    it("does not include engine runtime packages", () => {
+      for (const pkg of ["asset", "common", "core", "env"]) {
+        expect(packageJson.devDependencies[`@nanoforge-dev/${pkg}`]).toBeUndefined();
+      }
+      expect(packageJson.devDependencies["nanoforge"]).toBeUndefined();
     });
 
     it("should not include pnpm config by default", () => {
       expect(packageJson).not.toHaveProperty("pnpm");
     });
 
-    it("should resolve real versions for cli/nanoforge/typescript", () => {
+    it("should resolve real versions for cli/config/typescript", () => {
       expect(packageJson.devDependencies["@nanoforge-dev/cli"]).toMatch(RESOLVED_VERSION);
-      expect(packageJson.devDependencies["nanoforge"]).toMatch(RESOLVED_VERSION);
+      expect(packageJson.devDependencies["@nanoforge-dev/config"]).toMatch(RESOLVED_VERSION);
       expect(packageJson.devDependencies["typescript"]).toMatch(RESOLVED_VERSION);
     });
 
@@ -106,6 +109,7 @@ describe("workspace schematic", () => {
       const packageJson = JSON.parse(tree.readContent("/js-workspace/package.json"));
       expect(packageJson.devDependencies["typescript"]).toBeUndefined();
       expect(packageJson.devDependencies["@nanoforge-dev/cli"]).toMatch(RESOLVED_VERSION);
+      expect(packageJson.devDependencies["@nanoforge-dev/config"]).toMatch(RESOLVED_VERSION);
       expect(packageJson.devDependencies["@nanoforge-dev/core"]).toBeUndefined();
       expect(packageJson.devDependencies["prettier"]).toBeUndefined();
       expect(packageJson.version).toBeUndefined();

@@ -2,7 +2,7 @@ import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { stripDefineConfig, writeStandaloneEntry } from "./helpers/project-fixtures";
+import { writeStandaloneEntry } from "./helpers/project-fixtures";
 import { runCli } from "./helpers/run-cli";
 
 const tmpDir = resolve(__dirname, "../.tmp-e2e-build");
@@ -41,7 +41,6 @@ describe("nf build (TypeScript, no server)", () => {
   beforeAll(async () => {
     mkdirSync(projectDir, { recursive: true });
     await newProject("build-app", projectDir, false);
-    stripDefineConfig(appDir);
     writeStandaloneEntry(appDir);
   });
 
@@ -127,7 +126,6 @@ describe("nf build (TypeScript, with server)", () => {
   beforeAll(async () => {
     mkdirSync(projectDir, { recursive: true });
     await newProject("build-server-app", projectDir, true);
-    for (const dir of [workspaceDir, clientDir, serverDir]) stripDefineConfig(dir);
     writeStandaloneEntry(clientDir);
     writeStandaloneEntry(serverDir);
   });

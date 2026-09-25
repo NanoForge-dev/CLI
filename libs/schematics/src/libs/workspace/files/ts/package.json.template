@@ -8,7 +8,7 @@
   },
   "devDependencies": {
     "@nanoforge-dev/cli": "<%= cliVersion %>",
-    "nanoforge": "<%= engineVersion %>",
+    "@nanoforge-dev/config": "<%= engineVersion %>",
     "typescript": "<%= typescriptVersion %>"
   },<% if (packageManager !== "pnpm") { %>
   "workspaces": ["apps/*"],<% } %><% if (packageManager === "npm" && allowBuilds.length > 0) { %>

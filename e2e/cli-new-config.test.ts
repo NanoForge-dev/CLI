@@ -47,7 +47,7 @@ describe("nf new config output (no server)", () => {
   });
 
   it("should use defineConfig from nanoforge", () => {
-    expect(config).toContain('import { defineConfig } from "nanoforge/config";');
+    expect(config).toContain('import { defineConfig } from "@nanoforge-dev/config";');
   });
 });
 
@@ -93,7 +93,8 @@ describe("nf new package.json output", () => {
 
   it("should have nanoforge dependencies", () => {
     const allDeps = { ...pkg.dependencies, ...pkg.devDependencies };
-    expect(allDeps).toHaveProperty("nanoforge");
+    expect(allDeps).toHaveProperty("@nanoforge-dev/core");
+    expect(allDeps).toHaveProperty("@nanoforge-dev/config");
     expect(allDeps).toHaveProperty("@nanoforge-dev/ecs");
     expect(allDeps).toHaveProperty("@nanoforge-dev/graphics-2d");
   });

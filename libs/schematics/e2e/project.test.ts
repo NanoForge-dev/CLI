@@ -10,7 +10,7 @@ const collectionPath = resolve(__dirname, "../dist/collection.json");
 // protocol came back.
 // Includes semver-range fallbacks (e.g. "^2") so this still passes when the
 // registry is unreachable and the fetcher falls back to its default.
-const RESOLVED_VERSION = /^(\d+\.\d+\.\d+|workspace:\*|\*|\^\d+(\.\d+){0,2})$/;
+const RESOLVED_VERSION = /^(\d+\.\d+\.\d+|workspace:\*|\*|latest|\^\d+(\.\d+){0,2})$/;
 
 describe("project schematic", () => {
   const runner = new SchematicTestRunner("schematics", collectionPath);
@@ -266,7 +266,8 @@ describe("project schematic", () => {
             tree.readContent(`/${packageManager}-dep-apps/client/package.json`),
           );
           expect(packageJson.devDependencies["@nanoforge-dev/ecs"]).toMatch(RESOLVED_VERSION);
-          expect(packageJson.devDependencies["nanoforge"]).toMatch(RESOLVED_VERSION);
+          expect(packageJson.devDependencies["@nanoforge-dev/core"]).toMatch(RESOLVED_VERSION);
+          expect(packageJson.devDependencies["@nanoforge-dev/cli"]).toMatch(RESOLVED_VERSION);
         });
 
         it("resolves a real registry version when workspace is false", async () => {
@@ -281,7 +282,8 @@ describe("project schematic", () => {
             tree.readContent(`/${packageManager}-standalone-apps/client/package.json`),
           );
           expect(packageJson.devDependencies["@nanoforge-dev/ecs"]).toMatch(RESOLVED_VERSION);
-          expect(packageJson.devDependencies["nanoforge"]).toMatch(RESOLVED_VERSION);
+          expect(packageJson.devDependencies["@nanoforge-dev/core"]).toMatch(RESOLVED_VERSION);
+          expect(packageJson.devDependencies["@nanoforge-dev/cli"]).toMatch(RESOLVED_VERSION);
         });
       },
     );

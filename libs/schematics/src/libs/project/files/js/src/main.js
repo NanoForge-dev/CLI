@@ -1,4 +1,4 @@
-import { NanoforgeFactory } from "nanoforge";
+import { NanoforgeFactory } from "@nanoforge-dev/core";
 import { EcsLibrary } from "@nanoforge-dev/ecs/<%= part %>";<% if (part === "client") { %>
 import { Graphics2DLibrary } from "@nanoforge-dev/graphics-2d";
 import { InputLibrary } from "@nanoforge-dev/input";<% } %>
@@ -11,7 +11,7 @@ import { positionSync } from "./systems/position-sync.system";<% } %><% } else {
 import { move2D } from "./systems/move-2d.system";<% } %>
 
 /**
- * @param {import("nanoforge").<%= part === "client" ? "ClientRunOptions" : "ServerRunOptions" %>} options
+ * @param {import("@nanoforge-dev/common").<%= part === "client" ? "ClientRunOptions" : "ServerRunOptions" %>} options
  * @returns {Promise<void>}
  */
 export const main = async (options) => {

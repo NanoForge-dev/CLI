@@ -9,7 +9,7 @@ import { Tooltip } from "mintlify/components";
 
 The `workspace` schematic creates the root of a NanoForge monorepo: the `nanoforge.config.ts` workspace declaration, `package.json`, and TypeScript or JavaScript base config. A workspace holds one or more projects generated with the [`project`](./2-project) schematic under `apps/`.
 
-`@nanoforge-dev/cli`, `nanoforge` and (for TypeScript) `typescript` are pinned to the newest registry version published at least 48h ago at generation time, mirroring pnpm's own `minimumReleaseAge` supply-chain protection so a freshly (and potentially compromised) published release isn't picked up immediately. Non-nanoforge packages like `typescript` are pinned to a specific version rather than a range; `typescript` is also kept on its `6.x` line rather than jumping to the `7.x` native rewrite.
+`@nanoforge-dev/cli`, `@nanoforge-dev/config` (using the engine version resolved from `@nanoforge-dev/core`) and (for TypeScript) `typescript` are pinned to the newest registry version published at least 48h ago at generation time, mirroring pnpm's own `minimumReleaseAge` supply-chain protection so a freshly (and potentially compromised) published release isn't picked up immediately. Non-nanoforge packages like `typescript` are pinned to a specific version rather than a range; `typescript` is also kept on its `6.x` line rather than jumping to the `7.x` native rewrite.
 
 ## Usage
 
