@@ -1,5 +1,6 @@
 import fs from "fs";
-import { join, resolve } from "path";
+import { dirname, join, resolve, sep } from "path";
+import { fileURLToPath } from "url";
 
 import { FileSystemError } from "@utils/errors";
 
@@ -8,8 +9,8 @@ export const getCwd = (directory: string) => {
 };
 
 export const getModulePath = (name: string, removeLast = false) => {
-  const path = import.meta.resolve(name).replace(/^file:\/\//, "");
-  if (removeLast) return path.split("/").slice(0, -1).join("/");
+  const path = fileURLToPath(import.meta.resolve(name));
+  if (removeLast) return path.endsWith(sep) ? path.slice(0, -1) : dirname(path);
   return path;
 };
 

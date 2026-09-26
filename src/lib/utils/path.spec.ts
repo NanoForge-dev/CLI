@@ -1,7 +1,7 @@
-import { resolve } from "node:path";
+import { basename, isAbsolute, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
-import { getCwd } from "./path";
+import { getCwd, getModulePath } from "./path";
 
 describe("getCwd", () => {
   it("should resolve a relative directory to an absolute path", () => {
@@ -9,10 +9,28 @@ describe("getCwd", () => {
   });
 
   it("should return an absolute path unchanged", () => {
-    expect(getCwd("/tmp/my-project")).toBe("/tmp/my-project");
+    const absolutePath = resolve("tmp", "my-project");
+    expect(getCwd(absolutePath)).toBe(absolutePath);
   });
 
   it("should resolve '.' to current working directory", () => {
     expect(getCwd(".")).toBe(resolve("."));
+  });
+});
+
+describe("getModulePath", () => {
+  it("should convert a resolved file URL to a native absolute path", () => {
+    const path = getModulePath("./path.ts");
+
+    expect(isAbsolute(path)).toBe(true);
+    expect(path).not.toMatch(/^file:/);
+    expect(basename(path)).toBe("path.ts");
+  });
+
+  it("should return the containing directory when requested", () => {
+    const path = getModulePath("./path.ts", true);
+
+    expect(isAbsolute(path)).toBe(true);
+    expect(basename(path)).toBe("utils");
   });
 });
