@@ -20,6 +20,11 @@
       "factory": "./libs/system/system.factory#main",
       "description": "Create a NanoForge system.",
       "schema": "./libs/system/schema.json"
+    },
+    "plugin": {
+      "factory": "./libs/plugin/plugin.factory#main",
+      "description": "Create a NanoForge editor plugin (manifest, Svelte panel, command, setting).",
+      "schema": "./libs/plugin/schema.json"
     }
   }
 }

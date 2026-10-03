@@ -1,4 +1,6 @@
 import { defaultClientConfig, defaultServerConfig } from "@nanoforge-dev/config";
+import { existsSync, readdirSync } from "node:fs";
+import { resolve } from "node:path";
 
 import { parseWorkspaceConfig } from "@lib/config";
 import {
@@ -7,6 +9,7 @@ import {
   getCreateTypeInput,
   getDirectoryInput,
   getPathInputWithDefault,
+  getPluginNameInputOrAsk,
 } from "@lib/input";
 import { Collection, CollectionFactory } from "@lib/schematics";
 import { Messages } from "@lib/ui";
@@ -31,6 +34,10 @@ export class CreateAction extends AbstractAction {
 
   public async handle(args: Input, options: Input): Promise<HandleResult> {
     const directory = getDirectoryInput(options);
+    const type = getCreateTypeInput(args);
+    // An editor plugin is a project of its own: it needs no app around it.
+    if (type === "plugin") return this.generatePlugin(directory, options);
+
     const workspaceConfig = await parseWorkspaceConfig(directory);
 
     if (workspaceConfig.type === "workspace") {
@@ -43,8 +50,6 @@ export class CreateAction extends AbstractAction {
     const { config } = workspaceConfig;
     const isClient = config.type === "client";
     const defaults = isClient ? defaultClientConfig : defaultServerConfig;
-
-    const type = getCreateTypeInput(args);
 
     const name = await getCreateNameInputOrAsk(options);
     const path = getPathInputWithDefault(
@@ -60,6 +65,23 @@ export class CreateAction extends AbstractAction {
       language: config.language ?? defaults.language,
     });
 
+    return {};
+  }
+
+  /** Generates a new editor plugin in `<directory>/<path or the plugin's short name>`. */
+  private async generatePlugin(directory: string, options: Input): Promise<HandleResult> {
+    const name = await getPluginNameInputOrAsk(options);
+    const path = getPathInputWithDefault(options, name.split("/").at(-1) ?? name);
+    const target = resolve(directory, path);
+    if (existsSync(target) && readdirSync(target).length) {
+      throw new CLIError(
+        `'${target}' already exists and is not empty.`,
+        "Choose another folder with --path.",
+      );
+    }
+    const collection = CollectionFactory.create(Collection.NANOFORGE, directory);
+    await executeSchematic("Plugin", collection, "plugin", { name, directory: path });
+    console.info(Messages.CREATE_PLUGIN_NEXT(target));
     return {};
   }
 

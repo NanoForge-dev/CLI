@@ -3,8 +3,10 @@ import { type Input } from "@lib/input";
 
 import { InvalidCommandArgumentError } from "@utils/errors";
 
-export const getCreateTypeInput = (inputs: Input): "component" | "system" => {
+export type CreateType = "component" | "system" | "plugin";
+
+export const getCreateTypeInput = (inputs: Input): CreateType => {
   const res = getStringInput(inputs, "type");
-  if (res && ["component", "system"].includes(res)) return res as "component" | "system";
-  throw new InvalidCommandArgumentError("type", "'component' or 'system'");
+  if (res && ["component", "system", "plugin"].includes(res)) return res as CreateType;
+  throw new InvalidCommandArgumentError("type", "'component', 'system' or 'plugin'");
 };
