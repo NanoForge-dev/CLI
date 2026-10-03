@@ -5,6 +5,7 @@ import { AbstractCommand } from "../abstract.command";
 interface EditorOptions {
   directory?: string;
   open?: boolean;
+  port?: string;
 }
 
 export class EditorCommand extends AbstractCommand {
@@ -18,6 +19,7 @@ export class EditorCommand extends AbstractCommand {
         "open the editor on the default web browser (default: true if path is specified, false otherwise)",
       )
       .option("--no-open", "do not open the editor on the default web browser")
+      .option("-p, --port <port>", "port of the editor (default: 5173)")
       .action(async (path: string, rawOptions: EditorOptions) => {
         const args = AbstractCommand.mapToInput({
           path,
@@ -26,6 +28,7 @@ export class EditorCommand extends AbstractCommand {
         const options = AbstractCommand.mapToInput({
           directory: rawOptions.directory,
           open: rawOptions.open,
+          port: rawOptions.port,
         });
 
         await this.action.run(args, options);
