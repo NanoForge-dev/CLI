@@ -31,6 +31,7 @@ interface BuildTarget {
   static?: string;
   output: string;
   platform: "browser" | "node";
+  sourcemap: boolean;
 }
 
 export class BuildAction extends AbstractAction {
@@ -103,6 +104,7 @@ export class BuildAction extends AbstractAction {
         project.config.out?.dir ?? defaults.out.dir,
       ),
       platform: isClient ? "browser" : "node",
+      sourcemap: isEditor,
     };
   }
 
@@ -127,7 +129,13 @@ export class BuildAction extends AbstractAction {
           target.directory,
           target.entry,
           target.output,
-          ["--asset-naming", "[name].[ext]", "--target", target.platform],
+          [
+            "--asset-naming",
+            "[name].[ext]",
+            "--target",
+            target.platform,
+            ...(target.sourcemap ? ["--sourcemap=linked"] : []),
+          ],
           rebuild,
         );
       }, false);
