@@ -56,6 +56,9 @@ export const Messages = {
   CREATE_SUCCESS: success("Element successfully created!"),
   CREATE_FAILED: failure("Creation failed!"),
   CREATE_NAME_QUESTION: "What is the name of your component/system?",
+  CREATE_PLUGIN_NAME_QUESTION: "What is the name of your plugin (@scope/name)?",
+  CREATE_PLUGIN_NEXT: (directory: string) =>
+    `\nPlugin created in ${directory}\n  cd ${directory}\n  pnpm install\n  pnpm dev\nthen start the editor with DEV_PLUGINS=${directory} nf editor <project>.\n`,
 
   // --- Dev ---
   DEV_START: "NanoForge Dev Mode",

@@ -188,3 +188,49 @@ describe("nf create (error cases)", () => {
     expect(exitCode).not.toBe(0);
   });
 });
+
+describe("nf create plugin", () => {
+  const pluginsDir = resolve(tmpDir, "plugins");
+
+  beforeAll(() => {
+    mkdirSync(pluginsDir, { recursive: true });
+  });
+
+  it("should scaffold an editor plugin outside of any project", async () => {
+    const { stdout, exitCode } = await runCli([
+      "create",
+      "plugin",
+      "--name",
+      "@acme/score-board",
+      "-d",
+      pluginsDir,
+    ]);
+
+    expect(exitCode).toBe(0);
+    expect(stdout).toContain("Plugin created in");
+    const dir = resolve(pluginsDir, "score-board");
+    for (const file of [
+      "nanoforge.manifest.json",
+      "package.json",
+      "src/index.ts",
+      "src/Panel.svelte",
+    ])
+      expect(existsSync(resolve(dir, file))).toBe(true);
+  });
+
+  it("should refuse a folder that is not empty, and a name that is not @scope/name", async () => {
+    const again = await runCli([
+      "create",
+      "plugin",
+      "--name",
+      "@acme/score-board",
+      "-d",
+      pluginsDir,
+    ]);
+    expect(again.exitCode).not.toBe(0);
+
+    const bad = await runCli(["create", "plugin", "--name", "scoreboard", "-d", pluginsDir]);
+    expect(bad.exitCode).not.toBe(0);
+    expect(existsSync(resolve(pluginsDir, "scoreboard"))).toBe(false);
+  });
+});

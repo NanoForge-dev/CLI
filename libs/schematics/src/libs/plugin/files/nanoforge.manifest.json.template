@@ -1,0 +1,49 @@
+{
+  "type": "plugin",
+  "name": "<%= name %>",
+  "version": "0.1.0",
+  "displayName": "<%= title %>",
+  "description": "Counts, to show how an editor plugin is made.",
+  "engines": {
+    "editor": ">=0.1.0"
+  },
+  "entry": {
+    "client": "index.js"
+  },
+  "activation": ["onWidget:<%= id %>.panel", "onCommand:<%= id %>.add"],
+  "contributes": {
+    "widgets": [
+      {
+        "id": "<%= id %>.panel",
+        "title": "<%= title %>",
+        "icon": "plus",
+        "defaultSlot": "rightBottom",
+        "order": 900
+      }
+    ],
+    "commands": [
+      {
+        "id": "<%= id %>.add",
+        "title": "Add to the counter",
+        "category": "<%= title %>"
+      }
+    ],
+    "menus": [
+      {
+        "menu": "edit",
+        "command": "<%= id %>.add",
+        "group": "<%= id %>"
+      }
+    ],
+    "settings": [
+      {
+        "key": "step",
+        "type": "number",
+        "default": 1,
+        "title": "Step",
+        "description": "How much each click adds.",
+        "category": "<%= title %>"
+      }
+    ]
+  }
+}

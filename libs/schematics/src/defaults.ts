@@ -20,3 +20,6 @@ export const DEFAULT_TYPESCRIPT_VERSION = "6.0.3";
  * maliciously) published release isn't picked up immediately.
  */
 export const MIN_RELEASE_AGE_HOURS = 48;
+
+/** Fallback for the editor packages (`@nanoforge-dev/editor-*`), which share one version line. */
+export const DEFAULT_EDITOR_VERSION = "^1.0.0";

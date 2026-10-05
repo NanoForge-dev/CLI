@@ -18,6 +18,15 @@ export const getNewNameInputOrAsk = (inputs: Input) => {
   );
 };
 
+export const getPluginNameInputOrAsk = (inputs: Input) => {
+  return getInputOrAsk(getNameInput(inputs), () =>
+    askInput(Messages.CREATE_PLUGIN_NAME_QUESTION, {
+      required: true,
+      default: "@nanoforge/ecs",
+    }),
+  );
+};
+
 export const getCreateNameInputOrAsk = (inputs: Input) => {
   return getInputOrAsk(getNameInput(inputs), () =>
     askInput(Messages.CREATE_NAME_QUESTION, {

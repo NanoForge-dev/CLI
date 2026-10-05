@@ -33,6 +33,11 @@ export class NanoforgeCollection extends AbstractCollection {
       alias: "system",
       description: "Generate a System for an application",
     },
+    {
+      name: "plugin",
+      alias: "plugin",
+      description: "Generate an editor plugin",
+    },
   ];
 
   constructor(runner: Runner, cwd?: string) {

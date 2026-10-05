@@ -65,7 +65,15 @@ Used to build your nanoforge project.
 
 Used to create nanoforge components or systems.
 
-- `<type>` the type to create (component or system).
+`nf create plugin` creates an **editor plugin** instead: a small working plugin (a panel, a command, a setting, an undoable action) in a folder of its own. It needs no project around it.
+
+```sh
+nf create plugin --name @acme/counter   # writes ./counter
+```
+
+`--name` is the plugin's registry name (`@scope/name`), and `--path` the folder to write (default: the name without its scope). The new folder's README says how to run it in the editor.
+
+- `<type>` the type to create (component, system or plugin).
 - `-d, --directory <directory>` specify the working directory of the command.
 - `-c, --config <config>` path to the config file.
 - `-n, --name <name>` name of the component/system.

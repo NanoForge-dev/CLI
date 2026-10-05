@@ -12,12 +12,12 @@ export class CreateCommand extends AbstractCommand {
   public load(program: Command) {
     program
       .command("create <type>")
-      .description("create nanoforge components or systems")
+      .description("create a component or a system in an app, or an editor plugin (create plugin)")
       .option("-d, --directory <directory>", "specify the working directory of the command")
-      .option("-n, --name <name>", "name of the component/system")
+      .option("-n, --name <name>", "name of the component/system, or @scope/name of the plugin")
       .option(
         "-p, --path <path>",
-        "path to the component/system folder (default: <part>/<components|systems>)",
+        "path to the component/system folder (default: <part>/<components|systems>), or the folder of the new plugin (default: its name)",
       )
       .action(async (type: string, rawOptions: CreateOptions) => {
         const args = AbstractCommand.mapToInput({

@@ -38,4 +38,5 @@ export default [
   createLibTsdownConfig("project"),
   createLibTsdownConfig("component"),
   createLibTsdownConfig("system"),
+  createLibTsdownConfig("plugin"),
 ];
