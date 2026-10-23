@@ -14,6 +14,7 @@ interface NewOptions {
   skipInstall?: boolean;
   docker?: boolean;
   lint?: boolean;
+  agents?: boolean;
   editor?: boolean;
   git?: boolean;
   gitRemote?: string | false;
@@ -43,6 +44,7 @@ export class NewCommand extends AbstractCommand {
       .option("--docker", "generate docker files")
       .option("--no-docker", "do not generate docker files")
       .option("--no-lint", "do not generate lint files")
+      .option("--no-agents", "do not generate AGENTS.md files for AI coding agents")
       .option("--editor", "do add editor dependencies")
       .option("--git", "generate git repository")
       .option("--no-git", "do not generate git repository")
@@ -64,6 +66,7 @@ export class NewCommand extends AbstractCommand {
           skipInstall: rawOptions.skipInstall,
           docker: rawOptions.docker,
           lint: rawOptions.lint,
+          agents: rawOptions.agents,
           editor: rawOptions.editor,
           git: rawOptions.git,
         });
