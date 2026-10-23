@@ -3,6 +3,7 @@ import type { DeepRequired } from "../types/utils.type";
 
 export const defaultWorkspaceConfig: DeepRequired<Omit<WorkspaceConfig, "type">> = {
   packages: [],
+  network: "dedicated",
 };
 
 export const defaultLibConfig: DeepRequired<Omit<LibConfig, "type">> = {

@@ -5,6 +5,7 @@ import { dirname, join, relative } from "node:path";
 import {
   type ResolvedProject,
   type WorkspaceConfig,
+  isPeerToPeer,
   parseWorkspaceConfig,
   resolveProjects,
 } from "@lib/config";
@@ -62,10 +63,23 @@ export class BuildAction extends AbstractAction {
     isEditor: boolean,
   ): BuildTarget[] {
     const projects = resolveProjects(workspaceConfig, baseDirectory);
-
-    return projects.map((project) =>
+    const targets = projects.map((project) =>
       this.createTarget(project, baseDirectory, options, isEditor, projects.length > 1),
     );
+    if (!isPeerToPeer(workspaceConfig)) return targets;
+
+    const client = targets.find((target) => target.platform === "browser");
+    if (!client) return targets;
+
+    const browserServers = targets
+      .filter((target) => target.platform === "node")
+      .map((server) => ({
+        ...server,
+        name: `${server.name} (browser)`,
+        output: relative(server.directory, join(client.directory, client.output, "server")),
+        platform: "browser" as const,
+      }));
+    return [...targets, ...browserServers];
   }
 
   private createTarget(

@@ -8,6 +8,9 @@ export interface ResolvedProject {
   config: ClientConfig | ServerConfig;
 }
 
+export const isPeerToPeer = (workspace: WorkspaceConfig): boolean =>
+  workspace.type === "workspace" && workspace.config.network === "p2p";
+
 export const resolveProjects = (
   workspace: WorkspaceConfig,
   baseDirectory: string,

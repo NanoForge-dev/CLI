@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
@@ -177,6 +177,35 @@ describe("nf build (TypeScript, with server)", () => {
 
     expect(exitCode).toBe(0);
     expect(existsSync(resolve(serverDir, "dist", "server-asset.txt"))).toBe(true);
+  });
+});
+
+describe("nf build (TypeScript, peer-to-peer)", () => {
+  const projectDir = resolve(tmpDir, "build-ts-p2p");
+  const workspaceDir = resolve(projectDir, "build-p2p-app");
+  const clientDir = resolve(workspaceDir, "apps/client");
+  const serverDir = resolve(workspaceDir, "apps/server");
+
+  beforeAll(async () => {
+    mkdirSync(projectDir, { recursive: true });
+    await newProject("build-p2p-app", projectDir, true);
+    writeStandaloneEntry(clientDir);
+    writeStandaloneEntry(serverDir);
+    const configPath = resolve(workspaceDir, "nanoforge.config.ts");
+    const config = readFileSync(configPath, "utf8");
+    writeFileSync(
+      configPath,
+      config.replace('type: "workspace",', 'type: "workspace",\n  network: "p2p",'),
+    );
+  });
+
+  it("should also build the server app for the browser into the client output", async () => {
+    const { exitCode } = await runCli(["build", "-d", workspaceDir]);
+
+    expect(exitCode).toBe(0);
+    expect(existsSync(resolve(clientDir, "dist", "main.js"))).toBe(true);
+    expect(existsSync(resolve(clientDir, "dist", "server", "main.js"))).toBe(true);
+    expect(existsSync(resolve(serverDir, "dist", "main.js"))).toBe(true);
   });
 });
 
