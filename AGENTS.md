@@ -42,12 +42,14 @@ src/
     ├── runner/                                  # exécution de process enfants (build/dev/start)
     ├── schematics/                                # pont vers les schematics Angular DevKit
     ├── tree-kill/                                   # kill récursif d'arbres de process
-    └── ui/                                            # affichage terminal (spinners, couleurs)
+    ├── ui/                                            # affichage terminal (spinners, couleurs)
+    ├── input/, types/, utils/                           # helpers d'entrée utilisateur, types partagés, utilitaires génériques
+    └── constants.ts                                       # constantes partagées
 
 libs/                        # packages internes publiés séparément (workspace pnpm)
 ├── config/                    # @nanoforge-dev/config : définition/validation/merge de config
 │   └── src/{defaults,define-config,merge,parse,types}
-└── schematics/                 # @nanoforge-dev/schematics : schematics (component, project, system, workspace)
+└── schematics/                 # @nanoforge-dev/schematics : schematics (component, project, system, workspace, plugin)
     └── src/{libs,utils,collection.json}
 
 docs/                         # documentation (Docusaurus-like .mdx) + JSON Schemas publics
