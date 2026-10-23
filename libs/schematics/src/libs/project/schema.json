@@ -66,6 +66,11 @@
       "description": "Add editor dependencies",
       "default": false
     },
+    "agents": {
+      "type": "boolean",
+      "description": "Generate an AGENTS.md file documenting the project for AI coding agents",
+      "default": true
+    },
     "libs": {
       "type": "array",
       "items": { "type": "string" },

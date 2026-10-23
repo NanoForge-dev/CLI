@@ -36,6 +36,7 @@ schematics @nanoforge-dev/schematics:project --part=client --workspaceName=my-ga
 | `editor`         | `boolean`                            | `false`      | Reserved for future editor build support                                                                                                                                                                                                                                                                        |
 | `libs`           | `string[]`                           | `[]`         | Relative paths to shared libs this project depends on, written into `nanoforge.config.ts`                                                                                                                                                                                                                       |
 | `allowBuilds`    | `string[]`                           | `[]`         | <Tooltip tip="Only applies when workspace: false — a project inside a workspace relies on the workspace root's own allowBuilds instead.">Packages allowed to run install/build scripts (standalone projects only)</Tooltip>                                                                                     |
+| `agents`         | `boolean`                            | `true`       | <Tooltip tip="Documents the project layout, commands and ECS conventions for AI coding agents (Codex, Cursor, GitHub Copilot, Gemini CLI, Claude Code, ...).">Generate an AGENTS.md file</Tooltip>                                                                                                              |
 
 ## Generated structure
 
@@ -48,6 +49,7 @@ schematics @nanoforge-dev/schematics:project --part=client --workspaceName=my-ga
 ├── pnpm-workspace.yaml     # if !workspace && packageManager: pnpm && allowBuilds.length > 0
 ├── Dockerfile              # if docker: true
 ├── .dockerignore           # if docker: true
+├── AGENTS.md               # if agents: true
 ├── src/
 │   ├── main.ts
 │   ├── components/

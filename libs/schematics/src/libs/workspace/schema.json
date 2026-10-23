@@ -40,6 +40,11 @@
       "type": "boolean",
       "description": "Generate a Dockerfile building every app in the workspace into one image",
       "default": false
+    },
+    "agents": {
+      "type": "boolean",
+      "description": "Generate an AGENTS.md file documenting the project for AI coding agents",
+      "default": true
     }
   }
 }

@@ -27,6 +27,7 @@ schematics @nanoforge-dev/schematics:workspace --name=my-game
 | `strict`         | `boolean`                            | `true`                | <Tooltip tip="Enables strict mode in tsconfig.json for TypeScript, or strict JSDoc checking in compatible editors for JavaScript.">Enable strict mode</Tooltip>                                                                                                                                                                        |
 | `packageManager` | `"npm" \| "yarn" \| "pnpm" \| "bun"` | `npm`                 | <Tooltip tip="pnpm gets a pnpm-workspace.yaml and workspace:* dependency ranges; npm, yarn and bun get a package.json 'workspaces' field and pinned ranges.">Package manager to target</Tooltip>                                                                                                                                       |
 | `allowBuilds`    | `string[]`                           | `[]`                  | <Tooltip tip="`bun` is always included (@nanoforge-dev/cli depends on it and it has its own install script). Written to pnpm-workspace.yaml's allowBuilds map (pnpm), package.json's allowScripts (npm) or trustedDependencies (bun). Ignored for yarn.">Packages allowed to run install/build scripts, in addition to `bun`</Tooltip> |
+| `agents`         | `boolean`                            | `true`                | <Tooltip tip="Documents the workspace layout and commands for AI coding agents; each app gets its own AGENTS.md from the project schematic.">Generate an AGENTS.md file</Tooltip>                                                                                                                                                      |
 
 ## Generated structure
 
@@ -40,6 +41,7 @@ my-game/
 ├── nanoforge.config.ts    # (or .js)
 ├── .gitignore
 ├── README.md
+├── AGENTS.md              # if agents: true
 └── apps/                  # generated with the `project` schematic
 ```
 
