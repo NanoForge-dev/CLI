@@ -48,9 +48,10 @@ export default defineConfig({
 
 ## `workspace`
 
-| Field      | Type       | Default | Description                                                                                                                                                                                                                            |
-| ---------- | ---------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `packages` | `string[]` | `[]`    | <Tooltip tip="e.g. apps/*, apps/**/client, or a literal path like apps/client.">Glob patterns matched against directories relative to the workspace root</Tooltip>, each expected to hold its own `client`, `server`, or `lib` config. |
+| Field      | Type                   | Default       | Description                                                                                                                                                                                                                            |
+| ---------- | ---------------------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `packages` | `string[]`             | `[]`          | <Tooltip tip="e.g. apps/*, apps/**/client, or a literal path like apps/client.">Glob patterns matched against directories relative to the workspace root</Tooltip>, each expected to hold its own `client`, `server`, or `lib` config. |
+| `network`  | `"dedicated" \| "p2p"` | `"dedicated"` | Where the server app runs. `"p2p"` runs it in the browser of the first player who opens the game, the others joining that player over WebRTC: see [Peer-to-peer](#peer-to-peer).                                                       |
 
 A directory matched by a pattern but missing a `nanoforge.config.ts`/`.js` is skipped without
 error. A pattern that matches no project or lib at all only logs a warning, rather than failing
@@ -64,6 +65,27 @@ import { defineConfig } from "@nanoforge-dev/config";
 export default defineConfig({
   type: "workspace",
   packages: ["apps/*", "libs/*"],
+});
+```
+
+### Peer-to-peer
+
+With `network: "p2p"`, the same client and server apps run without a game server:
+
+- `nf build` also builds each server app for the browser, into the client's output (`server/`).
+- `nf start` sets `NANOFORGE_NETWORK_MODE=p2p` for both apps. The server process then only pairs
+  players (WebRTC signaling) on its `LISTENING_TCP_PORT`, and the environment stays the same as
+  with a dedicated server.
+- A player who opens the game without `?room=` hosts it in their tab, and the game can show its
+  invite link (`ctx.network.inviteLink`).
+
+```ts
+import { defineConfig } from "@nanoforge-dev/config";
+
+export default defineConfig({
+  type: "workspace",
+  packages: ["apps/*"],
+  network: "p2p",
 });
 ```
 
