@@ -1,6 +1,6 @@
 ---
 title: create
-description: Create a NanoForge component or system
+description: Create a NanoForge component, system or editor plugin
 ---
 
 ## Overview
@@ -14,18 +14,19 @@ creates files for the client; pass `--server` to target the server instead.
 nf create <type>
 ```
 
-`<type>` is either `component` or `system`.
+`<type>` is `component`, `system`, or `plugin` (an editor plugin, a project of its own).
 
 ## Options
 
-| Option                        | Description                                                   |
-| ----------------------------- | ------------------------------------------------------------- |
-| `<type>`                      | The type to create: `component` or `system`.                  |
-| `-d, --directory <directory>` | Working directory of the command.                             |
-| `-c, --config <config>`       | Path to the configuration file.                               |
-| `-n, --name <name>`           | Name of the component or system.                              |
-| `-s, --server`                | Create on the server instead of the client. Default: `false`. |
-| `-p, --path <path>`           | Path to the component/system folder.                          |
+| Option                        | Description                                                     |
+| ----------------------------- | --------------------------------------------------------------- |
+| `<type>`                      | The type to create: `component`, `system` or `plugin`.          |
+| `-d, --directory <directory>` | Working directory of the command.                               |
+| `-c, --config <config>`       | Path to the configuration file.                                 |
+| `-n, --name <name>`           | Name of the component or system.                                |
+| `-s, --server`                | Create on the server instead of the client. Default: `false`.   |
+| `-p, --path <path>`           | Path to the component/system folder, or the plugin's folder.    |
+| `-t, --template <template>`   | Plugins: `panel` (default) or `theme` (a color theme, no code). |
 
 ## Examples
 
@@ -39,4 +40,18 @@ nf create component --name Position
 
 ```bash
 nf create system --name Movement --server
+```
+
+**Create an editor plugin:**
+
+```bash
+nf create plugin --name @acme/score-board
+```
+
+**Create an editor theme** (a manifest with a color theme and an icon, no code):
+
+```bash
+nf create plugin --name @acme/forest --template theme
+cd forest && node build.mjs --watch
+DEV_PLUGINS=$(pwd) nf editor ../my-game
 ```
