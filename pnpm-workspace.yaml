@@ -20,7 +20,7 @@ catalogs:
     lint-staged: ^17.5.1
   cli:
     '@inquirer/prompts': ^8.7.2
-    '@types/inquirer': ^9.0.10
+    '@types/inquirer': ^10.0.0
     ansis: ^4.4.0
     commander: ^15.0.0
     node-emoji: ^2.2.0
