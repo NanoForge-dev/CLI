@@ -17,7 +17,7 @@ describe("parseConfig", () => {
 
   it("resolves a .js config file the same way as .ts", async () => {
     const resolved = await parseConfig(fixture("valid-config.js"));
-    expect(resolved).toEqual({ type: "workspace", packages: ["apps/*"] });
+    expect(resolved).toEqual({ type: "workspace", packages: ["apps/*"], network: "dedicated" });
   });
 
   it("rejects with code 'not-found' when the file doesn't exist", async () => {

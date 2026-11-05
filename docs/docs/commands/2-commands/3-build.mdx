@@ -9,6 +9,9 @@ description: Build your NanoForge project for production
 and output directories all default to the values in your
 [configuration file](../../configuration/1-configuration-file) and can be overridden per run.
 
+When the workspace sets `network: "p2p"`, each server app is also built for the browser, into the
+client's output directory under `server/`, so the host player's tab can run it.
+
 ## Usage
 
 ```bash

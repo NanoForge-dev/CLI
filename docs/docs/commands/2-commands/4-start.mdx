@@ -49,3 +49,9 @@ nf start --cert ./certs/cert.pem --key ./certs/key.pem
   project root when the game starts. See [Environment
   variables](../../configuration/2-environment-variables).
 </Note>
+
+<Note>
+  When the workspace sets `network: "p2p"`, `nf start` adds `NANOFORGE_NETWORK_MODE=p2p` to the
+  environment of both apps: the server app only pairs players, and the game runs in the host
+  player's browser.
+</Note>

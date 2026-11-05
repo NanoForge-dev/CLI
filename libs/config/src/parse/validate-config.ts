@@ -53,6 +53,7 @@ const sourceableConfigShape = {
 const workspaceConfigSchema = z.object({
   type: z.literal("workspace"),
   packages: z.array(z.string()).optional(),
+  network: z.enum(["dedicated", "p2p"]).optional(),
 });
 
 const libConfigSchema = z.object({
