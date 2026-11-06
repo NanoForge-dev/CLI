@@ -1,0 +1,30 @@
+{
+  "type": "plugin",
+  "name": "<%= name %>",
+  "version": "0.1.0",
+  "displayName": "<%= title %>",
+  "description": "A color theme for the NanoForge editor.",
+  "keywords": ["theme"],
+  "engines": {
+    "editor": ">=0.1.0"
+  },
+  "contributes": {
+    "themes": [
+      {
+        "id": "<%= short %>",
+        "label": "<%= title %>",
+        "extends": "nanoforge-dark",
+        "colors": {
+          "accent": "#2f7d6d",
+          "accent-hover": "#286a5d",
+          "accent-text": "#7fd6c2"
+        },
+        "syntax": {
+          "keyword": "#7fd6c2",
+          "string": "#e6c07b"
+        }
+      }
+    ],
+    "icons": [{ "id": "<%= short %>-leaf", "path": "icons/leaf.svg" }]
+  }
+}

@@ -59,6 +59,8 @@ export const Messages = {
   CREATE_PLUGIN_NAME_QUESTION: "What is the name of your plugin (@scope/name)?",
   CREATE_PLUGIN_NEXT: (directory: string) =>
     `\nPlugin created in ${directory}\n  cd ${directory}\n  pnpm install\n  pnpm dev\nthen start the editor with DEV_PLUGINS=${directory} nf editor <project>.\n`,
+  CREATE_THEME_NEXT: (directory: string) =>
+    `\nTheme created in ${directory}\n  cd ${directory}\n  node build.mjs --watch\nthen start the editor with DEV_PLUGINS=${directory} nf editor <project>, and choose it in Settings › Editor › Appearance.\n`,
 
   // --- Dev ---
   DEV_START: "NanoForge Dev Mode",

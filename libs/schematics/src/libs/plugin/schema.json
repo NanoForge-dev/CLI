@@ -13,6 +13,12 @@
       "type": ["string", "null"],
       "description": "Plugin destination directory. Defaults to the plugin's short name (the part after the scope).",
       "default": null
+    },
+    "template": {
+      "type": "string",
+      "enum": ["panel", "theme"],
+      "description": "What to start from: a panel with a command and a setting (panel), or a color theme with no code (theme).",
+      "default": "panel"
     }
   },
   "required": ["name"]

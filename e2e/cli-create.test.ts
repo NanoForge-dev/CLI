@@ -218,6 +218,38 @@ describe("nf create plugin", () => {
       expect(existsSync(resolve(dir, file))).toBe(true);
   });
 
+  it("should scaffold a theme with no code, and refuse an unknown template", async () => {
+    const { stdout, exitCode } = await runCli([
+      "create",
+      "plugin",
+      "--name",
+      "@acme/forest",
+      "--template",
+      "theme",
+      "-d",
+      pluginsDir,
+    ]);
+    expect(exitCode).toBe(0);
+    expect(stdout).toContain("Theme created in");
+    const dir = resolve(pluginsDir, "forest");
+    for (const file of ["nanoforge.manifest.json", "build.mjs", "icons/leaf.svg"])
+      expect(existsSync(resolve(dir, file))).toBe(true);
+    expect(existsSync(resolve(dir, "src"))).toBe(false);
+
+    const unknown = await runCli([
+      "create",
+      "plugin",
+      "--name",
+      "@acme/other",
+      "--template",
+      "nope",
+      "-d",
+      pluginsDir,
+    ]);
+    expect(unknown.exitCode).not.toBe(0);
+    expect(existsSync(resolve(pluginsDir, "other"))).toBe(false);
+  });
+
   it("should refuse a folder that is not empty, and a name that is not @scope/name", async () => {
     const again = await runCli([
       "create",

@@ -70,6 +70,41 @@ describe("plugin schematic", () => {
     expect(tree.files).toContain("/plugins/my-counter/nanoforge.manifest.json");
   });
 
+  describe("--template theme", () => {
+    let tree: UnitTestTree;
+
+    beforeAll(async () => {
+      tree = await runner.runSchematic("plugin", { name: "@acme/forest", template: "theme" });
+    });
+
+    it("should generate a theme with no code", () => {
+      expect([...tree.files].sort()).toEqual([
+        "/forest/.gitignore",
+        "/forest/README.md",
+        "/forest/build.mjs",
+        "/forest/icons/leaf.svg",
+        "/forest/nanoforge.manifest.json",
+        "/forest/package.json",
+      ]);
+    });
+
+    it("should write a manifest with a theme that extends the editor's, and no entry", () => {
+      const manifest = JSON.parse(tree.readContent("/forest/nanoforge.manifest.json"));
+      expect(manifest).toMatchObject({
+        type: "plugin",
+        name: "@acme/forest",
+        keywords: ["theme"],
+        contributes: {
+          themes: [{ id: "forest", label: "Forest", extends: "nanoforge-dark" }],
+          icons: [{ id: "forest-leaf", path: "icons/leaf.svg" }],
+        },
+      });
+      expect(manifest.entry).toBeUndefined();
+      const pkg = JSON.parse(tree.readContent("/forest/package.json"));
+      expect(pkg.scripts).toEqual({ build: "node build.mjs", dev: "node build.mjs --watch" });
+    });
+  });
+
   it("should refuse a name that is not @scope/name", async () => {
     for (const name of ["counter", "acme/counter", "@Acme/counter", "@acme/", "@acme/a b"])
       await expect(runner.runSchematic("plugin", { name })).rejects.toThrow();
