@@ -58,8 +58,10 @@ Git hooks are installed automatically by `pnpm install`:
 
 ## Releases
 
-All the packages of this repository share the same version and are released together. Releases are handled by maintainers through GitHub Actions:
+All the packages of this repository share the same version and are released together. Releases use the shared workflows of [NanoForge-dev/actions](https://github.com/NanoForge-dev/actions) (`@v3`), configured in `.github/nanoforge.json`:
 
-1. The **Pre-Release** workflow opens a `releases/cli@<version>` pull request that bumps every package to `<version>` and updates their changelogs. The version must be higher than the latest published version of **every** package (e.g. `@nanoforge-dev/schematics` is already at `2.2.1` on npm)
-2. Merging this pull request triggers the **Release** workflow, which publishes the packages to npm (libraries first), creates the `<version>` tag and GitHub release, and synchronizes the documentation
-3. The **Alpha Release** workflow can be triggered manually to publish an `alpha` pre-release of a single package from any branch
+1. Run the **Release PR** workflow (Actions tab). Leave the inputs empty to take the version from the commits, or set `version`. Use `dry-run` to preview. It opens a `releases/cli@<version>` pull request that bumps every package and updates their changelogs
+2. Review and merge that pull request with "Squash and merge"
+3. Merging it triggers the **Release** workflow: it publishes the packages to npm, creates the `<version>` tag and GitHub release, then syncs `docs/docs` to the `cli` category of the docs
+
+Other merged pull requests release nothing. For an alpha of one package, run **Alpha Release** on your branch and pick the package.

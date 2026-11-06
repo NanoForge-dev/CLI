@@ -1,0 +1,13 @@
+{
+  "$schema": "https://raw.githubusercontent.com/NanoForge-dev/actions/v3/schema/nanoforge.schema.json",
+  "groups": [
+    {
+      "name": "cli",
+      "packages": ["@nanoforge-dev/config", "@nanoforge-dev/schematics", "@nanoforge-dev/cli"],
+      "mode": "all",
+      "versioning": "shared",
+      "commitFormat": "chore: release @nanoforge-dev/cli@{version}"
+    }
+  ],
+  "docs": { "category": "cli" }
+}
