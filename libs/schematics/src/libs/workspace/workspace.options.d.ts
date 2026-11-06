@@ -41,4 +41,9 @@ export interface WorkspaceOptions {
    * Generate a Dockerfile building every app in the workspace into one image
    */
   docker: boolean;
+
+  /**
+   * Generate an AGENTS.md file documenting the project for AI coding agents
+   */
+  agents: boolean;
 }
