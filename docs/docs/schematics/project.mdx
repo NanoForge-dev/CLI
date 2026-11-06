@@ -3,8 +3,6 @@ title: Project
 description: Generate a NanoForge client or server project inside a workspace
 ---
 
-import { Tooltip } from "mintlify/components";
-
 ## Overview
 
 The `project` schematic generates a complete client or server project under `directory` (e.g. `apps/client`) inside a [`workspace`](./workspace): its own `package.json`, `nanoforge.config.ts`, `tsconfig.json`, example ECS component and system, `src/main.ts` entry point, and optionally a `Dockerfile` and lifecycle init functions. `directory` is the full destination path — it isn't appended with `part` automatically, so generating a client and a server side by side means passing e.g. `--directory=apps/client` and `--directory=apps/server` in two separate invocations.
