@@ -12,8 +12,18 @@ const build = () => {
   console.log("Built dist/");
 };
 
+// An editor saving mid-rename makes cpSync throw ENOENT: log it and wait for the next change
+// rather than killing the watcher.
+const rebuild = () => {
+  try {
+    build();
+  } catch (error) {
+    console.error(`Build failed: ${error.message}`);
+  }
+};
+
 build();
 if (process.argv.includes("--watch")) {
   for (const target of ["nanoforge.manifest.json", "icons"])
-    if (existsSync(target)) watch(target, { recursive: true }, build);
+    if (existsSync(target)) watch(target, { recursive: true }, rebuild);
 }

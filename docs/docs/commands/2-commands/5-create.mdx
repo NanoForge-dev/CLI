@@ -53,5 +53,5 @@ nf create plugin --name @acme/score-board
 ```bash
 nf create plugin --name @acme/forest --template theme
 cd forest && node build.mjs --watch
-DEV_PLUGINS=$(pwd) nf editor ../my-game
+DEV_PLUGINS=$(pwd) nf editor ../my-game  # in another terminal: the editor reloads the theme
 ```
