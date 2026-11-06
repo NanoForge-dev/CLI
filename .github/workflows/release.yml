@@ -15,7 +15,7 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    if: github.repository_owner == 'NanoForge-dev' && github.event.pull_request.merged == true && startsWith(github.head_ref, 'releases/cli@')
+    if: github.repository_owner == 'NanoForge-dev' && github.event.pull_request.merged == true && startsWith(github.head_ref, 'releases/loader@')
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -26,7 +26,7 @@ jobs:
       - name: Release packages
         uses: ./node_modules/@nanoforge-dev/actions/actions/release-packages
         with:
-          packages: "@nanoforge-dev/config,@nanoforge-dev/schematics,@nanoforge-dev/cli"
+          packages: "@nanoforge-dev/loader-client,@nanoforge-dev/loader-server,@nanoforge-dev/loader-website"
           tag-format: "{version}"
           latest: true
         env:
@@ -60,5 +60,5 @@ jobs:
       - name: Publish docs
         uses: ./node_modules/@nanoforge-dev/actions/actions/synchronize-docs
         with:
-          repository: cli
+          repository: loader
           category: cli
