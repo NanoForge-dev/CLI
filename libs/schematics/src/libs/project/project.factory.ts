@@ -88,6 +88,7 @@ const transform = async (schema: ProjectSchema): Promise<ProjectOptions> => {
     hasServer: schema.hasServer,
     docker: schema.docker ?? false,
     editor: schema.editor ?? false,
+    agents: schema.agents ?? true,
     allowBuilds: workspace ? [] : ["bun"],
   };
 };
@@ -108,6 +109,11 @@ const generate = (options: ProjectOptions, path: string): Source => {
       (path) =>
         (options.packageManager === "pnpm" && options.allowBuilds.length > 0) ||
         !(path.split("/").at(-1) ?? "").startsWith("pnpm-workspace.yaml"),
+    ),
+    filter(
+      (path) =>
+        options.agents ||
+        !["AGENTS.md", "CLAUDE.md"].some((name) => (path.split("/").at(-1) ?? "").startsWith(name)),
     ),
     filter((path) => {
       const filename = path.split("/").at(-1) ?? "";

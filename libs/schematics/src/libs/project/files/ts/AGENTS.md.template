@@ -1,0 +1,114 @@
+<% var nf = { npm: "npm exec --no -- nf", pnpm: "pnpm exec nf", yarn: "yarn nf", bun: "bun run nf" }[packageManager]; var add = { npm: "npm install", pnpm: "pnpm add", yarn: "yarn add", bun: "bun add" }[packageManager]; var networked = part === "server" || hasServer; %># <%= packageName %>
+
+Notes for AI coding agents. This is a NanoForge <%= part %> app, written in TypeScript.
+NanoForge is a game engine built on an entity component system (ECS).
+<% if (part === "client") { %>The game runs in the browser.<% } else { %>This app runs in Bun: it has no graphics, input or DOM.<% } %>
+<% if (workspace) { %>
+This app is part of a workspace: read `../../AGENTS.md` first.
+<% } %>
+## Files
+
+- `nanoforge.config.ts`: the app config that `nf` reads (`type: "<%= part %>"`). Fields and defaults:
+  https://docs.nanoforge.eu/docs/cli/configuration/configuration-file
+- `src/main.ts`: the entry file. The loader calls its exported `main(options)` from the bundled
+  `main.js`, so keep the file name and the export.
+- `src/components/`, `src/systems/`: one component or system per file,
+  `<kebab-name>.component.ts` and `<kebab-name>.system.ts`.
+- `assets/`: copied to the root of `dist/` on each build, so `assets/hero.png` is served as
+  `/hero.png`. Read it with `ctx.assets.getAsset("/hero.png")`, an `NfFile` whose `path` is its URL.
+- `dist/` is the build output, emptied on every build. `.nanoforge/` belongs to the NanoForge
+  tools: don't edit it.
+
+## Commands
+
+`nf` comes from the `@nanoforge-dev/cli` dev dependency: run it as `<%= nf %> <command>`.
+<% if (workspace) { %>
+Run `nf dev` and `nf start` from the workspace root: they run this app with the other one, and
+they read the `.env` of their `-d` folder (the current folder by default). To build this app
+alone, run `<%= nf %> build -d apps/<%= part %>` at the root.
+<% } else { %>
+- `nf dev`: runs `nf build --watch` and `nf start --watch` together.<% if (part === "client") { %> The game is on
+  http://localhost:3000 (`port` in the config).<% } %>
+- `nf build`: bundles `src/main.ts` with Bun into `dist/`. It does not type-check.
+- `nf start`: <% if (part === "client") { %>serves<% } else { %>runs<% } %> the last build.
+<% } %>
+<% if (workspace && packageManager === "npm") { %>Add a package with `npm install <package> -w apps/<%= part %>` at the workspace root.<% } else { %>Add a package with `<%= add %> <package>` in this folder.<% } %>
+
+The `@nanoforge-dev/*` packages are on `^2`. The online docs follow the engine's development
+branch and can describe APIs that the installed release lacks: the installed types
+(`@nanoforge-dev/<package>/dist` in `node_modules`) are the reference.
+
+## Game code
+
+- `main` creates the app with `NanoforgeFactory.<%= part === "client" ? "createClient" : "createServer" %>`, registers each library with
+  `app.use(...)`, then calls `await app.init(options)`. `app.use` throws after `init`, and
+  `ecs.registry` throws before it. `await app.run()` starts the tick loop and returns.
+- Components are plain classes. The registry keys them by their `name` field: give each class a
+  `name` equal to its class name (the generated ones use `this.constructor.name`), and never store
+  game data in `name`. Names must be unique in the app, and `entity` and `id` are reserved. An
+  entity has one component per class: adding a second one replaces the first.
+- Systems are `(registry, ctx) => void` functions. They run once per tick, in the order of the
+  `registry.addSystem` calls. Their result is ignored, so an async system is not awaited.
+- `registry.getZipper([A, B])` returns one object per entity that has both, keyed by component
+  name: `({ A, B }) => …`. The values are the live components: change them in place.
+  `getIndexedZipper` adds the entity `id`, and `registry.entityFromIndex(id)` turns it back into an
+  entity for `killEntity` or `removeComponent`.
+- `ctx.app.delta` is the time since the last tick, in milliseconds. `tickRate` in `main` is the
+  number of ticks per second. `ctx.app.requestStop()` stops the game.<% if (part === "client") { %>
+- Graphics use Konva: `@nanoforge-dev/graphics-2d` re-exports its shapes (`Circle`, `Rect`,
+  `Layer`…), and `ctx.graphics.baseLayer` is a layer already on the stage. Coordinates are in a
+  1920×1080 design space scaled to the window (the `viewport` option of `createClient`).
+- Keys: `ctx.input.isKeyPressed(InputEnum.KeyW)`, with `InputEnum` from `@nanoforge-dev/input`. Its
+  values are `KeyboardEvent.code` names.<% } %>
+<% if (networked) { %>
+## Network
+
+- The client and the server connect over TCP, a WebSocket, and over UDP, a WebRTC data channel
+  set up through a WebSocket. Their address and ports are `NANOFORGE_*` variables, which `nf start`
+  reads from the `.env` of <%= workspace ? "the workspace root" : "its `-d` folder" %>. It gives
+  `NANOFORGE_CLIENT_X` to the client and `NANOFORGE_SERVER_X` to the server, as `X` in
+  `options.env`. Everything the client gets reaches the browser: never put a secret there.
+  https://docs.nanoforge.eu/docs/cli/configuration/environment-variables
+- The generated systems use `ctx.network.tcp` and encode JSON with `TextEncoder`. Check the
+  installed `@nanoforge-dev/network` types before using another network API.
+<% } %>
+## Example
+
+A component and a system, as the rules above want them:
+
+```ts
+// src/components/velocity-2d.component.ts
+/** Speed of an entity, in pixels per second. */
+export class Velocity2D {
+  name = "Velocity2D";
+
+  constructor(
+    public x = 0,
+    public y = 0,
+  ) {}
+}
+
+// src/systems/apply-velocity-2d.system.ts
+import { type Context } from "@nanoforge-dev/common";
+import { type Registry } from "@nanoforge-dev/ecs";
+
+import { Position2D } from "../components/position-2d.component";
+import { Velocity2D } from "../components/velocity-2d.component";
+
+/** Moves every entity that has a position and a velocity. */
+export const applyVelocity2D = (registry: Registry, ctx: Context): void => {
+  const seconds = ctx.app.delta / 1000;
+
+  registry.getZipper([Position2D, Velocity2D]).forEach(({ Position2D, Velocity2D }) => {
+    Position2D.x += Velocity2D.x * seconds;
+    Position2D.y += Velocity2D.y * seconds;
+  });
+};
+```
+
+Register it in `main` with `registry.addSystem(applyVelocity2D)`.
+
+## Docs
+
+- `nf` commands: https://docs.nanoforge.eu/docs/cli/commands/overview
+- Everything else: https://docs.nanoforge.eu

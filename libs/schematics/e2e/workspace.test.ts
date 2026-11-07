@@ -265,4 +265,67 @@ describe("workspace schematic", () => {
       },
     );
   });
+
+  describe("AGENTS.md", () => {
+    const nfCommands = {
+      npm: "npm exec --no -- nf",
+      pnpm: "pnpm exec nf",
+      yarn: "yarn nf",
+      bun: "bun run nf",
+    };
+    const variants = (["ts", "js"] as const).flatMap((language) =>
+      (["npm", "pnpm", "yarn", "bun"] as const).map((packageManager) => ({
+        language,
+        packageManager,
+      })),
+    );
+
+    it.each(variants)("renders for %o", async ({ language, packageManager }) => {
+      const tree = await runner.runSchematic("workspace", {
+        name: "my-workspace",
+        language,
+        packageManager,
+      });
+      expect(tree.files).toContain("/my-workspace/AGENTS.md");
+      expect(tree.readContent("/my-workspace/CLAUDE.md")).toBe("@AGENTS.md\n");
+      expect(tree.files.some((file) => file.endsWith(".template"))).toBe(false);
+      const content = tree.readContent("/my-workspace/AGENTS.md");
+      expect(content).not.toContain("<%");
+      expect(content).not.toContain("%>");
+      expect(content).toContain("# my-workspace");
+      expect(content).toContain(`\`${nfCommands[packageManager]} <command>\``);
+      expect(content).toContain(`\`${packageManager} install\``);
+      expect(content.includes("pnpm-workspace.yaml")).toBe(packageManager === "pnpm");
+    });
+
+    it("points to both apps and the shared .env", async () => {
+      const tree = await runner.runSchematic("workspace", { name: "my-workspace" });
+      const content = tree.readContent("/my-workspace/AGENTS.md");
+      expect(content).toContain("`apps/client/`, `apps/server/`");
+      expect(content).toContain("`.env`");
+      expect(content).toContain("NANOFORGE_CLIENT_X");
+      expect(content).toContain("tsconfig.json");
+    });
+
+    it("references the JavaScript config files for a JavaScript workspace", async () => {
+      const tree = await runner.runSchematic("workspace", {
+        name: "js-workspace",
+        language: "js",
+      });
+      const content = tree.readContent("/js-workspace/AGENTS.md");
+      expect(content).toContain("nanoforge.config.js");
+      expect(content).toContain("jsconfig.json");
+      expect(content).not.toContain("tsconfig.json");
+      expect(content).not.toContain(".ts`");
+    });
+
+    it("is not generated when agents is false", async () => {
+      const tree = await runner.runSchematic("workspace", {
+        name: "no-agents",
+        agents: false,
+      });
+      expect(tree.files).not.toContain("/no-agents/AGENTS.md");
+      expect(tree.files).not.toContain("/no-agents/CLAUDE.md");
+    });
+  });
 });

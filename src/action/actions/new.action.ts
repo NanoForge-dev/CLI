@@ -5,6 +5,7 @@ import {
   type Input,
   getDirectoryInput,
   getEditorInput,
+  getNewAgentsInput,
   getNewDockerOrAsk,
   getNewLanguageInputOrAsk,
   getNewLintInput,
@@ -34,6 +35,7 @@ interface NewValues {
   skipInstall: boolean;
   docker: boolean;
   lint: boolean;
+  agents: boolean;
   editor: boolean;
   git: boolean;
   gitRemote: string | null;
@@ -73,6 +75,7 @@ export class NewAction extends AbstractAction {
       skipInstall: await getNewSkipInstallOrAsk(inputs),
       docker: await getNewDockerOrAsk(inputs),
       lint: getNewLintInput(inputs),
+      agents: getNewAgentsInput(inputs),
       editor: getEditorInput(inputs),
       git: await getNewGitOrAsk(inputs),
     };
@@ -111,6 +114,7 @@ export class NewAction extends AbstractAction {
       strict: values.strict,
       packageManager: values.packageManager,
       docker: values.docker,
+      agents: values.agents,
     });
   }
 
@@ -148,6 +152,7 @@ export class NewAction extends AbstractAction {
       workspace: values.multiplayer,
       docker: values.docker,
       editor: values.editor,
+      agents: values.agents,
     };
   }
 

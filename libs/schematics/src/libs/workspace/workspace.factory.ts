@@ -50,6 +50,7 @@ const transform = async (schema: WorkspaceSchema): Promise<WorkspaceOptions> => 
     packageManager,
     allowBuilds: Array.from(new Set([...ALWAYS_ALLOWED_BUILDS, ...(schema.allowBuilds ?? [])])),
     docker: schema.docker ?? false,
+    agents: schema.agents ?? true,
   };
 };
 
@@ -68,6 +69,11 @@ const generate = (options: WorkspaceOptions, path: string): Source => {
     filter(
       (path) =>
         options.docker || !["Dockerfile", ".dockerignore"].includes(path.split("/").at(-1) ?? ""),
+    ),
+    filter(
+      (path) =>
+        options.agents ||
+        !["AGENTS.md", "CLAUDE.md"].some((name) => (path.split("/").at(-1) ?? "").startsWith(name)),
     ),
     renameTemplateFiles(),
     move(normalize(path)),

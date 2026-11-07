@@ -1,3 +1,4 @@
+export * from "./agents.input";
 export * from "./docker.input";
 export * from "./language.input";
 export * from "./lint.input";
