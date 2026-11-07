@@ -11,8 +11,10 @@ This skill uses the `nf` binary built from this repo's sources (not a version pu
 
 ```bash
 pnpm install --frozen-lockfile
-pnpm run build   # tsc --noEmit && tsdown -> dist/nf.js
+pnpm run repo:build   # builds libs/config and libs/schematics, then the CLI -> dist/nf.js
 ```
+
+`pnpm run build` alone builds only the CLI package: on a fresh clone it fails with TS2307 `@nanoforge-dev/config` because the libs aren't built yet.
 
 ## 2. Discover the exact command before using it
 
@@ -28,14 +30,22 @@ Detailed command documentation is also in `docs/docs/commands/` (one page per co
 
 ## 3. Scaffold in an isolated test directory
 
-Run the chosen command from a test directory **outside this repo** (for example `/tmp` or the scratchpad), never at the root of the CLI repo itself:
+Run the chosen command from a test directory **outside this repo** (for example `/tmp` or the scratchpad), never at the root of the CLI repo itself.
+
+`nf new` takes no positional argument, and every option you leave out opens an interactive prompt (with no TTY, the command exits 1). Pass all of them:
 
 ```bash
 cd /path/to/a/test/folder
-node /absolute/path/to/repos/CLI/dist/nf.js new <project-name>
+node <path-to-this-repo>/dist/nf.js new --name demo --package-manager pnpm --language ts --strict --no-server --no-init-functions --skip-install --no-docker --no-git --no-git-remote
 ```
 
-For a component/system inside an already-generated project, move into that project and then use the `create` command (check its exact usage via `--help`, see step 2).
+For a component/system inside an already-generated project, move into that project and install its dependencies first (`pnpm install`, which needs network access to npm): with `--skip-install`, `nf create` fails with `Cannot find package '@nanoforge-dev/config'`. Then use the `create` command (check its exact usage via `--help`, see step 2), for example:
+
+```bash
+cd demo
+pnpm install
+node <path-to-this-repo>/dist/nf.js create component --name player
+```
 
 ## 4. Verify the result
 

@@ -2,7 +2,7 @@
 
 ## Role
 
-This repo contains NanoForge's CLI (`nf`), a game engine for the browser. The CLI is the command-line tool used by developers to create, develop, build, start, publish, and manage NanoForge projects (and their components/systems), as well as to launch the editor and interact with the NanoForge package registry.
+This repo contains the CLI (`nf`) of NanoForge, a game engine for the browser. The CLI is the command-line tool used by developers to create, develop, build, start, publish, and manage NanoForge projects (and their components/systems), as well as to launch the editor and interact with the NanoForge package registry.
 
 ## Tech Stack
 
@@ -29,6 +29,7 @@ src/
 │                                   #   new, publish, start, unpublish
 ├── action/                    # business logic executed by each command
 │   ├── abstract.action.ts
+│   ├── common/                   # helpers shared by actions (schematics runner, spinner)
 │   └── actions/                  # one action per command (build, create, dev, ...)
 └── lib/                      # shared internal libraries
     ├── config/                    # project config loading/resolution
@@ -37,7 +38,7 @@ src/
     ├── http/                          # HTTP client (to the NanoForge API / registry)
     ├── manifest/                        # project manifest reading
     ├── package-manager/                   # npm/yarn/pnpm/bun detection/abstraction
-    ├── question/                            # interactive prompts (questions/questions)
+    ├── question/                            # interactive prompts (index.ts + one file per question in questions/)
     ├── registry/                              # interactions with the package registry
     ├── runner/                                  # child process execution (build/dev/start)
     ├── schematics/                                # bridge to Angular DevKit schematics
@@ -67,7 +68,7 @@ scripts/nightly.sh            # nightly test runner (writes reports to reports/)
 
 The generated binary is used as follows: `nf [command] [options]` (e.g. `nf new`, `nf build`, `nf dev`, `nf editor`, `nf install`, `nf login`, `nf publish`...). Full command documentation is in `docs/docs/commands/`.
 
-Developing the CLI itself (from the repo root):
+Developing the CLI itself (from the repo root). On a fresh clone, run `pnpm install --frozen-lockfile && pnpm run repo:build` first: `pnpm run build` alone fails with TS2307 `@nanoforge-dev/config` until the libs are built.
 
 ```bash
 pnpm run build          # tsc --noEmit && tsdown
@@ -81,6 +82,8 @@ pnpm run test:e2e                     # vitest (vitest.config.e2e.ts), runs the 
 pnpm run changelog                      # git-cliff
 pnpm run release                          # @favware/cliff-jumper
 ```
+
+Releases go through the Release PR workflow (see Conventions): agents never run `pnpm run release` locally.
 
 Monorepo orchestration (root + `libs/*` via Turborepo):
 
