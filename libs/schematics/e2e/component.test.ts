@@ -28,9 +28,10 @@ describe("component schematic", () => {
       expect(content).toContain("class MyComponentComponent");
     });
 
-    it("should use the correct part in the import", () => {
+    it("should import its types from @nanoforge-dev/ecs", () => {
       const content = tree.readContent("/my-app/my-component.component.ts");
-      expect(content).toContain("@nanoforge-dev/ecs-client");
+      expect(content).toContain('"@nanoforge-dev/ecs"');
+      expect(content).not.toContain("@nanoforge-dev/ecs-");
     });
 
     it("should export the component name as default", () => {
@@ -61,9 +62,10 @@ describe("component schematic", () => {
       expect(tree.files).toContain("/my-app/my-component.component.ts");
     });
 
-    it("should use the correct part in the import", () => {
+    it("should import its types from @nanoforge-dev/ecs", () => {
       const content = tree.readContent("/my-app/my-component.component.ts");
-      expect(content).toContain("@nanoforge-dev/ecs-server");
+      expect(content).toContain('"@nanoforge-dev/ecs"');
+      expect(content).not.toContain("@nanoforge-dev/ecs-");
     });
   });
 
@@ -88,9 +90,10 @@ describe("component schematic", () => {
       expect(content).toContain("class MyComponentComponent");
     });
 
-    it("should use the correct part in the JSDoc typedef", () => {
+    it("should import its types from @nanoforge-dev/ecs", () => {
       const content = tree.readContent("/my-app/my-component.component.js");
-      expect(content).toContain("@nanoforge-dev/ecs-client");
+      expect(content).toContain('"@nanoforge-dev/ecs"');
+      expect(content).not.toContain("@nanoforge-dev/ecs-");
     });
 
     it("should export the EDITOR_COMPONENT_MANIFEST", () => {

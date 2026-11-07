@@ -1,7 +1,7 @@
 /**
  * @typedef {import("@nanoforge-dev/common").Context} Context
- * @typedef {import("@nanoforge-dev/ecs-<%= part %>").EditorSystemManifest} EditorSystemManifest
- * @typedef {import("@nanoforge-dev/ecs-<%= part %>").Registry} Registry
+ * @typedef {import("@nanoforge-dev/ecs").EditorSystemManifest} EditorSystemManifest
+ * @typedef {import("@nanoforge-dev/ecs").Registry} Registry
  */
 
 import { ExampleComponent } from "../components/example.component";
