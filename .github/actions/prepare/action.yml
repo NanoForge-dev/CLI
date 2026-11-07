@@ -1,31 +1,11 @@
 name: prepare
-description: Prepare action
-inputs:
-  node-install:
-    description: Install node
-    default: "true"
-  pnpm-install:
-    description: Install pnpm depedencies
-    default: "true"
-  build:
-    description: Build all workspace packages
-    default: "true"
+description: Installs Node.js, pnpm and the dependencies, then builds every package
 runs:
   using: composite
   steps:
-    - if: inputs.node-install == 'true'
-      name: Install Node.js
-      uses: actions/setup-node@v6
-      with:
-        node-version-file: .nvmrc
-        package-manager-cache: false
-        registry-url: https://registry.npmjs.org
+    - name: Set up Node.js, pnpm and the dependencies
+      uses: nanoforge-dev/actions/setup@v3
 
-    - if: inputs.pnpm-install == 'true'
-      name: Install dependencies
-      uses: ./.github/actions/pnpm-install
-
-    - if: inputs.build == 'true'
-      name: Build packages
+    - name: Build the packages
       shell: bash
       run: pnpm run repo:build

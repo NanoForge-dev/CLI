@@ -1,4 +1,9 @@
 name: Release
+# The release PR title holds the version (commitFormat); other merged PRs release nothing (no betaOnMerge group).
+run-name: >-
+  ${{ !github.event.pull_request.merged && format('Closed without merge: {0}', github.event.pull_request.title)
+  || startsWith(github.head_ref, 'releases/') && format('Release: {0}', github.event.pull_request.title)
+  || format('No release: {0}', github.event.pull_request.title) }}
 
 on:
   pull_request:
@@ -14,51 +19,8 @@ permissions:
 jobs:
   release:
     name: Release
-    runs-on: ubuntu-latest
-    if: github.repository_owner == 'NanoForge-dev' && github.event.pull_request.merged == true && startsWith(github.head_ref, 'releases/cli@')
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v7
-
-      - name: Prepare
-        uses: ./.github/actions/prepare
-
-      - name: Release packages
-        uses: ./node_modules/@nanoforge-dev/actions/actions/release-packages
-        with:
-          packages: "@nanoforge-dev/config,@nanoforge-dev/schematics,@nanoforge-dev/cli"
-          tag-format: "{version}"
-          latest: true
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  publish-docs:
-    name: Publish docs
-    runs-on: ubuntu-latest
-    if: github.repository_owner == 'NanoForge-dev'
-    needs: [release]
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-          fetch-tags: true
-
-      - name: Checkout docs repository
-        uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-          fetch-tags: true
-          path: docs-dist
-          repository: nanoforge-dev/docs
-          token: ${{ secrets.TOKEN }}
-
-      - name: Prepare
-        uses: ./.github/actions/prepare
-
-      - name: Publish docs
-        uses: ./node_modules/@nanoforge-dev/actions/actions/synchronize-docs
-        with:
-          repository: cli
-          category: cli
+    uses: nanoforge-dev/actions/.github/workflows/release.yml@v3
+    secrets:
+      NPM_PUBLISH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
+      # The config has docs: the release syncs docs/docs to the cli category of NanoForge-dev/docs.
+      NANOFORGE_DOCS_PRIVATE_KEY: ${{ secrets.NANOFORGE_DOCS_PRIVATE_KEY }}

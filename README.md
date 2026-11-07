@@ -69,6 +69,7 @@ Used to create nanoforge components or systems.
 
 ```sh
 nf create plugin --name @acme/counter   # writes ./counter
+nf create plugin --name @acme/forest --template theme   # a color theme, no code
 ```
 
 `--name` is the plugin's registry name (`@scope/name`), and `--path` the folder to write (default: the name without its scope). The new folder's README says how to run it in the editor.

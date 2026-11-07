@@ -5,6 +5,7 @@ import { join, resolve } from "path";
 import {
   type ResolvedProject,
   type WorkspaceConfig,
+  isPeerToPeer,
   parseWorkspaceConfig,
   resolveProjects,
 } from "@lib/config";
@@ -77,6 +78,9 @@ export class StartAction extends AbstractAction {
     }
 
     const env = this.parseEnv(directory);
+    if (isPeerToPeer(workspaceConfig)) {
+      env.client.NANOFORGE_NETWORK_MODE = env.server.NANOFORGE_NETWORK_MODE = "p2p";
+    }
     const packageManager = await PackageManagerFactory.find(directory);
     const tasks = this.buildStartTasks(packageManager, serverTargets, clientTargets, watch, env);
     await Promise.all(tasks);

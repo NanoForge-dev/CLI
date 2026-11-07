@@ -1,0 +1,57 @@
+---
+title: Schematics
+description: The templates behind nf new and nf create
+---
+
+## What are schematics?
+
+Schematics are the templates that write the files of a NanoForge project. They are built on
+[Angular DevKit schematics](https://github.com/angular/angular-cli/tree/main/packages/angular_devkit/schematics)
+and ship in the `@nanoforge-dev/schematics` package.
+
+You normally use them through the CLI:
+
+| Command                                     | Schematics it runs                                                   |
+| ------------------------------------------- | -------------------------------------------------------------------- |
+| [`nf new`](../commands/new)                 | `project` alone, or `workspace` then `project` twice with `--server` |
+| [`nf create component`](../commands/create) | `component`                                                          |
+| [`nf create system`](../commands/create)    | `system`                                                             |
+| [`nf create plugin`](../commands/create)    | `plugin`                                                             |
+
+These pages list each schematic's options and the files it writes, so you know what you get and
+what you can change.
+
+## Running a schematic without the CLI
+
+The CLI already includes the schematics. To run one by hand, install the schematics CLI and the
+package, then call it with its options:
+
+```bash
+npm install -g @angular-devkit/schematics-cli
+npm install @nanoforge-dev/schematics
+schematics @nanoforge-dev/schematics:<schematic> [--option=value ...]
+```
+
+## Available schematics
+
+<CardGroup cols={2}>
+  <Card title="workspace" href="./workspace">
+    The root of a workspace: `nanoforge.config.ts`, `package.json`, `.env`, TypeScript or JavaScript
+    config.
+  </Card>
+  <Card title="project" href="./project">
+    A client or server app: `main.ts`, example components and systems, config.
+  </Card>
+  <Card title="component" href="./component">
+    An ECS component class with its editor manifest.
+  </Card>
+  <Card title="system" href="./system">
+    An ECS system function with its editor manifest.
+  </Card>
+  <Card title="plugin" href="./plugin">
+    An editor plugin project: a panel, or a color theme.
+  </Card>
+</CardGroup>
+
+The schematics are released with the CLI: see the
+[CLI changelog](https://github.com/NanoForge-dev/CLI/blob/main/CHANGELOG.md).

@@ -1,0 +1,79 @@
+---
+title: Develop locally
+description: Work on your game with nf dev, environment variables and the editor
+---
+
+Once a project exists, most of your time is spent with `nf dev` running in a terminal.
+
+<Steps>
+  <Step title="Start dev mode">
+
+    From the project (or workspace) root:
+
+    ```bash
+    nf dev
+    ```
+
+    Open [http://localhost:3000](http://localhost:3000). Keep `nf dev` running in its own
+    terminal, and stop it with `Ctrl+C`.
+
+  </Step>
+
+  <Step title="Edit the game">
+
+    Save a file in `src/` (in a workspace: `apps/client/src/` or `apps/server/src/`).
+    `nf dev` rebuilds that app:
+
+    - a client change reloads the page;
+    - a server change restarts the server, then reloads the page.
+
+    `nf dev` hides the build output. If a change doesn't show up, run `nf build` in another
+    terminal to see the error. A change in `assets/` alone doesn't start a rebuild: the
+    next rebuild (after you save a file in `src/`) copies the assets again, or restart `nf dev`.
+
+  </Step>
+
+  <Step title="Configure the game">
+
+    Runtime values, such as the server address and ports, are environment variables. Put them in
+    the `.env` file at the root, with a `NANOFORGE_CLIENT_`, `NANOFORGE_SERVER_` or `NANOFORGE_`
+    prefix, then restart `nf dev`:
+
+    ```dotenv .env
+    NANOFORGE_CLIENT_SERVER_ADDRESS=127.0.0.1
+    NANOFORGE_SERVER_LISTENING_TCP_PORT=4444
+    ```
+
+    See [environment variables](/docs/cli/configuration/environment-variables) for the rules.
+    To serve the page on another port, set `port` in the client's `nanoforge.config.ts`.
+
+  </Step>
+
+  <Step title="Open the editor (optional)">
+
+    In another terminal, start the editor on the project:
+
+    ```bash
+    nf editor .
+    ```
+
+    It opens [http://localhost:5173](http://localhost:5173) in your browser. See
+    [`nf editor`](/docs/cli/commands/editor).
+
+  </Step>
+</Steps>
+
+## Work on a project in another folder
+
+Every command takes `-d` to run on another folder:
+
+```bash
+nf dev -d ./games/space
+```
+
+## When something goes wrong
+
+- The page says `Storage issue`: open it on `localhost`, not on an IP address, or serve it over
+  HTTPS. See [`nf start`](/docs/cli/commands/start#https).
+- The page stays on the loading screen: open the browser console, then see the
+  [loader troubleshooting](/docs/loader/overview#troubleshooting).

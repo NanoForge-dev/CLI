@@ -10,6 +10,7 @@ import {
   getDirectoryInput,
   getPathInputWithDefault,
   getPluginNameInputOrAsk,
+  getStringInputWithDefault,
 } from "@lib/input";
 import { Collection, CollectionFactory } from "@lib/schematics";
 import { Messages } from "@lib/ui";
@@ -79,9 +80,20 @@ export class CreateAction extends AbstractAction {
         "Choose another folder with --path.",
       );
     }
+    const template = getStringInputWithDefault(options, "template", "panel");
+    if (template !== "panel" && template !== "theme") {
+      throw new CLIError(
+        `'${template}' is not a plugin template.`,
+        "Use --template panel (a panel, a command and a setting) or --template theme (a color theme).",
+      );
+    }
     const collection = CollectionFactory.create(Collection.NANOFORGE, directory);
-    await executeSchematic("Plugin", collection, "plugin", { name, directory: path });
-    console.info(Messages.CREATE_PLUGIN_NEXT(target));
+    await executeSchematic("Plugin", collection, "plugin", { name, directory: path, template });
+    console.info(
+      template === "theme"
+        ? Messages.CREATE_THEME_NEXT(target)
+        : Messages.CREATE_PLUGIN_NEXT(target),
+    );
     return {};
   }
 

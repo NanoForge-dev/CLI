@@ -6,6 +6,7 @@ interface CreateOptions {
   directory?: string;
   name?: string;
   path?: string;
+  template?: string;
 }
 
 export class CreateCommand extends AbstractCommand {
@@ -19,6 +20,10 @@ export class CreateCommand extends AbstractCommand {
         "-p, --path <path>",
         "path to the component/system folder (default: <part>/<components|systems>), or the folder of the new plugin (default: its name)",
       )
+      .option(
+        "-t, --template <template>",
+        "what a plugin starts from: panel (a panel, a command and a setting) or theme (a color theme, no code)",
+      )
       .action(async (type: string, rawOptions: CreateOptions) => {
         const args = AbstractCommand.mapToInput({
           type,
@@ -28,6 +33,7 @@ export class CreateCommand extends AbstractCommand {
           directory: rawOptions.directory,
           name: rawOptions.name,
           path: rawOptions.path,
+          template: rawOptions.template,
         });
 
         await this.action.run(args, options);

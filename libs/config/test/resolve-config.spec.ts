@@ -13,13 +13,17 @@ describe("resolveWorkspaceConfig", () => {
     expect(resolveWorkspaceConfig({ type: "workspace" })).toEqual({
       type: "workspace",
       packages: [],
+      network: "dedicated",
     });
   });
 
   it("lets an explicit override win", () => {
-    expect(resolveWorkspaceConfig({ type: "workspace", packages: ["apps/*"] })).toEqual({
+    expect(
+      resolveWorkspaceConfig({ type: "workspace", packages: ["apps/*"], network: "p2p" }),
+    ).toEqual({
       type: "workspace",
       packages: ["apps/*"],
+      network: "p2p",
     });
   });
 });
@@ -70,7 +74,11 @@ describe("resolveServerConfig", () => {
 
 describe("resolveConfig", () => {
   it("dispatches to the resolver matching the config's type", () => {
-    expect(resolveConfig({ type: "workspace" })).toEqual({ type: "workspace", packages: [] });
+    expect(resolveConfig({ type: "workspace" })).toEqual({
+      type: "workspace",
+      packages: [],
+      network: "dedicated",
+    });
     expect(resolveConfig({ type: "server" }).entryFile).toBe("src/main.ts");
   });
 });

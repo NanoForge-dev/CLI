@@ -4,23 +4,20 @@ on:
   pull_request:
     branches:
       - main
+  # Pushes to main fill the caches that pull requests restore.
   push:
     branches:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   tests:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v7
-
-      - name: Prepare
-        uses: ./.github/actions/prepare
-
-      - name: Run linter
-        run: pnpm run repo:lint
-
-      - name: Run tests
-        run: pnpm run repo:test
+    name: Tests
+    uses: nanoforge-dev/actions/.github/workflows/tests.yml@v3
+    with:
+      style-scripts: '["repo:lint"]'
+      unit-script: repo:test:unit
+      e2e-script: repo:test:e2e

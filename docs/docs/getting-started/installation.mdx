@@ -1,0 +1,70 @@
+---
+title: Installation
+description: Install the nf command and check that it works
+---
+
+## Requirements
+
+- **Node.js 26**, the version the CLI declares in its `engines` field.
+- A package manager: npm, yarn, pnpm or Bun.
+
+You don't need to install Bun yourself. The CLI depends on the `bun` package and uses it to build
+and run your game.
+
+## Install the CLI
+
+Install it globally to get the `nf` command everywhere:
+
+<CodeGroup>
+
+```bash npm
+npm install -g @nanoforge-dev/cli
+```
+
+```bash pnpm
+pnpm add -g @nanoforge-dev/cli
+```
+
+```bash yarn
+yarn global add @nanoforge-dev/cli
+```
+
+```bash bun
+bun add -g @nanoforge-dev/cli
+```
+
+</CodeGroup>
+
+<Note>
+  The `bun` package downloads its binary in an install script. If your package manager blocks
+  install scripts (pnpm does by default), follow its prompt to approve the script of `bun`. Projects
+  made by `nf new` already allow it.
+</Note>
+
+## Check the installation
+
+```bash
+nf --version
+nf --help
+```
+
+`nf --help` lists every command. To see the options of one command, run `nf <command> --help`
+or `nf help <command>`:
+
+```bash
+nf help new
+```
+
+## Global and project versions
+
+Projects made by `nf new` list `@nanoforge-dev/cli` in their dev dependencies. When you run `nf`
+in a folder whose `node_modules` holds that package, the global `nf` runs the commands of the
+project's own CLI version. So each project keeps the CLI version it was made with, whatever your
+global version is.
+
+This check looks only at the current folder. Run `nf` from the project (or workspace) root to use
+its version.
+
+## Next steps
+
+Go to the [Quickstart](./quickstart) to create and run your first game.

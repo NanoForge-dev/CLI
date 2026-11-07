@@ -1,0 +1,75 @@
+---
+title: Workspace
+description: Generate the root of a NanoForge workspace
+---
+
+## Overview
+
+The `workspace` schematic writes the root of a workspace: a `nanoforge.config.ts` that lists
+`apps/*`, a `package.json`, the TypeScript or JavaScript config, and a `.env` with the network
+ports. The apps are then added under `apps/` with the [`project`](./project) schematic.
+[`nf new --server`](../commands/new) runs it for you.
+
+`@nanoforge-dev/config` gets the version of `@nanoforge-dev/core`, the engine version. The versions
+of `@nanoforge-dev/cli`, `@nanoforge-dev/core` and `typescript` are pinned to the
+newest release published at least 48 hours before generation, so a release published minutes ago
+is not picked up. `typescript` stays on its 6.x line.
+
+## Usage
+
+```bash
+schematics @nanoforge-dev/schematics:workspace --name=my-game
+```
+
+## Options
+
+| Option           | Type                                 | Default         | Description                                                                                                                                                          |
+| ---------------- | ------------------------------------ | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`           | `string`                             | `nanoforge-app` | Name of the workspace, and of its root package.                                                                                                                      |
+| `directory`      | `string`                             | the name        | Folder to write to.                                                                                                                                                  |
+| `language`       | `"ts" \| "js"`                       | `ts`            | `tsconfig.json` or `jsconfig.json`.                                                                                                                                  |
+| `strict`         | `boolean`                            | `true`          | Strict type checking.                                                                                                                                                |
+| `packageManager` | `"npm" \| "yarn" \| "pnpm" \| "bun"` | `npm`           | pnpm gets a `pnpm-workspace.yaml`; the others get a `workspaces` field in `package.json`.                                                                            |
+| `allowBuilds`    | `string[]`                           | `[]`            | Packages allowed to run install scripts, on top of `bun` (always allowed). Written for pnpm, npm (`allowScripts`) and Bun (`trustedDependencies`); ignored for yarn. |
+| `docker`         | `boolean`                            | `false`         | Add a `Dockerfile` that builds every app into one image, and a `.dockerignore`.                                                                                      |
+
+## Generated files
+
+```
+my-game/
+├── nanoforge.config.ts    # type: "workspace", packages: ["apps/*"] (or .js)
+├── package.json           # dev, build, start scripts; the CLI and config packages
+├── tsconfig.json          # TypeScript only
+├── jsconfig.json          # JavaScript only
+├── pnpm-workspace.yaml    # pnpm only
+├── .env                   # network ports, see Environment variables
+├── .gitignore
+├── README.md
+├── Dockerfile             # docker: true
+└── .dockerignore          # docker: true
+```
+
+The `.env` values are described in [environment variables](../configuration/environment-variables).
+
+<Warning>
+  The `dev`, `build` and `start` scripts of the generated `package.json` run `nf dev -r`, `nf build
+  -r` and `nf start -r`. The CLI has no `-r` option, so they fail, and so does the `Dockerfile`,
+  which runs the `build` script. Remove `-r` from the three scripts.
+</Warning>
+
+## Examples
+
+A TypeScript workspace for npm:
+
+```bash
+schematics @nanoforge-dev/schematics:workspace --name=my-game
+```
+
+A pnpm workspace that also allows the install script of `esbuild`:
+
+```bash
+schematics @nanoforge-dev/schematics:workspace \
+  --name=my-game \
+  --packageManager=pnpm \
+  --allowBuilds=esbuild
+```

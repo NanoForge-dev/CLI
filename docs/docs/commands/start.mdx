@@ -1,0 +1,104 @@
+---
+title: start
+description: Serve a built NanoForge game
+---
+
+## What it does
+
+`nf start` serves a game that [`nf build`](./build) has built. For each app of the project, it
+starts a loader:
+
+- a **client app** gets the client loader: a web server that serves the loading page and the
+  game files to the browser, on port 3000 by default;
+- a **server app** gets the server loader: a Bun process that runs the server build.
+
+It reads environment variables from the shell and from the `.env` file of the `-d` folder, and
+passes the `NANOFORGE_*` ones to the apps. See
+[environment variables](../configuration/environment-variables).
+
+`nf start` keeps running until you stop it with `Ctrl+C`. The [loader pages](/docs/loader/overview)
+describe what runs in the browser and on the server.
+
+## Usage
+
+```bash
+nf start [options]
+```
+
+## Options
+
+| Option                           | Type    | Default                             | Description                                                                                          |
+| -------------------------------- | ------- | ----------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `-d, --directory <directory>`    | path    | `.`                                 | Project or workspace folder.                                                                         |
+| `-p, --port <port>`              | number  | `port` in the client config, `3000` | Port of the client loader (the web page that loads the game).                                        |
+| `--client-dir <clientDirectory>` | path    | `out.dir`, `dist`                   | Build folder of the client, relative to the client app.                                              |
+| `--server-dir <serverDirectory>` | path    | `out.dir`, `dist`                   | Build folder of the server, relative to the server app.                                              |
+| `--watch`                        | boolean | `false`                             | Reload the page when the client build changes, and restart the server when the server build changes. |
+| `--cert <cert>`                  | path    | `tls.cert` in the config            | TLS certificate. Serves the client over HTTPS.                                                       |
+| `--key <key>`                    | path    | `tls.key` in the config             | TLS private key. Needed with `--cert`.                                                               |
+
+In a workspace, `--port`, `--cert` and `--key` apply to every client app. With `--watch` and a
+single server app, a change in the server build also reloads the page.
+
+## HTTPS
+
+The browser caches the game files with a storage API that works only in a
+[secure context](https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts):
+`http://localhost` works, but `http://<an IP or a host name>` does not. To open the game from
+another machine, serve it over HTTPS, with `--cert` and `--key` or with a `tls` block in the
+client configuration:
+
+```ts nanoforge.config.ts
+import { defineConfig } from "@nanoforge-dev/config";
+
+export default defineConfig({
+  type: "client",
+  tls: { enable: true, cert: "/etc/ssl/my-game/cert.pem", key: "/etc/ssl/my-game/key.pem" },
+});
+```
+
+Give **absolute paths**. The client loader runs from its own package folder, so a relative path
+is not resolved from your project. `--cert` and `--key` win over the configuration. You can also put the game behind a reverse proxy
+that serves HTTPS.
+
+## Peer-to-peer
+
+When the workspace sets `network: "p2p"`, `nf start` adds `NANOFORGE_NETWORK_MODE=p2p` to the
+environment of both apps. The server app then only pairs players, and the game runs in the host
+player's browser. See [peer-to-peer](../configuration/configuration-file#peer-to-peer).
+
+## Examples
+
+Serve the build on port 8080:
+
+```bash
+nf start --port 8080
+```
+
+Serve over HTTPS:
+
+```bash
+nf start --cert "$PWD/certs/cert.pem" --key "$PWD/certs/key.pem"
+```
+
+Serve builds made in other folders:
+
+```bash
+nf start --client-dir build/client --server-dir build/server
+```
+
+## Common errors
+
+- **`No client or server project found at '<folder>'.`** The configuration of the `-d` folder is
+  a workspace whose `packages` match no app. Check the patterns.
+- **`No certificate found for TLS.` / `No key found for TLS.`** You gave one of `--cert` and
+  `--key` (or `tls.enable: true` without both paths). Give both.
+- **The client fails to start with `--cert` and `--key`.** Check that both paths are absolute.
+- **The page shows `Storage issue: The game must be hosted with SSL (HTTPS)...`.** You opened the
+  game on an address that isn't `localhost` over HTTP. Use HTTPS (see above).
+- **The page shows `Could not find main function`, or the server logs `No main.js found`.** There
+  is no `main.js` in the build folder: run `nf build` first, and check that the entry file is
+  named `main.ts`.
+- **The port is already used.** Pass another `--port`, or stop the other process.
+
+More browser-side problems are in the [loader troubleshooting](/docs/loader/overview#troubleshooting).
