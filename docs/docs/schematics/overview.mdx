@@ -1,50 +1,57 @@
 ---
 title: Schematics
-description: Overview of the @nanoforge-dev/schematics package
+description: The templates behind nf new and nf create
 ---
 
 ## What are schematics?
 
-NanoForge schematics are code generators built on [Angular DevKit](https://github.com/angular/angular-cli/tree/main/packages/angular_devkit/schematics). They produce the boilerplate files that every NanoForge project needs — from the initial application scaffold down to individual ECS components and systems.
+Schematics are the templates that write the files of a NanoForge project. They are built on
+[Angular DevKit schematics](https://github.com/angular/angular-cli/tree/main/packages/angular_devkit/schematics)
+and ship in the `@nanoforge-dev/schematics` package.
 
-The NanoForge CLI (`nf`) calls these schematics internally whenever you run commands like `nf new` or `nf create`. You can also invoke them directly via the `schematics` CLI for advanced use cases.
+You normally use them through the CLI:
 
-## Installation
+| Command                                     | Schematics it runs                                                   |
+| ------------------------------------------- | -------------------------------------------------------------------- |
+| [`nf new`](../commands/new)                 | `project` alone, or `workspace` then `project` twice with `--server` |
+| [`nf create component`](../commands/create) | `component`                                                          |
+| [`nf create system`](../commands/create)    | `system`                                                             |
+| [`nf create plugin`](../commands/create)    | `plugin`                                                             |
 
-```bash
-npm install -g @nanoforge-dev/cli
-```
+These pages list each schematic's options and the files it writes, so you know what you get and
+what you can change.
 
-The schematics package is a dependency of the CLI and does not need to be installed separately. If you want to run schematics without the CLI:
+## Running a schematic without the CLI
+
+The CLI already includes the schematics. To run one by hand, install the schematics CLI and the
+package, then call it with its options:
 
 ```bash
 npm install -g @angular-devkit/schematics-cli
 npm install @nanoforge-dev/schematics
-```
-
-Then invoke directly:
-
-```bash
-schematics @nanoforge-dev/schematics:<schematic-name> [options]
+schematics @nanoforge-dev/schematics:<schematic> [--option=value ...]
 ```
 
 ## Available schematics
 
 <CardGroup cols={2}>
   <Card title="workspace" href="./workspace">
-    Scaffold the root of a NanoForge monorepo: `nanoforge.config.ts`, `package.json`, TypeScript or
-    JavaScript config, and linting.
+    The root of a workspace: `nanoforge.config.ts`, `package.json`, `.env`, TypeScript or JavaScript
+    config.
   </Card>
   <Card title="project" href="./project">
-    Generate a client or server project under `apps/<part>` inside a workspace, including its
-    `main.ts` entry point, example component/system, and optional Dockerfile.
+    A client or server app: `main.ts`, example components and systems, config.
   </Card>
   <Card title="component" href="./component">
-    Scaffold an ECS component class with an editor manifest for use in the NanoForge editor.
+    An ECS component class with its editor manifest.
   </Card>
   <Card title="system" href="./system">
-    Scaffold an ECS system function with an editor manifest for use in the NanoForge editor.
+    An ECS system function with its editor manifest.
+  </Card>
+  <Card title="plugin" href="./plugin">
+    An editor plugin project: a panel, or a color theme.
   </Card>
 </CardGroup>
 
-see the [changelog](https://github.com/NanoForge-dev/schematics/blob/main/CHANGELOG.md) for the full release history.
+The schematics are released with the CLI: see the
+[CLI changelog](https://github.com/NanoForge-dev/CLI/blob/main/CHANGELOG.md).

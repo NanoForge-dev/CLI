@@ -5,34 +5,41 @@ description: What the NanoForge CLI is and what you can do with it
 
 ## What is the NanoForge CLI?
 
-The NanoForge CLI (`nf`) is the main entry point for building, running, and deploying games made
-with [NanoForge](https://github.com/NanoForge-dev) - a powerful game engine for the web browser.
+The NanoForge CLI (`nf`) is the tool you use to make games with
+[NanoForge](https://github.com/NanoForge-dev), a game engine for the web browser.
 
-It wraps every step of the development lifecycle behind a single command: scaffolding a new project,
-generating ECS components and systems, running your game in development mode, building for
-production, and publishing reusable packages to the NanoForge registry.
+One command covers each step of a game's life: create a project, add components and systems, run
+it while you work, build it, serve it, open it in the editor, and share packages through the
+NanoForge registry.
 
 ## What can it do?
 
 <CardGroup cols={2}>
-  <Card title="Scaffold projects" href="../commands/new">
-    Create a fully configured project - client, optional server, linting, and Docker - in one
-    command.
+  <Card title="Create a project" href="../commands/new">
+    Make a ready-to-run game: one client app, or a workspace with a client and a server.
   </Card>
-  <Card title="Develop & run" href="../commands/dev">
-    Run your game locally with hot reloading, then start it as you would in production.
+  <Card title="Develop and run" href="../commands/dev">
+    Run the game locally. Changes rebuild the game and reload the browser.
+  </Card>
+  <Card title="Add components and systems" href="../commands/create">
+    Generate ECS components, systems, or an editor plugin.
+  </Card>
+  <Card title="Open the editor" href="../commands/editor">
+    Start the NanoForge visual editor on your project.
+  </Card>
+  <Card title="Build and serve" href="../commands/build">
+    Compile the client and server, then serve them with `nf start`.
   </Card>
   <Card title="Share packages" href="../commands/registry">
-    Publish and consume components, systems, and libraries through the NanoForge registry.
+    Log in, publish, and install components and systems from the registry.
   </Card>
 </CardGroup>
 
 ## Where to go next
 
-- New to NanoForge? Start with [Installation](./installation) then the
-  [Quickstart](./quickstart).
-- Looking for a specific flag? See the [Commands reference](../commands/overview).
-- Want a task-oriented walkthrough? Browse the [Guides](/guides/cli/overview).
+- New to NanoForge? Read [Installation](./installation), then the [Quickstart](./quickstart).
+- Looking for a flag? See the [command reference](../commands/overview).
+- Want a step-by-step walkthrough? Browse the [CLI guides](/guides/cli/overview).
 
-See the [changelog](https://github.com/NanoForge-dev/CLI/blob/main/CHANGELOG.md) for the full
-release history.
+The [CLI changelog](https://github.com/NanoForge-dev/CLI/blob/main/CHANGELOG.md) lists every
+release.

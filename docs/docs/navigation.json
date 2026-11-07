@@ -36,7 +36,8 @@
       "schematics/workspace",
       "schematics/project",
       "schematics/component",
-      "schematics/system"
+      "schematics/system",
+      "schematics/plugin"
     ]
   }
 ]

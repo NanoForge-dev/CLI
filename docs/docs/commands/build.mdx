@@ -1,48 +1,85 @@
 ---
 title: build
-description: Build your NanoForge project for production
+description: Compile the client and server apps of your game
 ---
 
-## Overview
+## What it does
 
-`nf build` compiles your NanoForge project. The client and server entry points, static directories,
-and output directories all default to the values in your
-[configuration file](../configuration/configuration-file) and can be overridden per run.
+`nf build` compiles each app of the project with Bun:
 
-When the workspace sets `network: "p2p"`, each server app is also built for the browser, into the
-client's output directory under `server/`, so the host player's tab can run it.
+- a `client` app for the browser (`--target browser`),
+- a `server` app for the server (`--target node`), run by Bun.
+
+In a workspace, it builds every client and server app that `packages` matches, one after the
+other. Libs are not built on their own: the apps that import them include them.
+
+For each app, `nf build`:
+
+1. empties the output folder (`dist/` by default),
+2. copies the assets folder (`assets/` by default) into it,
+3. bundles the entry file (`src/main.ts` by default) into it. Asset files that the code imports
+   keep their name (`[name].[ext]`).
+
+The loaders that [`nf start`](./start) runs look for `main.js` at the root of the output folder.
+Keep an entry file named `main.ts` (or `main.js`) so the bundle gets that name.
+
+With `network: "p2p"` in the workspace configuration, each server app is also built for the
+browser, into `server/` inside the client's output folder. The host player's browser runs it. See
+[peer-to-peer](../configuration/configuration-file#peer-to-peer).
 
 ## Usage
 
 ```bash
-nf build
+nf build [options]
 ```
 
 ## Options
 
-| Option                                  | Description                            |
-| --------------------------------------- | -------------------------------------- |
-| `-d, --directory <directory>`           | Working directory of the command.      |
-| `-c, --config <config>`                 | Path to the configuration file.        |
-| `--client-entry <clientEntry>`          | Entry file of the client.              |
-| `--server-entry <serverEntry>`          | Entry file of the server.              |
-| `--client-static-dir <clientStaticDir>` | Static directory of the client.        |
-| `--server-static-dir <serverStaticDir>` | Static directory of the server.        |
-| `--client-out-dir <clientOutDir>`       | Output directory of the client.        |
-| `--server-out-dir <serverOutDir>`       | Output directory of the server.        |
-| `--editor`                              | Build with the editor configuration.   |
-| `--watch`                               | Build in watch mode. Default: `false`. |
+The defaults come from each app's [configuration file](../configuration/configuration-file).
+Paths are relative to the app's folder. In a workspace, a `--client-*` option applies to every
+client app and a `--server-*` option to every server app.
+
+| Option                                  | Type    | Default                    | Description                                                                                 |
+| --------------------------------------- | ------- | -------------------------- | ------------------------------------------------------------------------------------------- |
+| `-d, --directory <directory>`           | path    | `.`                        | Project or workspace folder.                                                                |
+| `--client-entry <clientEntry>`          | path    | `entryFile`, `src/main.ts` | Entry file of the client.                                                                   |
+| `--server-entry <serverEntry>`          | path    | `entryFile`, `src/main.ts` | Entry file of the server.                                                                   |
+| `--client-static-dir <clientStaticDir>` | path    | `dir.assets`, `assets`     | Folder copied into the client output.                                                       |
+| `--server-static-dir <serverStaticDir>` | path    | `dir.assets`, `assets`     | Folder copied into the server output.                                                       |
+| `--client-out-dir <clientOutDir>`       | path    | `out.dir`, `dist`          | Output folder of the client. It is emptied first.                                           |
+| `--server-out-dir <serverOutDir>`       | path    | `out.dir`, `dist`          | Output folder of the server. It is emptied first.                                           |
+| `--editor`                              | boolean | `false`                    | Use `editor.entryFile` as the entry (unless `--*-entry` is set) and add linked source maps. |
+| `--watch`                               | boolean | `false`                    | Keep running, and rebuild an app when a file changes in the folder of its entry file.       |
 
 ## Examples
 
-**Build using the configuration defaults:**
+Build with the defaults of the configuration:
 
 ```bash
 nf build
 ```
 
-**Rebuild on change with a custom client output directory:**
+Build into other folders:
 
 ```bash
-nf build --watch --client-out-dir dist/client
+nf build --client-out-dir build/client --server-out-dir build/server
 ```
+
+Rebuild on every change (what [`nf dev`](./dev) runs):
+
+```bash
+nf build --watch
+```
+
+## Common errors
+
+- **`Configuration file not found at path: <folder>/nanoforge.config.ts.`** Run the command in
+  the project folder, or pass it with `-d`.
+- **`Invalid config at '<folder>': the root config cannot be of type 'lib'.`** Run `nf build` at
+  the workspace root or in an app, not in a lib.
+- **`No project or lib config found for workspace package pattern '<pattern>'`.** This is a
+  warning: no folder matched by `packages` has a `nanoforge.config.ts`. Check the patterns.
+- **`nf start` can't find `main.js`.** The entry file has another name, so the bundle does too.
+  Rename it `main.ts`, or set `entryFile` to a file named `main.ts`.
+- **A file in the output folder disappeared.** The output folder is emptied on each build. Keep
+  your files in the assets folder: it is copied in.

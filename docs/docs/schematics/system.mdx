@@ -5,7 +5,9 @@ description: Generate a NanoForge ECS system
 
 ## Overview
 
-The `system` schematic scaffolds a new ECS system function for a NanoForge client or server part. The generated file includes the system function, a default export required for code generation, and an `EDITOR_SYSTEM_MANIFEST` required for the NanoForge editor to display and configure the system.
+The `system` schematic writes one ECS system function, with a default export used for code
+generation and an `EDITOR_SYSTEM_MANIFEST` that the NanoForge editor reads to show the system.
+[`nf create system`](../commands/create) runs it in the systems folder of the app.
 
 ## Usage
 
@@ -15,18 +17,18 @@ schematics @nanoforge-dev/schematics:system --part=client --name=movement
 
 ## Options
 
-| Option      | Type                   | Default      | Description                                                                                                                                                                          |
-| ----------- | ---------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `name`      | `string`               | `example`    | <Tooltip tip="Converted to camelCase for the function name (e.g. 'movement' → 'movementSystem') and kebab-case for the file name (e.g. 'movement.system.ts').">System name</Tooltip> |
-| `part`      | `"client" \| "server"` | _(required)_ | <Tooltip tip="Determines which ECS package to import from: @nanoforge-dev/ecs-client or @nanoforge-dev/ecs-server.">The part of the application this system belongs to</Tooltip>     |
-| `directory` | `string`               | `.`          | <Tooltip tip="Typically the systems/ folder inside your part directory, e.g. client/systems/.">Destination directory for the generated file</Tooltip>                                |
-| `language`  | `"ts" \| "js"`         | `ts`         | Language to use for the generated file                                                                                                                                               |
+| Option      | Type                   | Default   | Description                                                                          |
+| ----------- | ---------------------- | --------- | ------------------------------------------------------------------------------------ |
+| `name`      | `string`               | `example` | System name. `movement` gives the function `movementSystem` in `movement.system.ts`. |
+| `part`      | `"client" \| "server"` | required  | Picks the package the types are imported from (see the warning below).               |
+| `directory` | `string`               | `.`       | Folder to write to.                                                                  |
+| `language`  | `"ts" \| "js"`         | `ts`      | `.ts` or `.js` file.                                                                 |
 
 ## Generated file
 
-`{directory}/{name}.system.ts`
+`<directory>/<name>.system.ts`, here for `--name=movement --part=client`:
 
-```ts
+```ts movement.system.ts
 import { type Context } from "@nanoforge-dev/common";
 import { type EditorSystemManifest, type Registry } from "@nanoforge-dev/ecs-client";
 
@@ -48,10 +50,10 @@ export const movementSystem = (registry: Registry, ctx: Context) => {
   });
 };
 
-// Required to generate code
+// * Required to generate code
 export default movementSystem.name;
 
-// Required for the editor to display the system and generate code
+// * Required for the editor to display the system and generate code
 export const EDITOR_SYSTEM_MANIFEST: EditorSystemManifest = {
   name: "movement",
   description:
@@ -60,44 +62,51 @@ export const EDITOR_SYSTEM_MANIFEST: EditorSystemManifest = {
 };
 ```
 
-## Editor manifest
+The example system works on `ExampleComponent`, imported from `../components/example.component`.
+That file exists only if you created a component named `example`. Replace it with your own
+components.
 
-The `EDITOR_SYSTEM_MANIFEST` export is required for the NanoForge editor to discover the system and wire it into the game loop.
-
-| Field          | Required | Description                                                                                                                                                                            |
-| -------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`         | Yes      | System name as displayed in the editor                                                                                                                                                 |
-| `description`  | Yes      | Human-readable description of what the system does                                                                                                                                     |
-| `dependencies` | Yes      | <Tooltip tip="Lists the component class names this system queries via registry.getZipper(). The editor uses this to validate wiring.">Component names this system depends on</Tooltip> |
+<Warning>
+  The file imports from `@nanoforge-dev/ecs-client` (or `@nanoforge-dev/ecs-server` for the
+  server). Projects made by `nf new` depend on `@nanoforge-dev/ecs`, not on these packages. Change
+  the import to `import type { EditorSystemManifest, Registry } from "@nanoforge-dev/ecs";`, like
+  the systems that `nf new` generates.
+</Warning>
 
 ## System signature
 
-Every NanoForge system follows the same function signature:
+Every system has this shape:
 
 ```ts
 (registry: Registry, ctx: Context) => void
 ```
 
-- **`registry`** — the ECS registry; use `registry.getZipper([...])` to query entities with specific components.
-- **`ctx`** — the application context; provides access to `ctx.app`, `ctx.assets`, and other engine services.
+- `registry` is the ECS registry. `registry.getZipper([...])` returns the entities that have all
+  the given components.
+- `ctx` is the app context: `ctx.app`, `ctx.network` and the other engine services.
+
+Add the system to the game in `src/main.ts` with `registry.addSystem(movementSystem)`.
+
+## Editor manifest
+
+| Field          | Required | Description                                                                |
+| -------------- | -------- | -------------------------------------------------------------------------- |
+| `name`         | yes      | Name shown in the editor.                                                  |
+| `description`  | yes      | What the system does.                                                      |
+| `dependencies` | yes      | Names of the component classes the system reads with `registry.getZipper`. |
 
 ## Examples
 
-**Generate a `PhysicsSystem` for the client:**
+A client system in the systems folder:
 
 ```bash
 schematics @nanoforge-dev/schematics:system \
-  --part=client \
-  --name=physics \
-  --directory=client/systems
+  --part=client --name=physics --directory=src/systems
 ```
 
-**Generate a JavaScript server system:**
+A JavaScript server system:
 
 ```bash
 schematics @nanoforge-dev/schematics:system \
-  --part=server \
-  --name=sync-state \
-  --language=js \
-  --directory=server/systems
+  --part=server --name=sync-state --language=js --directory=src/systems
 ```

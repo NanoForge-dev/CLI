@@ -1,57 +1,104 @@
 ---
 title: create
-description: Create a NanoForge component, system or editor plugin
+description: Create a component, a system, or an editor plugin
 ---
 
-## Overview
+## What it does
 
-`nf create` scaffolds a single ECS **component** or **system** in your project. By default it
-creates files for the client; pass `--server` to target the server instead.
+`nf create` generates one file or one project:
+
+- `component`: an ECS component class, in the components folder of the app.
+- `system`: an ECS system function, in the systems folder of the app.
+- `plugin`: a new editor plugin project, in a folder of its own.
+
+For a component or a system, run it in a `client` or `server` app (the `-d` folder). The app's
+`nanoforge.config.ts` decides the part and the language: a component created in a server app is a
+server component. In a workspace, point `-d` at the app (`-d apps/server`), not at the root.
 
 ## Usage
 
 ```bash
-nf create <type>
+nf create <type> [options]
 ```
 
-`<type>` is `component`, `system`, or `plugin` (an editor plugin, a project of its own).
+`<type>` is `component`, `system` or `plugin`.
 
 ## Options
 
-| Option                        | Description                                                     |
-| ----------------------------- | --------------------------------------------------------------- |
-| `<type>`                      | The type to create: `component`, `system` or `plugin`.          |
-| `-d, --directory <directory>` | Working directory of the command.                               |
-| `-c, --config <config>`       | Path to the configuration file.                                 |
-| `-n, --name <name>`           | Name of the component or system.                                |
-| `-s, --server`                | Create on the server instead of the client. Default: `false`.   |
-| `-p, --path <path>`           | Path to the component/system folder, or the plugin's folder.    |
-| `-t, --template <template>`   | Plugins: `panel` (default) or `theme` (a color theme, no code). |
+| Option                        | Type                              | Default                                                                                           | Description                                                                                            |
+| ----------------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `<type>`                      | `component`, `system` or `plugin` | required                                                                                          | What to create.                                                                                        |
+| `-d, --directory <directory>` | path                              | `.`                                                                                               | The app folder (component, system), or the folder the plugin folder goes in.                           |
+| `-n, --name <name>`           | string                            | asked; `example`, or `@nanoforge/ecs` for a plugin                                                | Name of the component or system. For a plugin: `@scope/name`, in lowercase letters, digits and dashes. |
+| `-p, --path <path>`           | path                              | `dir.components` or `dir.systems` (`src/components`, `src/systems`); for a plugin, its short name | Folder to write to, relative to `-d`.                                                                  |
+| `-t, --template <template>`   | `panel` or `theme`                | `panel`                                                                                           | Plugins only. `panel`: a panel, a command and a setting. `theme`: a color theme, with no code.         |
+
+## What it generates
+
+- `nf create component --name health` writes `health.component.ts` with a `HealthComponent` class
+  and its `EDITOR_COMPONENT_MANIFEST`. See the [component schematic](../schematics/component).
+- `nf create system --name movement` writes `movement.system.ts` with a `movementSystem`
+  function and its `EDITOR_SYSTEM_MANIFEST`. See the [system schematic](../schematics/system).
+- `nf create plugin --name @acme/score-board` writes a plugin project in `score-board/`. See the
+  [plugin schematic](../schematics/plugin).
+
+A JavaScript app (`language: "js"`) gets `.js` files.
+
+<Warning>
+  The generated component and system import their types from `@nanoforge-dev/ecs-client` or
+  `@nanoforge-dev/ecs-server`. Projects made by `nf new` depend on `@nanoforge-dev/ecs` instead.
+  Replace the import with `@nanoforge-dev/ecs`, like the files that `nf new` generates.
+</Warning>
 
 ## Examples
 
-**Create a client component:**
+Create a component in a client app:
 
 ```bash
-nf create component --name Position
+nf create component --name position
 ```
 
-**Create a server system:**
+Create a system in the server app of a workspace:
 
 ```bash
-nf create system --name Movement --server
+nf create system --name movement -d apps/server
 ```
 
-**Create an editor plugin:**
+Create an editor plugin, then build it on every change:
 
 ```bash
 nf create plugin --name @acme/score-board
+cd score-board
+pnpm install
+pnpm dev
 ```
 
-**Create an editor theme** (a manifest with a color theme and an icon, no code):
+Create an editor theme (a manifest with colors and icons, no code):
 
 ```bash
 nf create plugin --name @acme/forest --template theme
-cd forest && node build.mjs --watch
-DEV_PLUGINS=$(pwd) nf editor ../my-game  # in another terminal: the editor reloads the theme
+cd forest
+node build.mjs --watch
 ```
+
+When it is done, `nf create plugin` prints how to load the plugin in the editor:
+`DEV_PLUGINS=<plugin folder> nf editor <project>`. The editor reloads the plugin when its build
+changes. The [first plugin guide](/docs/editor/plugins/create-your-first-plugin) goes further.
+
+<Note>
+  `DEV_PLUGINS` needs a version of the editor with plugin support. The editor that `nf` bundles must
+  be newer than 0.1.4: editor 0.1.4 and earlier don't read `DEV_PLUGINS`.
+</Note>
+
+## Common errors
+
+- **`Cannot run 'create' at a workspace root ('<folder>').`** Point `-d` at an app:
+  `-d apps/client`.
+- **`Configuration file not found at path: <folder>/nanoforge.config.ts.`** The `-d` folder is not
+  an app. Components and systems need an app around them; plugins don't.
+- **`Invalid argument 'type'. Expected: 'component', 'system' or 'plugin'.`** Check the spelling
+  of `<type>`.
+- **`'<folder>' already exists and is not empty.`** The plugin folder exists. Choose another one
+  with `--path`.
+- **`'<template>' is not a plugin template.`** Use `--template panel` or `--template theme`.
+- **`"<name>" is not a plugin name.`** Use `@scope/name` in lowercase, for example `@acme/counter`.

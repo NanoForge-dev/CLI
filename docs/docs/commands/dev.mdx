@@ -1,30 +1,61 @@
 ---
 title: dev
-description: Run your NanoForge project in development mode
+description: Run your game while you work, with rebuild and reload on change
 ---
 
-## Overview
+## What it does
 
-`nf dev` runs your NanoForge project in development mode. It is the command you keep open while
-working - it serves the game and reacts to changes.
+`nf dev` is the command you keep open while you work. It runs two commands side by side, through
+your project's package manager:
+
+- [`nf build --watch`](./build): builds every app, then rebuilds an app when a file changes in the
+  folder of its entry file (`src/` by default). Its output is hidden.
+- [`nf start --watch`](./start): serves the game. The page reloads when the client build changes,
+  and the server restarts when the server build changes.
+
+Open the URL that `nf start` prints, [http://localhost:3000](http://localhost:3000) by default.
+Stop both with `Ctrl+C`.
 
 ## Usage
 
 ```bash
-nf dev
+nf dev [options]
 ```
 
 ## Options
 
-| Option                        | Description                       |
-| ----------------------------- | --------------------------------- |
-| `-d, --directory <directory>` | Working directory of the command. |
-| `-c, --config <config>`       | Path to the configuration file.   |
+| Option                        | Type    | Default                 | Description                                                                                                                                                                |
+| ----------------------------- | ------- | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `-d, --directory <directory>` | path    | `.`                     | Project or workspace folder.                                                                                                                                               |
+| `-e, --editor`                | boolean | `false`                 | Build with the editor entry file (`editor.entryFile`) and linked source maps, like `nf build --editor`. It doesn't start the editor: use [`nf editor`](./editor) for that. |
+| `-c, --config <config>`       | path    | `nanoforge.config.json` | Accepted, but has no effect: the configuration is always read from the `-d` folder.                                                                                        |
+
+`nf dev` has no port or TLS option. It uses the `port` and `tls` fields of the client's
+[configuration](../configuration/configuration-file).
 
 ## Examples
 
-**Standard dev run:**
+Run the project in the current folder:
 
 ```bash
 nf dev
 ```
+
+Run a project from another folder:
+
+```bash
+nf dev -d ./games/space
+```
+
+## Common errors
+
+- **A build error doesn't show.** The build output is hidden in `nf dev`. Run `nf build` to see
+  the error.
+- **The page doesn't reload.** The build watches only the folder of the entry file. A change in
+  `assets/` is not picked up: restart `nf dev`.
+- **The port is taken.** Set another `port` in the client's `nanoforge.config.ts`, or stop the
+  other process.
+- **Configuration file not found.** Run `nf dev` from the project root, or pass it with `-d`.
+
+For problems in the browser (a blank page, a storage error), see the
+[loader troubleshooting](/docs/loader/overview#troubleshooting).

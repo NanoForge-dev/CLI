@@ -5,7 +5,10 @@ description: Generate a NanoForge ECS component
 
 ## Overview
 
-The `component` schematic scaffolds a new ECS component class for a NanoForge client or server part. The generated file includes the component class, a default export required for code generation, and an `EDITOR_COMPONENT_MANIFEST` required for the NanoForge editor to display and configure the component.
+The `component` schematic writes one ECS component class, with a default export used for code
+generation and an `EDITOR_COMPONENT_MANIFEST` that the NanoForge editor reads to show and edit the
+component. [`nf create component`](../commands/create) runs it in the components folder of the
+app.
 
 ## Usage
 
@@ -15,18 +18,18 @@ schematics @nanoforge-dev/schematics:component --part=client --name=health
 
 ## Options
 
-| Option      | Type                   | Default      | Description                                                                                                                                                                           |
-| ----------- | ---------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`      | `string`               | `example`    | <Tooltip tip="Converted to PascalCase for the class name (e.g. 'health' → 'HealthComponent') and kebab-case for the file name (e.g. 'health.component.ts').">Component name</Tooltip> |
-| `part`      | `"client" \| "server"` | _(required)_ | <Tooltip tip="Determines which ECS package to import from: @nanoforge-dev/ecs-client or @nanoforge-dev/ecs-server.">The part of the application this component belongs to</Tooltip>   |
-| `directory` | `string`               | `.`          | <Tooltip tip="Typically the components/ folder inside your part directory, e.g. client/components/.">Destination directory for the generated file</Tooltip>                           |
-| `language`  | `"ts" \| "js"`         | `ts`         | Language to use for the generated file                                                                                                                                                |
+| Option      | Type                   | Default   | Description                                                                          |
+| ----------- | ---------------------- | --------- | ------------------------------------------------------------------------------------ |
+| `name`      | `string`               | `example` | Component name. `health` gives the class `HealthComponent` in `health.component.ts`. |
+| `part`      | `"client" \| "server"` | required  | Picks the package the manifest type is imported from (see the warning below).        |
+| `directory` | `string`               | `.`       | Folder to write to.                                                                  |
+| `language`  | `"ts" \| "js"`         | `ts`      | `.ts` or `.js` file.                                                                 |
 
 ## Generated file
 
-`{directory}/{name}.component.ts`
+`<directory>/<name>.component.ts`, here for `--name=health --part=client`:
 
-```ts
+```ts health.component.ts
 import { type EditorComponentManifest } from "@nanoforge-dev/ecs-client";
 
 export class HealthComponent {
@@ -51,10 +54,10 @@ export class HealthComponent {
   }
 }
 
-// Required to generate code
+// * Required to generate code
 export default HealthComponent.name;
 
-// Required for the editor to display the component and generate code
+// * Required for the editor to display the component and generate code
 export const EDITOR_COMPONENT_MANIFEST: EditorComponentManifest = {
   name: "Health",
   description: "Health component description",
@@ -77,42 +80,47 @@ export const EDITOR_COMPONENT_MANIFEST: EditorComponentManifest = {
       description: "Param C description",
       example: true,
       default: false,
+      // Not required because it has a default value
       optional: true,
     },
   ],
 };
 ```
 
+Replace the example parameters, getters and method with your component's data.
+
+<Warning>
+  The file imports from `@nanoforge-dev/ecs-client` (or `@nanoforge-dev/ecs-server` for the server).
+  Projects made by `nf new` depend on `@nanoforge-dev/ecs`, not on these packages. Change the import
+  to `import type {EditorComponentManifest} from "@nanoforge-dev/ecs";`, like the components that
+  `nf new` generates.
+</Warning>
+
 ## Editor manifest
 
-The `EDITOR_COMPONENT_MANIFEST` export is required for the NanoForge editor to discover the component, render its configuration panel, and generate code. Each `params` entry describes one constructor parameter:
+Each `params` entry describes one constructor parameter, in order:
 
-| Field         | Required | Description                                                  |
-| ------------- | -------- | ------------------------------------------------------------ |
-| `type`        | Yes      | Parameter type: `"string"`, `"number"`, or `"boolean"`       |
-| `name`        | Yes      | Constructor parameter name                                   |
-| `description` | Yes      | Human-readable description shown in the editor               |
-| `example`     | Yes      | Example value used in code generation                        |
-| `default`     | No       | Default value when the parameter is optional                 |
-| `optional`    | No       | When `true`, the editor treats the parameter as non-required |
+| Field         | Required | Description                                         |
+| ------------- | -------- | --------------------------------------------------- |
+| `type`        | yes      | `"string"`, `"number"` or `"boolean"`.              |
+| `name`        | yes      | Name of the constructor parameter.                  |
+| `description` | yes      | Text shown in the editor.                           |
+| `example`     | yes      | Example value used in generated code.               |
+| `default`     | no       | Value used when the parameter is left out.          |
+| `optional`    | no       | `true` when the editor may leave the parameter out. |
 
 ## Examples
 
-**Generate a `PlayerComponent` for the client:**
+A client component in the components folder:
 
 ```bash
 schematics @nanoforge-dev/schematics:component \
-  --part=client \
-  --name=player \
-  --directory=client/components
+  --part=client --name=player --directory=src/components
 ```
 
-**Generate a JavaScript server component:**
+A JavaScript server component:
 
 ```bash
 schematics @nanoforge-dev/schematics:component \
-  --part=server \
-  --name=network-player \
-  --language=js \
-  --directory=server/components
+  --part=server --name=network-player --language=js --directory=src/components
 ```

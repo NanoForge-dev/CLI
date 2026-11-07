@@ -1,44 +1,70 @@
 ---
 title: install / add
-description: Add components, systems, or libraries to your project
+description: Install components, systems or libraries from the NanoForge registry
 ---
 
-## Overview
+## What it does
 
-`nf install` (aliased as `nf add`) pulls components, systems, or libraries from the NanoForge
-registry into your project. By default it installs components and systems for the client; use
-`--lib` for libraries and `--server` to target the server.
+`nf install` (or its alias `nf add`) adds packages to your project.
+
+- **Components and systems** (the default) come from the NanoForge registry. For each name, `nf`
+  fetches the package's manifest, then the packages it depends on. It installs their npm and
+  library dependencies with your package manager, as dev dependencies. Then it downloads each
+  file into `client/components/` or `client/systems/` under the `-d` folder (`server/...` with
+  `--server`).
+- **Libraries** (`--lib`) are npm packages. `nf` adds them as dev dependencies with your project's
+  package manager, found from its lock file (npm when there is none).
+
+A registry name has the form `scope/name`. If you are logged in ([`nf login`](./registry)), `nf`
+sends your API key with the requests.
+
+<Note>
+  The `client/` and `server/` folders come from the older project layout. Projects made by `nf new`
+  keep their code in `src/components` and `src/systems` (or `apps/client/src/...` in a workspace).
+  Move the downloaded files there, and import them from your code.
+</Note>
 
 ## Usage
 
 ```bash
-nf install [names...]
+nf install [names...] [options]
+nf add [names...] [options]
 ```
 
 ## Options
 
-| Option                        | Description                                                        |
-| ----------------------------- | ------------------------------------------------------------------ |
-| `[names...]`                  | Names of the components/systems/libraries to install.              |
-| `-d, --directory <directory>` | Working directory of the command.                                  |
-| `-l, --lib`                   | Install a library instead of a component/system. Default: `false`. |
-| `-s, --server`                | Install on the server instead of the client. Default: `false`.     |
+| Option                        | Type     | Default | Description                                                                     |
+| ----------------------------- | -------- | ------- | ------------------------------------------------------------------------------- |
+| `[names...]`                  | string[] | asked   | Packages to install: `scope/name` from the registry, or npm names with `--lib`. |
+| `-d, --directory <directory>` | path     | `.`     | Project folder.                                                                 |
+| `-l, --lib`                   | boolean  | `false` | Install npm libraries instead of registry components and systems.               |
+| `-s, --server`                | boolean  | `false` | Download components and systems into `server/` instead of `client/`.            |
 
 ## Examples
 
-**Install a component for the client:**
+Install a component for the client:
 
 ```bash
 nf install my-org/health-bar
 ```
 
-**Install a library on the server:**
+Install two systems for the server:
 
 ```bash
-nf add my-org/physics --lib --server
+nf add my-org/gravity my-org/collisions --server
 ```
 
-<Note>
-  Installing from a private scope may require authentication. See the [registry
-  commands](./registry) to log in first.
-</Note>
+Add an npm library:
+
+```bash
+nf add --lib lodash-es
+```
+
+## Common errors
+
+- **`API Request failed (Status 404)`.** The package doesn't exist on the registry. Check the
+  `scope/name`.
+- **Another `API Request failed (Status <code>)`.** The registry refused the request: the details
+  follow the message. If the package needs an account, log in with [`nf login`](./registry).
+- **The dependency install fails.** Run your package manager's install in the project folder to
+  see the full error.
