@@ -38,7 +38,7 @@ The "Default" column is the answer that is preselected when `nf new` asks the qu
 | `--editor`                                     | boolean                        | `false`         | Add the `nf editor .` instructions to the generated README.                                   |
 | `--init-functions` / `--no-init-functions`     | boolean                        | none            | Accepted, but has no effect yet.                                                              |
 | `--no-lint`                                    | boolean                        | none            | Accepted, but has no effect yet: `nf new` generates no lint files.                            |
-| `--no-agents`                                  | boolean                        | `true`          | Don't add the `AGENTS.md` and `CLAUDE.md` files for AI coding agents.                         |
+| `--no-agents`                                  | boolean                        | none            | Don't add the `AGENTS.md` and `CLAUDE.md` files, which are added unless this flag is passed.  |
 
 ## What it generates
 
@@ -50,6 +50,7 @@ my-game/
 ├── package.json           # dev, build, start scripts and the engine packages
 ├── tsconfig.json          # or jsconfig.json
 ├── README.md
+├── AGENTS.md              # unless --no-agents, with a CLAUDE.md that imports it
 ├── Dockerfile             # with --docker
 ├── assets/
 └── src/
@@ -65,6 +66,7 @@ my-game/
 ├── nanoforge.config.ts    # type: "workspace", packages: ["apps/*"]
 ├── package.json
 ├── .env                   # network ports for the client and the server
+├── AGENTS.md              # unless --no-agents, with a CLAUDE.md; each app has its own
 ├── Dockerfile             # with --docker
 └── apps/
     ├── client/            # the client app, which also syncs its position from the server

@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Instructions for AI coding agents (Codex, Cursor, GitHub Copilot, Gemini CLI, Claude Code, ...)
+Instructions for AI coding agents (Codex, Cursor, GitHub Copilot, Claude Code, ...)
 working on this project. Human-oriented documentation lives in `README.md`.
 
 ## Project overview
@@ -22,12 +22,11 @@ NanoForge is a web game engine built on an ECS (Entity Component System):
 | Task                         | Command                                          |
 | ---------------------------- | ------------------------------------------------ |
 | Install dependencies         | `<%= packageManager %> install`                  |
-| Develop with hot reload      | `nf dev`                                         |
+| Rebuild and reload on change | `nf dev`                                         |
 | Build for production         | `nf build` (output in `dist/`)                   |
 | Run the built app            | `nf start`                                       |
 | Scaffold a component         | `nf create component -n <Name>`                  |
-| Scaffold a system            | `nf create system -n <name>`                     |
-| Install a registry component | `nf install <name>`                              |<% if (editor) { %>
+| Scaffold a system            | `nf create system -n <name>`                     |<% if (editor) { %>
 | Open the visual editor       | `nf editor .`                                    |<% } %>
 
 <% if (workspace) { %>Install dependencies from the workspace root. <% } %>There is no test runner configured. After a change, run `nf build` to check that the project
@@ -47,7 +46,7 @@ still compiles.
 └── jsconfig.json
 ```
 
-Do not edit generated or installed files: `dist/`, `.nanoforge/` and `nf_modules/`.
+Do not edit the build output in `dist/`.
 
 ## Conventions
 
@@ -113,12 +112,12 @@ import { Velocity2D } from "../components/velocity-2d.component";
  * @param {Registry} registry
  * @param {Context} _ctx
  */
-export function applyVelocity(registry, _ctx) {
+export const applyVelocity = (registry, _ctx) => {
   registry.getZipper([Position2D, Velocity2D]).forEach(({ Position2D, Velocity2D }) => {
     Position2D.x += Velocity2D.x;
     Position2D.y += Velocity2D.y;
   });
-}
+};
 
 export default applyVelocity.name;
 

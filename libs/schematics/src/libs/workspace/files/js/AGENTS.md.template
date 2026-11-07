@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Instructions for AI coding agents (Codex, Cursor, GitHub Copilot, Gemini CLI, Claude Code, ...)
+Instructions for AI coding agents (Codex, Cursor, GitHub Copilot, Claude Code, ...)
 working on this repository. Human-oriented documentation lives in `README.md`.
 
 ## Project overview
@@ -30,12 +30,12 @@ working inside `apps/<part>`.
 
 Run from the workspace root:
 
-| Task                    | Command                                  |
-| ----------------------- | ---------------------------------------- |
-| Install dependencies    | `<%= packageManager %> install`          |
-| Develop with hot reload | `nf dev`                                 |
-| Build every app         | `nf build`                               |
-| Run every built app     | `nf start`                               |
+| Task                         | Command                         |
+| ---------------------------- | ------------------------------- |
+| Install dependencies         | `<%= packageManager %> install` |
+| Rebuild and reload on change | `nf dev`                        |
+| Build every app              | `nf build`                      |
+| Run every built app          | `nf start`                      |
 
 Call `nf` directly: the root `package.json` scripts pass a `-r` option that the CLI does not
 have, so they fail.
@@ -55,7 +55,7 @@ still compiles.
   `network: "p2p"` in the workspace configuration, the server app is also built for the
   browser and runs inside a player's client.
 - Install dependencies from the root only; do not add a lockfile inside `apps/*`.
-- Do not edit generated files: `dist/`, `.nanoforge/` and `nf_modules/`.
+- Do not edit the build output in `dist/`.
 
 ## Documentation
 
