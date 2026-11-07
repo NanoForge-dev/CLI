@@ -1,13 +1,19 @@
 ---
 title: Workspace
-description: Generate a NanoForge workspace (monorepo root)
+description: Generate the root of a NanoForge workspace
 ---
 
 ## Overview
 
-The `workspace` schematic creates the root of a NanoForge monorepo: the `nanoforge.config.ts` workspace declaration, `package.json`, and TypeScript or JavaScript base config. A workspace holds one or more projects generated with the [`project`](./project) schematic under `apps/`.
+The `workspace` schematic writes the root of a workspace: a `nanoforge.config.ts` that lists
+`apps/*`, a `package.json`, the TypeScript or JavaScript config, and a `.env` with the network
+ports. The apps are then added under `apps/` with the [`project`](./project) schematic.
+[`nf new --server`](../commands/new) runs it for you.
 
-`@nanoforge-dev/cli`, `@nanoforge-dev/config` (using the engine version resolved from `@nanoforge-dev/core`) and (for TypeScript) `typescript` are pinned to the newest registry version published at least 48h ago at generation time, mirroring pnpm's own `minimumReleaseAge` supply-chain protection so a freshly (and potentially compromised) published release isn't picked up immediately. Non-nanoforge packages like `typescript` are pinned to a specific version rather than a range; `typescript` is also kept on its `6.x` line rather than jumping to the `7.x` native rewrite.
+`@nanoforge-dev/config` gets the version of `@nanoforge-dev/core`, the engine version. The versions
+of `@nanoforge-dev/cli`, `@nanoforge-dev/core` and `typescript` are pinned to the
+newest release published at least 48 hours before generation, so a release published minutes ago
+is not picked up. `typescript` stays on its 6.x line.
 
 ## Usage
 
@@ -17,47 +23,49 @@ schematics @nanoforge-dev/schematics:workspace --name=my-game
 
 ## Options
 
-| Option           | Type                                 | Default               | Description                                                                                                                                                                                                                                                                                                                            |
-| ---------------- | ------------------------------------ | --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`           | `string`                             | `nanoforge-workspace` | <Tooltip tip="Used as the workspace folder name and package.json name field.">The name of the workspace</Tooltip>                                                                                                                                                                                                                      |
-| `directory`      | `string`                             | `name`                | <Tooltip tip="Defaults to the workspace name when not provided.">Destination directory for the generated files</Tooltip>                                                                                                                                                                                                               |
-| `language`       | `"ts" \| "js"`                       | `ts`                  | Language to use for generated source files                                                                                                                                                                                                                                                                                             |
-| `strict`         | `boolean`                            | `true`                | <Tooltip tip="Enables strict mode in tsconfig.json for TypeScript, or strict JSDoc checking in compatible editors for JavaScript.">Enable strict mode</Tooltip>                                                                                                                                                                        |
-| `packageManager` | `"npm" \| "yarn" \| "pnpm" \| "bun"` | `npm`                 | <Tooltip tip="pnpm gets a pnpm-workspace.yaml and workspace:* dependency ranges; npm, yarn and bun get a package.json 'workspaces' field and pinned ranges.">Package manager to target</Tooltip>                                                                                                                                       |
-| `allowBuilds`    | `string[]`                           | `[]`                  | <Tooltip tip="`bun` is always included (@nanoforge-dev/cli depends on it and it has its own install script). Written to pnpm-workspace.yaml's allowBuilds map (pnpm), package.json's allowScripts (npm) or trustedDependencies (bun). Ignored for yarn.">Packages allowed to run install/build scripts, in addition to `bun`</Tooltip> |
+| Option           | Type                                 | Default         | Description                                                                                                                                                          |
+| ---------------- | ------------------------------------ | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`           | `string`                             | `nanoforge-app` | Name of the workspace, and of its root package.                                                                                                                      |
+| `directory`      | `string`                             | the name        | Folder to write to.                                                                                                                                                  |
+| `language`       | `"ts" \| "js"`                       | `ts`            | `tsconfig.json` or `jsconfig.json`.                                                                                                                                  |
+| `strict`         | `boolean`                            | `true`          | Strict type checking.                                                                                                                                                |
+| `packageManager` | `"npm" \| "yarn" \| "pnpm" \| "bun"` | `npm`           | pnpm gets a `pnpm-workspace.yaml`; the others get a `workspaces` field in `package.json`.                                                                            |
+| `allowBuilds`    | `string[]`                           | `[]`            | Packages allowed to run install scripts, on top of `bun` (always allowed). Written for pnpm, npm (`allowScripts`) and Bun (`trustedDependencies`); ignored for yarn. |
+| `docker`         | `boolean`                            | `false`         | Add a `Dockerfile` that builds every app into one image, and a `.dockerignore`.                                                                                      |
 
-## Generated structure
+## Generated files
 
 ```
 my-game/
-├── package.json
+├── nanoforge.config.ts    # type: "workspace", packages: ["apps/*"] (or .js)
+├── package.json           # dev, build, start scripts; the CLI and config packages
 ├── tsconfig.json          # TypeScript only
-├── tsconfig.spec.json     # TypeScript only
 ├── jsconfig.json          # JavaScript only
-├── pnpm-workspace.yaml    # if packageManager: pnpm — allowBuilds map
-├── nanoforge.config.ts    # (or .js)
+├── pnpm-workspace.yaml    # pnpm only
+├── .env                   # network ports, see Environment variables
 ├── .gitignore
 ├── README.md
-└── apps/                  # generated with the `project` schematic
+├── Dockerfile             # docker: true
+└── .dockerignore          # docker: true
 ```
+
+The `.env` values are described in [environment variables](../configuration/environment-variables).
+
+<Warning>
+  The `dev`, `build` and `start` scripts of the generated `package.json` run `nf dev -r`, `nf build
+  -r` and `nf start -r`. The CLI has no `-r` option, so they fail, and so does the `Dockerfile`,
+  which runs the `build` script. Remove `-r` from the three scripts.
+</Warning>
 
 ## Examples
 
-**Minimal TypeScript workspace:**
+A TypeScript workspace for npm:
 
 ```bash
 schematics @nanoforge-dev/schematics:workspace --name=my-game
 ```
 
-**pnpm workspace:**
-
-```bash
-schematics @nanoforge-dev/schematics:workspace \
-  --name=my-game \
-  --packageManager=pnpm
-```
-
-**pnpm workspace allowing an extra dependency's build scripts (bun is always allowed):**
+A pnpm workspace that also allows the install script of `esbuild`:
 
 ```bash
 schematics @nanoforge-dev/schematics:workspace \

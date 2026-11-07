@@ -1,40 +1,68 @@
 ---
 title: Publish a package
-description: Share a component, system, or library through the registry
+description: Share a component or a system on the NanoForge registry
 ---
 
-Once you've built something reusable, you can publish it to the NanoForge registry so other projects
-can `nf install` it.
+Once you have written a component or a system that others can use, publish it to the NanoForge
+registry. Other projects can then get it with `nf install`.
 
 <Steps>
-  <Step title="Authenticate">
-    Log in with your API key. Authentication is global by default; use `-l` to scope it to the
-    current project only:
+  <Step title="Log in">
+
+    Get an API key from [your registry dashboard](https://registry.nanoforge.eu/dashboard/registry),
+    then run:
 
     ```bash
-    nf login --api-key <your-api-key>
+    nf login
     ```
+
+    `nf login` asks for the key, checks it with the registry, and saves it in `.nanoforgerc` in
+    your home folder. Add `--local` to save it only for the current folder.
+
+  </Step>
+
+  <Step title="Write the manifest">
+
+    Put the file to share in a folder of its own, with a `nanoforge.manifest.json` next to it:
+
+    ```json nanoforge.manifest.json
+    {
+      "name": "my-org/health-bar",
+      "type": "component",
+      "description": "A health bar above each entity",
+      "publish": { "paths": { "package": "health-bar.component.ts" } }
+    }
+    ```
+
+    `name` is `scope/name`, `type` is `component` or `system`, and `publish.paths.package` is the
+    one file to upload (`index.ts` if you leave it out). The other fields are listed in
+    [the package manifest](/docs/cli/commands/registry#the-package-manifest).
 
   </Step>
 
   <Step title="Publish">
-    From the package directory:
+
+    From that folder:
 
     ```bash
     nf publish
     ```
 
+    `nf publish` uploads the manifest and the file, then prints the package's link. Only that
+    file is sent: keep secrets out of it.
+
   </Step>
 
-<Step title="Remove a published package (if needed)">```bash nf unpublish ```</Step>
+  <Step title="Remove it (if needed)">
 
-  <Step title="Log out (optional)">
     ```bash
-    nf logout
+    nf unpublish
     ```
+
+    `nf unpublish` removes the package named in the manifest of the current folder.
+
   </Step>
 </Steps>
 
-<Note>
-  All four commands are documented together under [registry commands](/docs/cli/commands/registry).
-</Note>
+To remove the saved key from your machine, run `nf logout`. The four commands are described in
+[registry commands](/docs/cli/commands/registry).

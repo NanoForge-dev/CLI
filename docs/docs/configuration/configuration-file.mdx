@@ -5,15 +5,15 @@ description: The nanoforge.config.ts (or .js) file consumed by the CLI
 
 ## Overview
 
-Every NanoForge workspace, project, or lib has a `nanoforge.config.ts` (or `.js`) at its root,
-exporting its configuration wrapped in `defineConfig` from `@nanoforge-dev/config`. The CLI reads
-this file to know how to build and start your game, and — for a workspace root — to discover the
-projects and libs it contains.
+Every NanoForge workspace, app or lib has a `nanoforge.config.ts` (or `.js`) at its root. It
+exports its configuration wrapped in `defineConfig` from `@nanoforge-dev/config`. The CLI reads
+this file to know how to build and start your game and, at a workspace root, to find the apps and
+libs it contains.
 
-Commands accept `-c, --config <directory>` to point at a different directory to read the config
-from (default: the current directory). The CLI looks for `nanoforge.config.ts` in that directory
-first, falls back to `nanoforge.config.js` when no `.ts` file exists, and fails if neither is
-present.
+Commands read the configuration of their `-d, --directory` folder (default: the current folder).
+The CLI looks for `nanoforge.config.ts` first, then `nanoforge.config.js`, and fails with
+`Configuration file not found` if neither exists. Every field except `type` is optional: a missing
+field takes the default shown below.
 
 ## `type`
 
@@ -77,6 +77,8 @@ With `network: "p2p"`, the same client and server apps run without a game server
 - A player who opens the game without `?room=` hosts it in their tab, and the game can show its
   invite link (`ctx.network.inviteLink`).
 
+The [peer-to-peer networking page](/docs/engine/network/network-peer) explains the game side.
+
 ```ts
 import { defineConfig } from "@nanoforge-dev/config";
 
@@ -107,20 +109,28 @@ export default defineConfig({ type: "lib" });
 
 ## `client` / `server`
 
-`client` and `server` share the exact same fields and defaults — `type` is the only thing that
-tells them apart.
+`client` and `server` share these fields and defaults:
 
-| Field            | Type       | Default          | Description                                            |
-| ---------------- | ---------- | ---------------- | ------------------------------------------------------ |
-| `entryFile`      | `string`   | `src/main.ts`    | Entry file.                                            |
-| `out.dir`        | `string`   | `dist`           | Build output directory.                                |
-| `out.mainFile`   | `string`   | `main.js`        | Build output entry file name.                          |
-| `dir.assets`     | `string`   | `assets`         | Where assets live.                                     |
-| `dir.packages`   | `string`   | `nf_modules`     | Where downloaded package dependencies are installed.   |
-| `dir.components` | `string`   | `src/components` | Used by the editor only.                               |
-| `dir.systems`    | `string`   | `src/systems`    | Used by the editor only.                               |
-| `dir.scenes`     | `string`   | `src/scenes`     | Used by the editor only.                               |
-| `libs`           | `string[]` | `[]`             | Relative paths to shared libs this project depends on. |
+| Field              | Type           | Default          | Description                                                                                                |
+| ------------------ | -------------- | ---------------- | ---------------------------------------------------------------------------------------------------------- |
+| `entryFile`        | `string`       | `src/main.ts`    | Entry file that `nf build` bundles. Name it `main.ts`: the loaders run `main.js`.                          |
+| `out.dir`          | `string`       | `dist`           | Build output folder. `nf build` empties it first; `nf start` serves it.                                    |
+| `out.mainFile`     | `string`       | `main.js`        | Not used by `nf build` or `nf start` yet: the bundle is named after the entry file.                        |
+| `dir.assets`       | `string`       | `assets`         | Its files are copied to the root of the build output. Subfolders are not supported yet.                    |
+| `dir.packages`     | `string`       | `nf_modules`     | Folder for downloaded packages. No `nf` command reads it yet.                                              |
+| `dir.components`   | `string`       | `src/components` | Where `nf create component` writes, and where the editor looks.                                            |
+| `dir.systems`      | `string`       | `src/systems`    | Where `nf create system` writes, and where the editor looks.                                               |
+| `dir.scenes`       | `string`       | `src/scenes`     | Used by the editor only.                                                                                   |
+| `editor.entryFile` | `string`       | `src/main.ts`    | Entry file used with `nf build --editor` and `nf dev --editor`.                                            |
+| `language`         | `"ts" \| "js"` | `ts`             | Language of the files that `nf create` generates.                                                          |
+| `libs`             | `string[]`     | `[]`             | Relative paths to shared libs this app uses. `nf build` doesn't read it: it bundles what the code imports. |
+
+A `client` also has:
+
+| Field  | Type                                                                  | Default             | Description                                                                                               |
+| ------ | --------------------------------------------------------------------- | ------------------- | --------------------------------------------------------------------------------------------------------- |
+| `port` | `string`                                                              | `"3000"`            | Port of the web page that `nf start` serves. `nf start --port` overrides it.                              |
+| `tls`  | `{ enable?: false }` or `{ enable: true, cert: string, key: string }` | `{ enable: false }` | Serve over HTTPS with this certificate and key. Use absolute paths. See [HTTPS](../commands/start#https). |
 
 ### Example
 
@@ -128,8 +138,8 @@ tells them apart.
 import { defineConfig } from "@nanoforge-dev/config";
 
 export default defineConfig({
-  type: "server",
-  entryFile: "src/main.ts",
+  type: "client",
+  port: "8080",
   dir: { assets: "static" },
   libs: ["../../libs/shared"],
 });
@@ -153,8 +163,17 @@ with the defaults.
 
 ## Errors
 
-- `ConfigNotFoundError` — thrown by the CLI when neither `nanoforge.config.ts` nor
-  `nanoforge.config.js` exists in the directory it was pointed at.
-- `ConfigParseError` (from `@nanoforge-dev/config`) — thrown while loading or validating a config
-  file's default export. Its `code` identifies the failure: `not-found`, `load-failed`,
-  `no-default-export`, or `invalid-type`.
+- **`Configuration file not found at path: <folder>/nanoforge.config.ts.`** Neither
+  `nanoforge.config.ts` nor `nanoforge.config.js` exists in the `-d` folder.
+- **`Config file's default export is not a valid NanoforgeConfig`.** A field has the wrong type or
+  `type` is not one of the four values. The lines below the message name the field.
+- **`Config file has no default export`.** Add `export default defineConfig({ ... })`.
+- **`Failed to load config file`.** The file throws or doesn't compile. The cause follows the
+  message.
+- **`Invalid config at '<folder>': the root config cannot be of type 'lib'.`** Run the command at
+  the workspace root or in an app.
+- **`Invalid config at '<folder>': a workspace package cannot itself be of type 'workspace'.`**
+  Workspaces can't be nested.
+
+In code, `@nanoforge-dev/config` throws a `ConfigParseError` whose `code` is `not-found`,
+`load-failed`, `no-default-export` or `invalid-type`.

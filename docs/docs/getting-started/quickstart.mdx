@@ -1,61 +1,79 @@
 ---
 title: Quickstart
-description: Create, run, and build your first NanoForge project
+description: Create, run and build your first NanoForge game
 ---
 
-This quickstart takes you from an empty folder to a running game in a few minutes.
+This page takes you from an empty folder to a game running in your browser.
 
 <Steps>
   <Step title="Create a project">
-    Run the interactive scaffolder and answer the prompts (project name, language, package manager,
-    whether to include a server, and so on):
+
+    Run the project generator and answer its questions:
 
     ```bash
     nf new
     ```
 
-    Prefer a non-interactive run? Pass the answers as flags:
+    To skip the questions, give every answer as a flag:
 
     ```bash
-    nf new --name my-game --language ts --package-manager pnpm --server
+    nf new --name my-game --package-manager npm --language ts --strict \
+      --no-server --no-skip-install --no-docker --no-git
     ```
+
+    `nf new` creates the project in `my-game/` and installs its dependencies.
 
   </Step>
 
-  <Step title="Move into the project">
+  <Step title="Look at the project">
+
     ```bash
     cd my-game
     ```
 
-    The scaffolder generates a `nanoforge.config.json` at the root. See
-    [Configuration](../configuration/configuration-file) for what every field means.
+    Without a server, the project is one client app:
+
+    ```
+    my-game/
+    ├── nanoforge.config.ts   # what nf reads: type, entry file, folders
+    ├── package.json
+    ├── assets/               # files copied into the build
+    └── src/
+        ├── main.ts           # the game's entry point
+        ├── components/
+        └── systems/
+    ```
+
+    Each field of `nanoforge.config.ts` is described in the
+    [configuration file reference](../configuration/configuration-file).
 
   </Step>
 
-  <Step title="Run in development mode">
-    Start the game locally with file watching:
+  <Step title="Run it while you work">
 
     ```bash
     nf dev
     ```
 
+    Open [http://localhost:3000](http://localhost:3000). When you save a file in `src/`, `nf dev`
+    rebuilds the game and the page reloads. Stop it with `Ctrl+C`.
+
   </Step>
 
-  <Step title="Build for production">
+  <Step title="Build and serve it">
+
     ```bash
     nf build
-    ```
-
-    Then start the built game:
-
-    ```bash
     nf start
     ```
+
+    `nf build` writes the game to `dist/`. `nf start` serves that build on port 3000.
 
   </Step>
 </Steps>
 
 ## Where to go next
 
-- Learn each command in detail in the [Commands reference](../commands/overview).
-- Follow task-oriented [Guides](/guides/cli/overview) for common workflows.
+- Add a server to your game: [create a project](/guides/cli/create-a-project) with `--server`.
+- Add your own [components and systems](/guides/cli/components-and-systems).
+- Read about every command in the [command reference](../commands/overview).

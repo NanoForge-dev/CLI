@@ -1,49 +1,58 @@
 ---
 title: Commands
-description: Overview of every NanoForge CLI command
+description: Every nf command, the options they share, and how errors look
 ---
 
-## Using the CLI
-
-Every command follows the same shape:
+## Usage
 
 ```bash
-nf [command] [options]
+nf <command> [options]
 ```
 
-Most commands accept `-d, --directory <directory>` to set the working directory and
-`-c, --config <config>` to point at a specific configuration file. Run any command with `--help` to
-see its full option list:
+| Command                                     | What it does                                                  |
+| ------------------------------------------- | ------------------------------------------------------------- |
+| [`nf new`](./new)                           | Create a project: one client app, or a client and a server.   |
+| [`nf dev`](./dev)                           | Build in watch mode and serve the game, reloading on changes. |
+| [`nf build`](./build)                       | Compile the client and server apps.                           |
+| [`nf start`](./start)                       | Serve a built game.                                           |
+| [`nf create`](./create)                     | Create a component, a system, or an editor plugin.            |
+| [`nf install` / `nf add`](./install)        | Install components, systems or libraries from the registry.   |
+| [`nf editor`](./editor)                     | Start the NanoForge editor.                                   |
+| [`nf login` / `nf logout`](./registry)      | Save or remove your registry API key.                         |
+| [`nf publish` / `nf unpublish`](./registry) | Publish or remove a package on the registry.                  |
 
-```bash
-nf <command> --help
+## Options every command has
+
+| Option                        | Description                                                                                        |
+| ----------------------------- | -------------------------------------------------------------------------------------------------- |
+| `-d, --directory <directory>` | Folder to run the command in. Default: the current folder. `nf` reads `nanoforge.config.ts` there. |
+| `-h, --help`                  | Show the command's usage and options.                                                              |
+
+`nf -v` (or `nf --version`) prints the CLI version. `nf help <command>` is the same as
+`nf <command> --help`.
+
+## Where nf reads the configuration
+
+Commands that need a project (`build`, `start`, `dev`, `create`) read `nanoforge.config.ts` in the
+`-d` folder, or `nanoforge.config.js` when there is no `.ts` file. That file is either a
+`workspace` that lists its apps, or a single `client` or `server` app. See the
+[configuration file reference](../configuration/configuration-file).
+
+## Errors
+
+When a command fails, `nf` prints the name of the step that failed ("Build failed!", "Start
+failed!"), the error, then a line starting with "Suggestion:" when it has one. It then exits with
+code 1. For example, outside a project:
+
+```text
+🙀  Build failed!
+Configuration file not found at path: nanoforge.config.ts.
+
+💡 Suggestion: Please run 'nf new' or provide a valid --config path.
 ```
 
-## Available commands
+Run the command from the project folder, or pass that folder with `-d`. The "--config" in the
+suggestion is outdated: only `-d` sets where the configuration is read.
 
-<CardGroup cols={2}>
-  <Card title="new" href="./new">
-    Scaffold a brand new NanoForge project.
-  </Card>
-  <Card title="dev" href="./dev">
-    Run your project in development mode with watching.
-  </Card>
-  <Card title="build" href="./build">
-    Compile your client and server for production.
-  </Card>
-  <Card title="start" href="./start">
-    Serve a built project, optionally over HTTPS.
-  </Card>
-  <Card title="create" href="./create">
-    Create a single component or system.
-  </Card>
-  <Card title="install / add" href="./install">
-    Add components, systems, or libraries from the registry.
-  </Card>
-  <Card title="editor" href="./editor">
-    Launch the NanoForge visual editor.
-  </Card>
-  <Card title="registry" href="./registry">
-    Authenticate, publish, and unpublish packages.
-  </Card>
-</CardGroup>
+An unknown command prints `Invalid command: <name>` and exits with code 1. An unknown option
+prints `error: unknown option '<option>'`.

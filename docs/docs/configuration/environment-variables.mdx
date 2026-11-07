@@ -1,33 +1,70 @@
 ---
 title: Environment variables
-description: Pass configuration to the client and server at runtime
+description: Pass runtime values to the client and server of your game
 ---
 
 ## Overview
 
-When running a NanoForge game (via `nf start`), environment variables can be passed to the client
-and server through a `.env` file at the root of the project, or directly from the environment.
+[`nf start`](../commands/start) (and so [`nf dev`](../commands/dev)) passes environment variables
+whose name starts with `NANOFORGE_` to your apps. It reads them from:
 
-```dotenv
-NANOFORGE_CLIENT_SERVER_TCP_PORT=4445
-NANOFORGE_CLIENT_SERVER_UDP_PORT=4444
+1. the shell environment;
+2. the `.env` file in the `-d` folder (the workspace root, or the app folder).
+
+A variable set in the shell wins over the same variable in `.env`. A variable with an empty value
+is dropped. Other variables are not passed.
+
+Use the shell only for values that aren't secret. The prefix scoping below applies to the `.env`
+file: keep server-only secrets there.
+
+`nf new --server` writes this `.env` at the workspace root:
+
+```dotenv .env
+NANOFORGE_CLIENT_SERVER_TCP_PORT=4444
+NANOFORGE_CLIENT_SERVER_UDP_PORT=4445
 NANOFORGE_CLIENT_SERVER_ADDRESS=127.0.0.1
+
+NANOFORGE_SERVER_LISTENING_TCP_PORT=4444
+NANOFORGE_SERVER_LISTENING_UDP_PORT=4445
 ```
+
+The server listens on TCP 4444 and UDP 4445, and the client connects to `127.0.0.1` on the same
+ports. Change both sides together.
 
 ## Scoping by prefix
 
-Variables are scoped by their prefix, which controls where they are available:
+In the `.env` file, the prefix decides which app gets the variable:
 
-| Prefix              | Availability                        |
-| ------------------- | ----------------------------------- |
-| `NANOFORGE_CLIENT_` | Available in the client only        |
-| `NANOFORGE_SERVER_` | Available in the server only        |
-| `NANOFORGE_`        | Available in both client and server |
+| Prefix              | Goes to                   | Your code reads                                                                    |
+| ------------------- | ------------------------- | ---------------------------------------------------------------------------------- |
+| `NANOFORGE_CLIENT_` | the client only           | the rest of the name: `NANOFORGE_CLIENT_SERVER_ADDRESS` → `SERVER_ADDRESS`         |
+| `NANOFORGE_SERVER_` | the server only           | the rest of the name: `NANOFORGE_SERVER_LISTENING_TCP_PORT` → `LISTENING_TCP_PORT` |
+| `NANOFORGE_`        | the client and the server | the rest of the name: `NANOFORGE_DEBUG` → `DEBUG`                                  |
 
-<Note>
-  Prefixes are stripped before the variable is exposed to libraries. For example,
-  `NANOFORGE_CLIENT_SERVER_ADDRESS` is exposed to the client as `SERVER_ADDRESS`.
-</Note>
+The game receives them, without the prefix, in the `env` object passed to its `main` function.
+The network libraries read their ports and address from there: see the
+[network client](/docs/engine/network/network-client-api) and
+[network server](/docs/engine/network/network-server-api) pages.
 
-For full documentation on how libraries consume these variables, see
-[`@nanoforge-dev/config`](https://github.com/NanoForge-dev/Engine/tree/main/packages/config).
+<Warning>
+  Everything the client gets is sent to the browser and anyone can read it. Never put a secret in a
+  `NANOFORGE_CLIENT_` or a plain `NANOFORGE_` variable. Put values only the server may see in a
+  `NANOFORGE_SERVER_` variable **in the `.env` file**, and never export them in the shell or
+  container environment that runs `nf start` or `nf dev`.
+</Warning>
+
+## Variables nf sets
+
+| Variable in the game | Set when                           | Value                                                                       |
+| -------------------- | ---------------------------------- | --------------------------------------------------------------------------- |
+| `NETWORK_MODE`       | the workspace has `network: "p2p"` | `p2p`, on both apps. See [peer-to-peer](./configuration-file#peer-to-peer). |
+| `tlsEnabled`         | always, client only                | `true` when the client is served over HTTPS, `false` otherwise.             |
+
+## Example
+
+Point the client at a server on another machine for one run, without editing `.env`. This is
+fine for a value that isn't secret:
+
+```bash
+NANOFORGE_CLIENT_SERVER_ADDRESS=192.168.1.20 nf start
+```

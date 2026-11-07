@@ -1,26 +1,25 @@
 ---
 title: Guides
-description: Task-oriented walkthroughs for common NanoForge CLI workflows
+description: Step-by-step walkthroughs for common NanoForge CLI tasks
 ---
 
-The [Commands reference](/docs/cli/commands/overview) documents what each command does. These guides
-take the opposite angle: they follow the **paths a user actually walks** when building a game with
-the CLI, stitching commands together end to end.
+The [command reference](/docs/cli/commands/overview) describes each command on its own. These
+guides follow a task from start to end, and chain the commands it needs.
 
 <CardGroup cols={2}>
   <Card title="Create your first project" href="./create-a-project">
-    Scaffold a project, understand what was generated, and run it.
+    Create a game with or without a server, see what was generated, and run it.
   </Card>
   <Card title="Develop locally" href="./develop-locally">
-    Use dev mode and regenerate files as you change your configuration.
+    Keep `nf dev` running, set environment variables, and open the editor.
   </Card>
-  <Card title="Build & deploy" href="./build-and-deploy">
-    Produce a production build and serve it, optionally over HTTPS.
+  <Card title="Build and deploy" href="./build-and-deploy">
+    Build the game, serve it over HTTPS, and run it in a container.
   </Card>
-  <Card title="Add components & systems" href="./components-and-systems">
-    Create your own ECS pieces or install shared ones from the registry.
+  <Card title="Add components and systems" href="./components-and-systems">
+    Create your own ECS pieces, add them to the game, or install shared ones.
   </Card>
   <Card title="Publish a package" href="./publish-a-package">
-    Authenticate and share a component, system, or library with others.
+    Log in and share a component or a system on the registry.
   </Card>
 </CardGroup>
