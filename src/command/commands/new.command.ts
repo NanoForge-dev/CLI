@@ -44,7 +44,7 @@ export class NewCommand extends AbstractCommand {
       .option("--docker", "generate docker files")
       .option("--no-docker", "do not generate docker files")
       .option("--no-lint", "do not generate lint files")
-      .option("--no-agents", "do not generate AGENTS.md files for AI coding agents")
+      .option("--no-agents", "do not generate AGENTS.md and CLAUDE.md files for AI coding agents")
       .option("--editor", "do add editor dependencies")
       .option("--git", "generate git repository")
       .option("--no-git", "do not generate git repository")

@@ -87,7 +87,7 @@ export interface ProjectOptions {
   allowBuilds: string[];
 
   /**
-   * Generate an AGENTS.md file documenting the project for AI coding agents
+   * Generate an AGENTS.md file documenting the project for AI coding agents, and a CLAUDE.md that imports it
    */
   agents: boolean;
 }

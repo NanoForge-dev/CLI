@@ -273,11 +273,15 @@ describe("workspace schematic", () => {
         packageManager: "pnpm",
       });
       expect(tree.files).toContain("/my-workspace/AGENTS.md");
+      expect(tree.readContent("/my-workspace/CLAUDE.md")).toBe("@AGENTS.md\n");
+      expect(tree.files.some((file) => file.endsWith(".template"))).toBe(false);
       const content = tree.readContent("/my-workspace/AGENTS.md");
       expect(content).toContain(
         "`my-workspace` is a [NanoForge](https://nanoforge.eu) multiplayer game",
       );
-      expect(content).toContain("`pnpm run build`");
+      expect(content).toContain("`pnpm install`");
+      expect(content).toContain("`nf build`");
+      expect(content).not.toContain("run build");
       expect(content).not.toContain("<%");
     });
 
@@ -297,6 +301,7 @@ describe("workspace schematic", () => {
         agents: false,
       });
       expect(tree.files).not.toContain("/no-agents/AGENTS.md");
+      expect(tree.files).not.toContain("/no-agents/CLAUDE.md");
     });
   });
 });

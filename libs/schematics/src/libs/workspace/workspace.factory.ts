@@ -70,7 +70,11 @@ const generate = (options: WorkspaceOptions, path: string): Source => {
       (path) =>
         options.docker || !["Dockerfile", ".dockerignore"].includes(path.split("/").at(-1) ?? ""),
     ),
-    filter((path) => options.agents || (path.split("/").at(-1) ?? "") !== "AGENTS.md"),
+    filter(
+      (path) =>
+        options.agents ||
+        !["AGENTS.md", "CLAUDE.md"].some((name) => (path.split("/").at(-1) ?? "").startsWith(name)),
+    ),
     renameTemplateFiles(),
     move(normalize(path)),
   ]);

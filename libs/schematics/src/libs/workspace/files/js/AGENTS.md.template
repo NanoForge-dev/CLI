@@ -33,9 +33,12 @@ Run from the workspace root:
 | Task                    | Command                                  |
 | ----------------------- | ---------------------------------------- |
 | Install dependencies    | `<%= packageManager %> install`          |
-| Develop with hot reload | `<%= packageManager %> run dev`          |
-| Build every app         | `<%= packageManager %> run build`        |
-| Run every built app     | `<%= packageManager %> run start`        |
+| Develop with hot reload | `nf dev`                                 |
+| Build every app         | `nf build`                               |
+| Run every built app     | `nf start`                               |
+
+Call `nf` directly: the root `package.json` scripts pass a `-r` option that the CLI does not
+have, so they fail.
 
 Target a single app with `-d apps/<part>`, e.g. `nf build -d apps/client`. Scaffold components
 and systems from inside an app (`nf create component -n <Name> -d apps/client`), never from
@@ -48,7 +51,9 @@ still compiles.
 
 - Client and server communicate through `@nanoforge-dev/network` (`ctx.network` in systems).
   When you change the shape of a message sent by one side, update the other side too.
-- Keep the game logic on the server; the client renders and sends input.
+- Keep the game logic on the server; the client renders and sends input. With
+  `network: "p2p"` in the workspace configuration, the server app is also built for the
+  browser and runs inside a player's client.
 - Install dependencies from the root only; do not add a lockfile inside `apps/*`.
 - Do not edit generated files: `dist/`, `.nanoforge/` and `nf_modules/`.
 

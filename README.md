@@ -141,7 +141,7 @@ Used to create a new nanoforge project.
 - `--docker` generate docker files.
 - `--no-docker` do not generate docker files.
 - `--no-lint` do not generate lint files.
-- `--no-agents` do not generate `AGENTS.md` files for AI coding agents.
+- `--no-agents` do not generate the `AGENTS.md` and `CLAUDE.md` files for AI coding agents.
 - `--editor` add editor dependencies.
 - `--git` generate a git repository.
 - `--no-git` do not generate a git repository.

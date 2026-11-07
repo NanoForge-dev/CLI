@@ -438,6 +438,8 @@ describe("project schematic", () => {
         editor: true,
       });
       expect(tree.files).toContain("/apps/client/AGENTS.md");
+      expect(tree.readContent("/apps/client/CLAUDE.md")).toBe("@AGENTS.md\n");
+      expect(tree.files.some((file) => file.endsWith(".template"))).toBe(false);
       const content = tree.readContent("/apps/client/AGENTS.md");
       expect(content).toContain(
         "`my-workspace-client` is a [NanoForge](https://nanoforge.eu) **client** app",
@@ -481,6 +483,7 @@ describe("project schematic", () => {
         agents: false,
       });
       expect(tree.files).not.toContain("/apps/client/AGENTS.md");
+      expect(tree.files).not.toContain("/apps/client/CLAUDE.md");
     });
   });
 });

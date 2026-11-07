@@ -110,7 +110,11 @@ const generate = (options: ProjectOptions, path: string): Source => {
         (options.packageManager === "pnpm" && options.allowBuilds.length > 0) ||
         !(path.split("/").at(-1) ?? "").startsWith("pnpm-workspace.yaml"),
     ),
-    filter((path) => options.agents || (path.split("/").at(-1) ?? "") !== "AGENTS.md"),
+    filter(
+      (path) =>
+        options.agents ||
+        !["AGENTS.md", "CLAUDE.md"].some((name) => (path.split("/").at(-1) ?? "").startsWith(name)),
+    ),
     filter((path) => {
       const filename = path.split("/").at(-1) ?? "";
       if (
