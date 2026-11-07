@@ -8,7 +8,7 @@ This repo contains NanoForge's CLI (`nf`), a game engine for the browser. The CL
 
 - **Language**: TypeScript (Node.js 26), package published as ESM (`"type": "module"`)
 - **CLI framework**: [Commander](https://github.com/tj/commander.js), with a custom Command/Action separation (see Conventions), interactive prompts via `@inquirer/prompts`
-- **Code generation**: Angular DevKit Schematics (`@angular-devkit/schematics`, `@angular-devkit/schematics-cli`) to generate projects, components, systems, and workspaces
+- **Code generation**: Angular DevKit Schematics (`@angular-devkit/schematics`, `@angular-devkit/schematics-cli`) to generate workspaces, projects, components, systems, and editor plugins
 - **Project execution runtime**: Bun (the CLI bundles/uses `bun` as a dependency)
 - **Build**: [tsdown](https://github.com/sxzz/tsdown) (Rolldown-based bundler) + type checking via `tsc --noEmit`
 - **Monorepo**: pnpm workspaces + [Turborepo](https://turbo.build) to orchestrate build/lint/format/test across the root package and the internal libs
@@ -52,12 +52,15 @@ libs/                        # internal packages published separately (pnpm work
 └── schematics/                 # @nanoforge-dev/schematics: schematics (component, project, system, workspace, plugin)
     └── src/{libs,utils,collection.json}
 
-docs/                         # documentation (Docusaurus-like .mdx) + public JSON Schemas
-├── docs/{getting-started,configuration,commands,schematics}/
-├── guides/cli/                  # step-by-step guides (creating a project, local dev, build & deployment, publishing a package...)
+docs/                         # Mintlify documentation (.mdx) + public JSON Schemas
+├── docs/{getting-started,configuration,commands,schematics}/   # synced to the `cli` category of the docs repo at release
+│   └── navigation.json           # page order and groups (every page listed once)
+├── guides/                      # step-by-step guides (creating a project, local dev, build & deployment, publishing a package...)
+│   └── navigation.json           # guide order
 └── *.schema.json                # JSON schemas for the config file, the manifest, etc.
 
 e2e/                          # end-to-end tests of the compiled binary (spawns the `nf` process)
+scripts/nightly.sh            # nightly test runner (writes reports to reports/)
 ```
 
 ## Main Commands
@@ -65,6 +68,7 @@ e2e/                          # end-to-end tests of the compiled binary (spawns 
 The generated binary is used as follows: `nf [command] [options]` (e.g. `nf new`, `nf build`, `nf dev`, `nf editor`, `nf install`, `nf login`, `nf publish`...). Full command documentation is in `docs/docs/commands/`.
 
 Developing the CLI itself (from the repo root):
+
 ```bash
 pnpm run build          # tsc --noEmit && tsdown
 pnpm run build:dev       # build in development mode
@@ -79,6 +83,7 @@ pnpm run release                          # @favware/cliff-jumper
 ```
 
 Monorepo orchestration (root + `libs/*` via Turborepo):
+
 ```bash
 pnpm run repo:build          # turbo run build (concurrency 5)
 pnpm run repo:lint             # turbo run lint
@@ -90,7 +95,8 @@ pnpm run repo:test                 # turbo run test:unit then test:e2e
 
 - **Command/Action architecture**: each command (`command/commands/*.command.ts`) only declares the Commander interface (arguments/options) and delegates execution to a corresponding Action class (`action/actions/*.action.ts`) extending `abstract.action.ts` — strict separation between the CLI interface and the business logic.
 - **Code style**: shared config via the published external packages `@nanoforge-dev/utils-eslint-config` and `@nanoforge-dev/utils-prettier-config` (`catalog:lint`), with `@trivago/prettier-plugin-sort-imports` for import ordering (`@lib/*`, `@utils/*`, `~/*`, then relative imports).
+- **Docs pages**: page file names have no number prefix; a new page must be added to the folder's `navigation.json`, or it won't show up.
 - **Commits**: Conventional Commits, checked by Commitlint and Husky hooks (`lint-staged` on staged files).
-- **Releases**: `git-cliff` for the changelog, `@favware/cliff-jumper` for version bumping, dedicated GitHub Actions workflows (`release.yml`, `pre-release.yml`, `alpha-release.yml` for alpha releases).
+- **Releases**: all packages share one version and are released together through the shared `NanoForge-dev/actions` v3 workflows, configured in `.github/nanoforge.json` (changelogs by `git-cliff`): `release-pr.yml` (manual, opens the `releases/cli@<version>` PR), `release.yml` (on merge of that PR: npm publish, tag, GitHub release, docs sync) and `alpha-release.yml` (manual, an alpha of one package). See `.github/CONTRIBUTING.md`.
 - **Generated project environment variables**: prefix convention exposed to games built by the CLI — `NANOFORGE_CLIENT_*` (client only), `NANOFORGE_SERVER_*` (server only), `NANOFORGE_*` (both); the prefixes are stripped before being exposed to consuming libs.
-- **Config schema**: a generated project's config file is validated against published JSON Schemas (`docs/*.schema.json`), publicly accessible via `https://nanoforge-dev.github.io/docs/cli/config-schema.json`.
+- **Config schema**: a generated project's config file is validated against published JSON Schemas (`docs/*.schema.json`). The `$id` of `config.schema.json` is `https://docs.nanoforge.eu/docs/cli/config.schema.json` (`manifest.schema.json` is also on `docs.nanoforge.eu`; the build, client, run and server config schemas still use `https://nanoforge-dev.github.io/docs/cli/<name>.schema.json`).

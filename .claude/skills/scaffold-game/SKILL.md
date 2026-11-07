@@ -24,7 +24,7 @@ node dist/nf.js new --help
 node dist/nf.js create --help
 ```
 
-Detailed command documentation is also in `docs/docs/commands/` (one page per command), and the available schematics are listed in `libs/schematics/src/collection.json` (application, configuration, part-base, part-main, component, system, docker).
+Detailed command documentation is also in `docs/docs/commands/` (one page per command; `registry.mdx` covers `login`, `logout`, `publish` and `unpublish`), and the available schematics are listed in `libs/schematics/src/collection.json` (workspace, project, component, system, plugin). `nf new` uses workspace and project; `nf create` uses component, system and plugin (`nf create plugin --template panel|theme`).
 
 ## 3. Scaffold in an isolated test directory
 
@@ -39,7 +39,7 @@ For a component/system inside an already-generated project, move into that proje
 
 ## 4. Verify the result
 
-Inspect the generated files (`ls`, `cat`) and compare them against the expected schema in `libs/schematics/src/libs/<schematic-name>/` (the corresponding schematic's `files/` files) to confirm that the applied template is correct.
+Inspect the generated files (`ls`, `cat`) and compare them against the expected schema in `libs/schematics/src/libs/<schematic-name>/` (the corresponding schematic's `files/` files; `theme-files/` for a theme plugin) to confirm that the applied template is correct.
 
 ## Out of scope for this skill
 
