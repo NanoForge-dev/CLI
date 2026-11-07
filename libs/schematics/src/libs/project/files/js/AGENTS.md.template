@@ -46,7 +46,8 @@ still compiles.
 └── jsconfig.json
 ```
 
-Do not edit the build output in `dist/`.
+Do not edit the build output in `dist/`.<% if (editor) { %> `.nanoforge/` holds the editor's settings, cache and
+project plugins: leave it to the editor.<% } %>
 
 ## Conventions
 

@@ -447,6 +447,7 @@ describe("project schematic", () => {
       expect(content).toContain("read the workspace root `AGENTS.md` first");
       expect(content).toContain("NanoforgeFactory.createClient");
       expect(content).toContain("`nf editor .`");
+      expect(content).toContain("`.nanoforge/` holds the editor's settings");
       expect(content).not.toContain("<%");
     });
 
@@ -462,6 +463,7 @@ describe("project schematic", () => {
       expect(content).toContain("NanoforgeFactory.createServer");
       expect(content).not.toContain("workspace root");
       expect(content).not.toContain("`nf editor .`");
+      expect(content).not.toContain(".nanoforge/");
     });
 
     it("uses JavaScript conventions for a JavaScript project", async () => {
