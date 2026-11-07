@@ -1,50 +1,99 @@
 ---
-title: Add components & systems
-description: Create your own ECS pieces or install shared ones
+title: Add components and systems
+description: Create your own ECS components and systems, or install shared ones
 ---
 
-NanoForge games are built from ECS **components** and **systems**. You can author your own or pull
-ready-made ones from the registry.
+A NanoForge game is made of ECS **components** (data on an entity) and **systems** (functions
+that run every tick on the entities that have some components). You can write your own or install
+them from the registry.
 
 ## Create your own
 
 <Steps>
   <Step title="Create a component">
+
+    In a client app (or a project without a server), run:
+
     ```bash
-    nf create component --name Position
+    nf create component --name health
     ```
 
-    Files are created under the client's component directory by default. Target the server with
-    `--server`.
+    It writes `src/components/health.component.ts`, with a `HealthComponent` class. In a
+    workspace, point `-d` at the app: `nf create component --name health -d apps/server` creates a
+    server component.
+
+    Open the file and change the import to `@nanoforge-dev/ecs`: the template imports
+    `@nanoforge-dev/ecs-client`, which your project doesn't install. Then replace the example
+    parameters with your data.
 
   </Step>
 
   <Step title="Create a system">
+
     ```bash
-    nf create system --name Movement --server
+    nf create system --name regen
     ```
 
-    See [`nf create`](/docs/cli/commands/create) for all options.
+    It writes `src/systems/regen.system.ts`, with a `regenSystem` function. Fix the import the
+    same way, and replace `ExampleComponent` with your component:
+
+    ```ts src/systems/regen.system.ts
+    import type { Context } from "@nanoforge-dev/common";
+    import type { EditorSystemManifest, Registry } from "@nanoforge-dev/ecs";
+
+    import { HealthComponent } from "../components/health.component";
+
+    export const regenSystem = (registry: Registry, _ctx: Context) => {
+      registry.getZipper([HealthComponent]).forEach((entity) => {
+        entity.HealthComponent.addOne();
+      });
+    };
+    ```
+
+    Update its `EDITOR_SYSTEM_MANIFEST` too: `dependencies: ["HealthComponent"]`.
+
+  </Step>
+
+  <Step title="Add them to the game">
+
+    In `src/main.ts`, give an entity the component and add the system:
+
+    ```ts src/main.ts
+    const player = registry.spawnEntity();
+    registry.addComponent(player, new HealthComponent("player", 100));
+    registry.addSystem(regenSystem);
+    ```
+
+    With `nf dev` running, the game rebuilds when you save.
 
   </Step>
 </Steps>
 
+See [`nf create`](/docs/cli/commands/create) for every option, and the
+[component](/docs/cli/schematics/component) and [system](/docs/cli/schematics/system) pages for
+the generated files.
+
 ## Install shared ones
 
-To reuse components, systems, or libraries published to the NanoForge registry:
+Install components and systems that others published on the registry:
 
 ```bash
-# a component or system
 nf install my-org/health-bar
-
-# a library, on the server
-nf add my-org/physics --lib --server
+nf install my-org/gravity --server
 ```
 
-If the package lives in a private scope, [log in](/docs/cli/commands/registry) first:
+Add an npm library to the project:
 
 ```bash
-nf login --api-key <your-api-key>
+nf add --lib lodash-es
 ```
 
-See [`nf install`](/docs/cli/commands/install) for the full reference.
+`nf install` downloads registry files into `client/components` or `client/systems` (`server/...`
+with `--server`) under the current folder. Move them next to your own components and systems,
+then import them. See [`nf install`](/docs/cli/commands/install).
+
+If a package needs an account, [log in](/docs/cli/commands/registry#login) first:
+
+```bash
+nf login
+```

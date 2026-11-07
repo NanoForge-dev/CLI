@@ -1,49 +1,68 @@
 ---
 title: Create your first project
-description: Scaffold a NanoForge project and understand the result
+description: Create a NanoForge game, see what was generated, and run it
 ---
 
-This guide walks the most common starting point: turning an idea into a runnable project.
+This guide creates a game with a client and a server, then runs it. For a game with no server,
+leave out `--server`: you get one client app, as in the [Quickstart](/docs/cli/getting-started/quickstart).
 
 <Steps>
-  <Step title="Scaffold the project">
-    The interactive scaffolder is the easiest way to start:
+  <Step title="Create the project">
 
     ```bash
-    nf new
+    nf new --name my-game --server
     ```
 
-    You'll be asked for a name, language, package manager, and whether to include a server, Docker
-    files, git, and so on. To skip the prompts, pass the answers as flags:
-
-    ```bash
-    nf new --name my-game --language ts --package-manager pnpm --server
-    ```
-
-    See [`nf new`](/docs/cli/commands/new) for the full flag list.
+    `nf new` asks the remaining questions: package manager, language, strict mode, install,
+    Docker and git. Press Enter to keep the default answer. To skip every question, see
+    [`nf new`](/docs/cli/commands/new) for the full list of flags.
 
   </Step>
 
   <Step title="Look at what was generated">
-    Move into the project and inspect it:
 
     ```bash
     cd my-game
     ```
 
-    The most important file is `nanoforge.config.json`, the central configuration the CLI reads for
-    every command. Each field is documented in
-    [Configuration file](/docs/cli/configuration/configuration-file).
+    With a server, the project is a workspace:
+
+    ```
+    my-game/
+    ├── nanoforge.config.ts   # type: "workspace", packages: ["apps/*"]
+    ├── .env                  # the ports the client and the server use to talk
+    ├── package.json
+    └── apps/
+        ├── client/           # runs in the browser
+        │   ├── nanoforge.config.ts
+        │   └── src/          # main.ts, components/, systems/
+        └── server/           # runs in Bun
+            ├── nanoforge.config.ts
+            └── src/
+    ```
+
+    The server moves a circle and sends its position. The client draws the circle where the
+    server says it is. Each `nanoforge.config.ts` is described in the
+    [configuration file reference](/docs/cli/configuration/configuration-file).
 
   </Step>
 
   <Step title="Run it">
+
+    From the workspace root:
+
     ```bash
     nf dev
     ```
 
-    Your game now runs locally in development mode. The next guide,
-    [Develop locally](./develop-locally), goes deeper into the dev workflow.
+    `nf dev` builds both apps, starts the server and serves the client. Open
+    [http://localhost:3000](http://localhost:3000) to see the red circle that the server moves.
+
+    Use `nf dev` itself, not `npm run dev`: the root `package.json` scripts pass a `-r` option
+    that the CLI doesn't have.
 
   </Step>
 </Steps>
+
+Next, [develop locally](./develop-locally) explains what `nf dev` watches and how to configure
+the game.
