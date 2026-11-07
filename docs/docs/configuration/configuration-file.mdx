@@ -116,7 +116,7 @@ export default defineConfig({ type: "lib" });
 | `entryFile`        | `string`       | `src/main.ts`    | Entry file that `nf build` bundles. Name it `main.ts`: the loaders run `main.js`.                          |
 | `out.dir`          | `string`       | `dist`           | Build output folder. `nf build` empties it first; `nf start` serves it.                                    |
 | `out.mainFile`     | `string`       | `main.js`        | Not used by `nf build` or `nf start` yet: the bundle is named after the entry file.                        |
-| `dir.assets`       | `string`       | `assets`         | Folder copied into the build output.                                                                       |
+| `dir.assets`       | `string`       | `assets`         | Its files are copied to the root of the build output. Subfolders are not supported yet.                    |
 | `dir.packages`     | `string`       | `nf_modules`     | Folder for downloaded packages. No `nf` command reads it yet.                                              |
 | `dir.components`   | `string`       | `src/components` | Where `nf create component` writes, and where the editor looks.                                            |
 | `dir.systems`      | `string`       | `src/systems`    | Where `nf create system` writes, and where the editor looks.                                               |

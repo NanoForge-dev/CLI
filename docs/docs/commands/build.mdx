@@ -16,7 +16,8 @@ other. Libs are not built on their own: the apps that import them include them.
 For each app, `nf build`:
 
 1. empties the output folder (`dist/` by default),
-2. copies the assets folder (`assets/` by default) into it,
+2. copies the files of the assets folder (`assets/` by default) to the root of the output
+   folder: `assets/player.png` becomes `dist/player.png`,
 3. bundles the entry file (`src/main.ts` by default) into it. Asset files that the code imports
    keep their name (`[name].[ext]`).
 
@@ -83,3 +84,6 @@ nf build --watch
   Rename it `main.ts`, or set `entryFile` to a file named `main.ts`.
 - **A file in the output folder disappeared.** The output folder is emptied on each build. Keep
   your files in the assets folder: it is copied in.
+- **`EISDIR: illegal operation on a directory, copyfile ...`.** The assets folder has a
+  subfolder. The copy handles only files at its top level: move the files up, or import them
+  from your code instead.
