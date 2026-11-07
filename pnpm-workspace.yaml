@@ -15,7 +15,6 @@ catalogs:
     '@commitlint/cli': ^21.2.3
     '@commitlint/config-conventional': ^21.2.3
     '@favware/cliff-jumper': ^6.1.0
-    '@nanoforge-dev/actions': ^2.1.5
     husky: ^9.1.7
     lint-staged: ^17.5.1
   cli:
@@ -39,7 +38,7 @@ catalogs:
     rc9: ^3.1.0
     reflect-metadata: ^0.2.2
     unrun: ^0.3.0
-    zod: ^4.5.4
+    zod: ^4.6.7
   lint:
     '@nanoforge-dev/utils-eslint-config': ^1.0.2
     '@nanoforge-dev/utils-prettier-config': ^1.0.2
@@ -62,3 +61,7 @@ minimumReleaseAgeExclude:
   - '@nanoforge-dev/loader-client@1.6.0'
   - '@nanoforge-dev/loader-server@1.6.0'
   - '@nanoforge-dev/loader-website@1.6.0'
+
+# shortcut: oxfmt (via @nanoforge-dev/utils-eslint-config) pins a vulnerable tinypool; drop once the eslint config moves to a fixed oxfmt.
+overrides:
+  tinypool: ^2.1.2

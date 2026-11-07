@@ -1,0 +1,125 @@
+---
+title: login, logout, publish, unpublish
+description: Authenticate with the NanoForge registry, then publish or remove packages
+---
+
+These four commands work with the NanoForge registry. `login` and `logout` manage your API key.
+`publish` and `unpublish` send or remove the package described by a `nanoforge.manifest.json`.
+To install packages, see [`nf install`](./install).
+
+## Where the API key is stored
+
+`nf login` saves the key in a `.nanoforgerc` file:
+
+- **global** (the default): `.nanoforgerc` in your home folder (or in `$XDG_CONFIG_HOME` when it
+  is set), used by every project;
+- **local** (`--local`): `.nanoforgerc` in the `-d` folder, used only there.
+
+When it needs the key, `nf` reads `.nanoforgerc` in the `-d` folder first, then in the current
+folder, then in your home folder. Don't commit a local `.nanoforgerc`: it holds your key.
+
+## login
+
+Check an API key with the registry, then save it.
+
+```bash
+nf login [options]
+```
+
+| Option                        | Type    | Default | Description                                                                                     |
+| ----------------------------- | ------- | ------- | ----------------------------------------------------------------------------------------------- |
+| `-d, --directory <directory>` | path    | `.`     | Folder of the local `.nanoforgerc`.                                                             |
+| `-l, --local`                 | boolean | `false` | Save the key for this folder only.                                                              |
+| `-k, --api-key <key>`         | string  | asked   | Your API key, from [your registry dashboard](https://registry.nanoforge.eu/dashboard/registry). |
+
+```bash
+nf login
+nf login --local --api-key "$NF_REGISTRY_KEY"
+```
+
+If the registry refuses the key, `nf login` fails with `API Request failed (Status <code>)` and
+saves nothing.
+
+## logout
+
+Remove the saved API key.
+
+```bash
+nf logout [options]
+```
+
+| Option                        | Type    | Default | Description                         |
+| ----------------------------- | ------- | ------- | ----------------------------------- |
+| `-d, --directory <directory>` | path    | `.`     | Folder of the local `.nanoforgerc`. |
+| `-l, --local`                 | boolean | `false` | Remove the key of this folder only. |
+
+```bash
+nf logout
+nf logout --local
+```
+
+## The package manifest
+
+`publish` and `unpublish` read `nanoforge.manifest.json` in the `-d` folder:
+
+```json nanoforge.manifest.json
+{
+  "name": "my-org/health-bar",
+  "type": "component",
+  "description": "A health bar above each entity",
+  "tags": ["ui"],
+  "dependencies": ["my-org/health"],
+  "npmDependencies": { "lodash-es": "^4.17.21" },
+  "publish": { "paths": { "package": "health-bar.component.ts" } }
+}
+```
+
+| Field                   | Required | Description                                                                      |
+| ----------------------- | -------- | -------------------------------------------------------------------------------- |
+| `name`                  | yes      | `scope/name`: letters, digits and dashes on each side of the `/`.                |
+| `type`                  | yes      | `component` or `system`.                                                         |
+| `description`           | no       | Short description.                                                               |
+| `tags`                  | no       | List of tags.                                                                    |
+| `dependencies`          | no       | Other registry packages (`scope/name`) that `nf install` installs with this one. |
+| `npmDependencies`       | no       | npm packages and versions that `nf install` adds to the project.                 |
+| `libDependencies`       | no       | Library packages and versions. `nf install` adds them like `npmDependencies`.    |
+| `publish.paths.package` | no       | The file to upload, relative to the manifest. Default: `index.ts`.               |
+
+## publish
+
+Upload the package file and its manifest to the registry. You must be logged in.
+
+```bash
+nf publish [options]
+```
+
+| Option                        | Type | Default | Description                                  |
+| ----------------------------- | ---- | ------- | -------------------------------------------- |
+| `-d, --directory <directory>` | path | `.`     | Folder that holds `nanoforge.manifest.json`. |
+
+`nf publish` uploads only the manifest fields and the one file named by `publish.paths.package`.
+It prints the package URL when it is done.
+
+## unpublish
+
+Remove the package named in `nanoforge.manifest.json` from the registry. You must be logged in.
+
+```bash
+nf unpublish [options]
+```
+
+| Option                        | Type | Default | Description                                  |
+| ----------------------------- | ---- | ------- | -------------------------------------------- |
+| `-d, --directory <directory>` | path | `.`     | Folder that holds `nanoforge.manifest.json`. |
+
+## Common errors
+
+- **`You must be logged in to perform this action.`** Run `nf login` first.
+- **`Manifest Error: No manifest file found in directory: <folder>`.** Run the command in the
+  package folder, or pass it with `-d`.
+- **`Manifest Error: Validation failed`.** A field is missing or wrong: check `name` (`scope/name`)
+  and `type` (`component` or `system`).
+- **`Package not found, please specify path in the nanoforge.manifest.json : publish.paths.package!`**
+  There is no `index.ts` next to the manifest. Set `publish.paths.package` to your file.
+- **`API Request failed (Status <code>)`.** The registry refused the request. The details follow
+  the message.

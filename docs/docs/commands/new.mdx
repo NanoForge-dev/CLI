@@ -1,0 +1,110 @@
+---
+title: new
+description: Create a new NanoForge project
+---
+
+## What it does
+
+`nf new` creates a NanoForge project, installs its dependencies, and can set up a git repository.
+It asks a question for each choice. Give the answer as a flag to skip that question.
+
+- **Without a server** (the default), the project is one client app at the root of its folder.
+- **With a server** (`--server`), the project is a workspace: a root `nanoforge.config.ts` that
+  lists `apps/*`, a client app in `apps/client`, and a server app in `apps/server`.
+
+## Usage
+
+```bash
+nf new [options]
+```
+
+## Options
+
+The "Default" column is the answer that is preselected when `nf new` asks the question.
+
+| Option                                         | Type                           | Default         | Description                                                                                   |
+| ---------------------------------------------- | ------------------------------ | --------------- | --------------------------------------------------------------------------------------------- |
+| `-d, --directory <directory>`                  | path                           | `.`             | Folder the project folder is created in.                                                      |
+| `--name <name>`                                | string                         | `nanoforge-app` | Project name. Also the package name.                                                          |
+| `--path <path>`                                | path                           | the name        | Folder of the project, relative to `-d`.                                                      |
+| `--package-manager <packageManager>`           | `npm`, `yarn`, `pnpm` or `bun` | `npm`           | Package manager used to install the dependencies, and written into the generated files.       |
+| `--language <language>`                        | `ts` or `js`                   | `ts`            | Language of the generated code.                                                               |
+| `--strict` / `--no-strict`                     | boolean                        | `true`          | Strict type checking (`tsconfig.json`, or `jsconfig.json` for JavaScript).                    |
+| `--server` / `--no-server`                     | boolean                        | `false`         | Make a workspace with a client and a server app.                                              |
+| `--skip-install` / `--no-skip-install`         | boolean                        | `false`         | Don't install the dependencies.                                                               |
+| `--docker` / `--no-docker`                     | boolean                        | `true`          | Add a `Dockerfile` and a `.dockerignore`.                                                     |
+| `--git` / `--no-git`                           | boolean                        | `true`          | Run `git init` in the project.                                                                |
+| `--git-remote <gitRemote>` / `--no-git-remote` | URL                            | none            | Add this remote as `origin`. Only asked when git is on. `--no-git-remote` skips the question. |
+| `--editor`                                     | boolean                        | `false`         | Add the `nf editor .` instructions to the generated README.                                   |
+| `--init-functions` / `--no-init-functions`     | boolean                        | none            | Accepted, but has no effect yet.                                                              |
+| `--no-lint`                                    | boolean                        | none            | Accepted, but has no effect yet: `nf new` generates no lint files.                            |
+
+## What it generates
+
+Without a server:
+
+```
+my-game/
+├── nanoforge.config.ts    # type: "client"
+├── package.json           # dev, build, start scripts and the engine packages
+├── tsconfig.json          # or jsconfig.json
+├── README.md
+├── Dockerfile             # with --docker
+├── assets/
+└── src/
+    ├── main.ts
+    ├── components/        # position-2d, drawable-circle-2d
+    └── systems/           # draw-2d
+```
+
+With `--server`:
+
+```
+my-game/
+├── nanoforge.config.ts    # type: "workspace", packages: ["apps/*"]
+├── package.json
+├── .env                   # network ports for the client and the server
+├── Dockerfile             # with --docker
+└── apps/
+    ├── client/            # the client app, which also syncs its position from the server
+    └── server/            # the server app, which moves the entity and sends its position
+```
+
+The [schematics pages](../schematics/overview) describe every generated file.
+
+<Warning>
+  In a workspace, the root `package.json` scripts run `nf dev -r`, `nf build -r` and `nf start -r`.
+  The CLI has no `-r` option, so `npm run dev` (and the workspace `Dockerfile`, which runs the
+  `build` script) fails with `error: unknown option '-r'`. Run `nf dev`, `nf build` and `nf start`
+  directly, or remove `-r` from those scripts.
+</Warning>
+
+## Examples
+
+Answer the questions one by one:
+
+```bash
+nf new
+```
+
+Make a TypeScript workspace with a server, using pnpm, with no question asked:
+
+```bash
+nf new --name my-game --package-manager pnpm --language ts --strict \
+  --server --no-skip-install --no-docker --git --no-git-remote
+```
+
+Create the project in `games/space` without installing the dependencies:
+
+```bash
+nf new --name space --path games/space --skip-install
+```
+
+## Common errors
+
+- **The install fails.** The project is still generated. Fix the cause (network, package manager
+  missing), then run the install command of your package manager in the project folder.
+- **The generation fails right away.** Check `--package-manager` (`npm`, `yarn`, `pnpm` or `bun`)
+  and `--language` (`ts` or `js`): other values are refused.
+- **The command waits for input in a script.** A question is still open. Pass every flag of the
+  table above, including `--git-remote <url>` or `--no-git-remote` when git is on.

@@ -1,0 +1,43 @@
+[
+  {
+    "group": "Getting started",
+    "icon": "rocket",
+    "pages": [
+      "getting-started/introduction",
+      "getting-started/installation",
+      "getting-started/quickstart"
+    ]
+  },
+  {
+    "group": "Commands",
+    "icon": "terminal",
+    "pages": [
+      "commands/overview",
+      "commands/new",
+      "commands/dev",
+      "commands/build",
+      "commands/start",
+      "commands/create",
+      "commands/install",
+      "commands/editor",
+      "commands/registry"
+    ]
+  },
+  {
+    "group": "Configuration",
+    "icon": "sliders",
+    "pages": ["configuration/configuration-file", "configuration/environment-variables"]
+  },
+  {
+    "group": "Schematics",
+    "icon": "shapes",
+    "pages": [
+      "schematics/overview",
+      "schematics/workspace",
+      "schematics/project",
+      "schematics/component",
+      "schematics/system",
+      "schematics/plugin"
+    ]
+  }
+]

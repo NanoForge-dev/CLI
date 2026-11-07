@@ -1,0 +1,99 @@
+---
+title: Project
+description: Generate a NanoForge client or server app
+---
+
+## Overview
+
+The `project` schematic writes one app: a `client` (runs in the browser) or a `server` (runs in
+Bun). It has its own `package.json`, `nanoforge.config.ts`, `src/main.ts` and example components
+and systems. [`nf new`](../commands/new) runs it once for a game without a server, or twice inside
+a [workspace](./workspace) (`apps/client`, `apps/server`).
+
+`directory` is the full destination path: it isn't joined with `part`. To write a client and a
+server side by side, run it twice with `--directory=apps/client` and `--directory=apps/server`.
+
+Every app depends on `@nanoforge-dev/cli`, `core`, `common`, `config`, `asset` and `ecs`. A client
+also gets `env`, `graphics-2d`, `input` and `network`. A server gets `network` as a runtime
+dependency. The versions are pinned to the newest release published at least 48 hours before
+generation.
+
+## Usage
+
+```bash
+schematics @nanoforge-dev/schematics:project --part=client --directory=apps/client
+```
+
+## Options
+
+| Option           | Type                                 | Default   | Description                                                                                                                                                                |
+| ---------------- | ------------------------------------ | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `part`           | `"client" \| "server"`               | required  | The app to generate.                                                                                                                                                       |
+| `directory`      | `string`                             | `apps`    | Full destination path.                                                                                                                                                     |
+| `name`           | `string`                             | see below | Package name, in kebab-case. With `workspaceName`, the package is `<workspaceName>-<name>`, and `name` defaults to `part`. Without it, `name` defaults to `nanoforge-app`. |
+| `workspaceName`  | `string`                             | none      | Name of the parent workspace, used as a package name prefix.                                                                                                               |
+| `language`       | `"ts" \| "js"`                       | `ts`      | Language of the generated files.                                                                                                                                           |
+| `strict`         | `boolean`                            | `true`    | Strict type checking.                                                                                                                                                      |
+| `packageManager` | `"npm" \| "yarn" \| "pnpm" \| "bun"` | `npm`     | Used in the `Dockerfile` and the install-script settings.                                                                                                                  |
+| `workspace`      | `boolean`                            | `true`    | The app is inside a workspace. A standalone app (`false`) allows the install script of `bun` itself, and can get a `Dockerfile`.                                           |
+| `hasServer`      | `boolean`                            | `false`   | Client only: add the `position-sync` system, which takes the entity's position from the server instead of the client.                                                      |
+| `docker`         | `boolean`                            | `false`   | Add a `Dockerfile` and a `.dockerignore`. Ignored when `workspace` is `true`: the workspace has its own.                                                                   |
+| `editor`         | `boolean`                            | `false`   | Add the `nf editor .` instructions to the README.                                                                                                                          |
+| `initFunctions`  | `boolean`                            | `false`   | Accepted, but not used by the templates yet.                                                                                                                               |
+| `libs`           | `string[]`                           | `[]`      | Accepted, but not written to `nanoforge.config.ts` yet.                                                                                                                    |
+| `allowBuilds`    | `string[]`                           | `[]`      | Accepted, but not used yet: a standalone app always allows `bun` only.                                                                                                     |
+
+## Generated files
+
+```
+<directory>/
+├── package.json             # dev, build, start scripts and the engine packages
+├── nanoforge.config.ts      # type: "client" or "server" (or .js)
+├── tsconfig.json            # TypeScript only
+├── jsconfig.json            # JavaScript only
+├── pnpm-workspace.yaml      # standalone pnpm app only
+├── .gitignore
+├── README.md
+├── Dockerfile               # docker: true, standalone only
+├── .dockerignore            # docker: true, standalone only
+├── assets/
+└── src/
+    ├── main.ts
+    ├── components/
+    │   ├── position-2d.component.ts         # both parts
+    │   └── drawable-circle-2d.component.ts  # client only
+    └── systems/
+        ├── draw-2d.system.ts                # client only
+        ├── position-sync.system.ts          # client only, hasServer: true
+        └── move-2d.system.ts                # server only
+```
+
+`src/main.ts` creates the app, adds the ECS, network (and, on the client, 2D graphics and input)
+libraries, spawns one entity with a position, and adds the systems:
+
+- the client draws a red circle at the entity's position;
+- the server moves the entity one pixel per tick and sends its position to every client;
+- with `hasServer`, the client takes that position from the server.
+
+## Examples
+
+A client in a workspace:
+
+```bash
+schematics @nanoforge-dev/schematics:project \
+  --part=client --workspaceName=my-game --directory=apps/client --hasServer=true
+```
+
+A server in the same workspace:
+
+```bash
+schematics @nanoforge-dev/schematics:project \
+  --part=server --workspaceName=my-game --directory=apps/server
+```
+
+A standalone JavaScript client with a `Dockerfile`:
+
+```bash
+schematics @nanoforge-dev/schematics:project \
+  --part=client --name=my-game --directory=my-game --workspace=false --language=js --docker=true
+```

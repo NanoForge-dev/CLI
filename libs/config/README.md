@@ -45,7 +45,7 @@ export default defineConfig({
 
 The `type` field discriminates between the four config shapes:
 
-- `workspace` — a monorepo root listing its `packages`.
+- `workspace` — a monorepo root listing its `packages`, and its `network` mode (`"dedicated"` by default, or `"p2p"` to run the server app in the host player's browser).
 - `lib` — a shared library consumed by clients/servers.
 - `client` — a browser-side NanoForge app.
 - `server` — a server-side NanoForge app.

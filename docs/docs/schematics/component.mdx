@@ -1,0 +1,131 @@
+---
+title: Component
+description: Generate a NanoForge ECS component
+---
+
+## Overview
+
+The `component` schematic writes one ECS component class, with a default export used for code
+generation and an `EDITOR_COMPONENT_MANIFEST` that the NanoForge editor reads to show and edit the
+component. [`nf create component`](../commands/create) runs it in the components folder of the
+app.
+
+## Usage
+
+```bash
+schematics @nanoforge-dev/schematics:component --part=client --name=health
+```
+
+## Options
+
+| Option      | Type                   | Default   | Description                                                                          |
+| ----------- | ---------------------- | --------- | ------------------------------------------------------------------------------------ |
+| `name`      | `string`               | `example` | Component name. `health` gives the class `HealthComponent` in `health.component.ts`. |
+| `part`      | `"client" \| "server"` | required  | Picks the package the manifest type is imported from (see the warning below).        |
+| `directory` | `string`               | `.`       | Folder to write to.                                                                  |
+| `language`  | `"ts" \| "js"`         | `ts`      | `.ts` or `.js` file.                                                                 |
+
+## Generated file
+
+`<directory>/<name>.component.ts`, here for `--name=health --part=client`:
+
+```ts health.component.ts
+import { type EditorComponentManifest } from "@nanoforge-dev/ecs-client";
+
+export class HealthComponent {
+  name = this.constructor.name;
+
+  constructor(
+    public paramA: string,
+    public paramB: number,
+    public paramC: boolean = false,
+  ) {}
+
+  get foo() {
+    return "bar";
+  }
+
+  get paramAOrDefault() {
+    return this.paramC ? this.paramA : "default";
+  }
+
+  addOne() {
+    this.paramB += 1;
+  }
+}
+
+// * Required to generate code
+export default HealthComponent.name;
+
+// * Required for the editor to display the component and generate code
+export const EDITOR_COMPONENT_MANIFEST: EditorComponentManifest = {
+  name: "Health",
+  description: "Health component description",
+  params: [
+    {
+      type: "string",
+      name: "paramA",
+      description: "Param A description",
+      example: "Example value",
+    },
+    {
+      type: "number",
+      name: "paramB",
+      description: "Param B description",
+      example: 3,
+    },
+    {
+      type: "boolean",
+      name: "paramC",
+      description: "Param C description",
+      example: true,
+      default: false,
+      // Not required because it has a default value
+      optional: true,
+    },
+  ],
+};
+```
+
+Replace the example parameters, getters and method with your component's data.
+
+<Warning>
+
+The file imports from `@nanoforge-dev/ecs-client` (or `@nanoforge-dev/ecs-server` for the server).
+Projects made by `nf new` depend on `@nanoforge-dev/ecs`, not on these packages. Change the import
+to this one, like the components that `nf new` generates:
+
+```ts
+import type { EditorComponentManifest } from "@nanoforge-dev/ecs";
+```
+
+</Warning>
+
+## Editor manifest
+
+Each `params` entry describes one constructor parameter, in order:
+
+| Field         | Required | Description                                         |
+| ------------- | -------- | --------------------------------------------------- |
+| `type`        | yes      | `"string"`, `"number"` or `"boolean"`.              |
+| `name`        | yes      | Name of the constructor parameter.                  |
+| `description` | yes      | Text shown in the editor.                           |
+| `example`     | yes      | Example value used in generated code.               |
+| `default`     | no       | Value used when the parameter is left out.          |
+| `optional`    | no       | `true` when the editor may leave the parameter out. |
+
+## Examples
+
+A client component in the components folder:
+
+```bash
+schematics @nanoforge-dev/schematics:component \
+  --part=client --name=player --directory=src/components
+```
+
+A JavaScript server component:
+
+```bash
+schematics @nanoforge-dev/schematics:component \
+  --part=server --name=network-player --language=js --directory=src/components
+```

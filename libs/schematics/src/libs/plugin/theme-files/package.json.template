@@ -1,0 +1,11 @@
+{
+  "name": "<%= short %>-editor-theme",
+  "version": "0.1.0",
+  "private": true,
+  "description": "<%= title %>: a NanoForge editor theme",
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "dev": "node build.mjs --watch"
+  }
+}

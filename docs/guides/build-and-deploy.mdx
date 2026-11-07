@@ -1,0 +1,84 @@
+---
+title: Build and deploy
+description: Build your game and serve it on a server
+---
+
+When your game is ready to ship, build it, then serve the build with `nf start` on a machine that
+players can reach.
+
+<Steps>
+  <Step title="Build">
+
+    From the project (or workspace) root:
+
+    ```bash
+    nf build
+    ```
+
+    Each app is compiled into its output folder, `dist/` by default (`apps/client/dist` and
+    `apps/server/dist` in a workspace). Set another folder with `out.dir` in the app's
+    [configuration](/docs/cli/configuration/configuration-file), or for one run:
+
+    ```bash
+    nf build --client-out-dir build --server-out-dir build
+    ```
+
+    Pass the same folders to `nf start` with `--client-dir` and `--server-dir`.
+
+  </Step>
+
+  <Step title="Serve over HTTPS">
+
+    Players open the game on your server's address, not on `localhost`. The browser then needs
+    HTTPS: over plain HTTP, the page stops with `Storage issue: The game must be hosted with SSL
+    (HTTPS)...`.
+
+    Give `nf start` a certificate and its key, as absolute paths:
+
+    ```bash
+    nf start --port 8443 --cert /etc/ssl/my-game/cert.pem --key /etc/ssl/my-game/key.pem
+    ```
+
+    You can also set them in the client's `tls` field, or run `nf start` behind a reverse proxy
+    that serves HTTPS. See [HTTPS](/docs/cli/commands/start#https).
+
+  </Step>
+
+  <Step title="Set the production values">
+
+    Set the environment variables the game needs in the `.env` file at the root. The client must
+    reach the server at an address the players can resolve:
+
+    ```dotenv .env
+    NANOFORGE_CLIENT_SERVER_ADDRESS=game.example.com
+    NANOFORGE_CLIENT_SERVER_TCP_PORT=4444
+    NANOFORGE_CLIENT_SERVER_UDP_PORT=4445
+    NANOFORGE_SERVER_LISTENING_TCP_PORT=4444
+    NANOFORGE_SERVER_LISTENING_UDP_PORT=4445
+    ```
+
+    Keep secrets for the server in `NANOFORGE_SERVER_` variables in this file, never in the shell
+    or container environment that runs `nf start`. Open the ports on the server's firewall. See
+    [environment variables](/docs/cli/configuration/environment-variables).
+
+  </Step>
+</Steps>
+
+## Run it in a container
+
+`nf new --docker` adds a `Dockerfile`. For a game without a server, it builds the app with your
+package manager, then runs `nf start` and exposes port 3000:
+
+```bash
+docker build -t my-game .
+docker run -p 3000:3000 my-game
+```
+
+<Warning>
+  In a workspace (`nf new --server --docker`), the `Dockerfile` runs the root `build` script, which
+  calls `nf build -r` and fails: the CLI has no `-r` option. Remove `-r` from the `dev`, `build` and
+  `start` scripts of the root `package.json` before you build the image.
+</Warning>
+
+The container serves plain HTTP. Put it behind a reverse proxy that serves HTTPS, or mount a
+certificate and set the client's `tls` field.

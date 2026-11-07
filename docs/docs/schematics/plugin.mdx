@@ -1,0 +1,103 @@
+---
+title: Plugin
+description: Generate a NanoForge editor plugin or theme
+---
+
+## Overview
+
+The `plugin` schematic writes a new editor plugin project, in a folder of its own. It is not part
+of a game: you build it, then load it in the editor. [`nf create plugin`](../commands/create) runs
+it.
+
+It has two templates:
+
+- `panel` (the default): a Svelte panel, a command in the _Edit_ menu, and a setting. The panel
+  is a counter, to show each piece of the plugin API.
+- `theme`: a color theme and an icon, with no code. Everything is in `nanoforge.manifest.json`.
+
+The [editor plugin documentation](/docs/editor/plugins/overview) covers the manifest, the SDK and
+the [themes](/docs/editor/plugins/themes).
+
+## Usage
+
+```bash
+schematics @nanoforge-dev/schematics:plugin --name=@acme/score-board
+```
+
+## Options
+
+| Option      | Type                 | Default        | Description                                                                                 |
+| ----------- | -------------------- | -------------- | ------------------------------------------------------------------------------------------- |
+| `name`      | `string`             | required       | Name of the plugin in the registry: `@scope/name`, in lowercase letters, digits and dashes. |
+| `directory` | `string`             | the short name | Folder to write to. The short name is the part after the scope: `score-board`.              |
+| `template`  | `"panel" \| "theme"` | `panel`        | What the plugin starts from.                                                                |
+
+## Generated files
+
+With `template: "panel"`:
+
+```
+score-board/
+├── nanoforge.manifest.json   # the panel, the command, the menu entry, the setting
+├── package.json              # build (vite build), dev (vite build --watch), typecheck
+├── vite.config.ts
+├── svelte.config.js
+├── tsconfig.json
+├── .gitignore
+├── README.md
+└── src/
+    ├── index.ts              # activate: registers the panel, the command and the history
+    ├── Panel.svelte          # the panel
+    └── counter.ts
+```
+
+The editor SDK packages (`@nanoforge-dev/editor-sdk`, `@nanoforge-dev/editor-vite-plugin`) are
+pinned to the newest 1.x release published at least 48 hours before generation.
+
+With `template: "theme"`:
+
+```
+forest/
+├── nanoforge.manifest.json   # contributes.themes and contributes.icons
+├── package.json              # build and dev run build.mjs
+├── build.mjs                 # copies the manifest and the icons to dist/
+├── icons/
+│   └── leaf.svg
+├── .gitignore
+└── README.md
+```
+
+The theme `extends` the editor's dark theme and changes only a few colors. Its `keywords: ["theme"]`
+lists it among the themes of the editor's marketplace once published.
+
+## Run it in the editor
+
+Build the plugin into `dist/` on every change, then start the editor with `DEV_PLUGINS` pointing
+at the plugin folder:
+
+```bash
+cd score-board
+pnpm install
+pnpm dev
+# in another terminal
+DEV_PLUGINS=$PWD nf editor ../my-game
+```
+
+For a theme, run `node build.mjs --watch` instead of `pnpm dev`, then choose the theme in
+_Settings › Editor › Appearance_. No published editor reads `DEV_PLUGINS` yet (the latest release is 0.1.4): this loop needs a newer
+editor release.
+
+## Examples
+
+A panel plugin:
+
+```bash
+schematics @nanoforge-dev/schematics:plugin --name=@acme/score-board
+```
+
+A theme in a custom folder:
+
+```bash
+schematics @nanoforge-dev/schematics:plugin \
+  --name=@acme/forest --template=theme --directory=themes/forest
+```
