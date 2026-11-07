@@ -28,8 +28,8 @@ Once a project exists, most of your time is spent with `nf dev` running in a ter
     - a server change restarts the server, then reloads the page.
 
     `nf dev` hides the build output. If a change doesn't show up, run `nf build` in another
-    terminal to see the error. Files added to `assets/` are copied only by a full build: restart
-    `nf dev` after changing them.
+    terminal to see the error. A change in `assets/` alone doesn't start a rebuild: the
+    next rebuild (after you save a file in `src/`) copies the assets again, or restart `nf dev`.
 
   </Step>
 

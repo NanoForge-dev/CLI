@@ -10,7 +10,8 @@ The `workspace` schematic writes the root of a workspace: a `nanoforge.config.ts
 ports. The apps are then added under `apps/` with the [`project`](./project) schematic.
 [`nf new --server`](../commands/new) runs it for you.
 
-The versions of `@nanoforge-dev/cli`, `@nanoforge-dev/config` and `typescript` are pinned to the
+`@nanoforge-dev/config` gets the version of `@nanoforge-dev/core`, the engine version. The versions
+of `@nanoforge-dev/cli`, `@nanoforge-dev/core` and `typescript` are pinned to the
 newest release published at least 48 hours before generation, so a release published minutes ago
 is not picked up. `typescript` stays on its 6.x line.
 

@@ -51,8 +51,9 @@ nf dev -d ./games/space
 
 - **A build error doesn't show.** The build output is hidden in `nf dev`. Run `nf build` to see
   the error.
-- **The page doesn't reload.** The build watches only the folder of the entry file. A change in
-  `assets/` is not picked up: restart `nf dev`.
+- **An asset change doesn't show.** The build watches only the folder of the entry file. A change
+  in `assets/` alone doesn't start a rebuild: save a file in `src/` (every rebuild copies the
+  assets again), or restart `nf dev`.
 - **The port is taken.** Set another `port` in the client's `nanoforge.config.ts`, or stop the
   other process.
 - **Configuration file not found.** Run `nf dev` from the project root, or pass it with `-d`.

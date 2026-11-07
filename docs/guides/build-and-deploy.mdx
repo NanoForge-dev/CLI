@@ -46,8 +46,8 @@ players can reach.
 
   <Step title="Set the production values">
 
-    Set the environment variables the game needs, in the shell or in the `.env` file at the
-    root. The client must reach the server at an address the players can resolve:
+    Set the environment variables the game needs in the `.env` file at the root. The client must
+    reach the server at an address the players can resolve:
 
     ```dotenv .env
     NANOFORGE_CLIENT_SERVER_ADDRESS=game.example.com
@@ -57,7 +57,8 @@ players can reach.
     NANOFORGE_SERVER_LISTENING_UDP_PORT=4445
     ```
 
-    Open those ports on the server's firewall. See
+    Keep secrets for the server in `NANOFORGE_SERVER_` variables in this file, never in the shell
+    or container environment that runs `nf start`. Open the ports on the server's firewall. See
     [environment variables](/docs/cli/configuration/environment-variables).
 
   </Step>
