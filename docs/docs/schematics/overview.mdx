@@ -3,8 +3,6 @@ title: Schematics
 description: Overview of the @nanoforge-dev/schematics package
 ---
 
-import { Card, CardGroup } from "mintlify/components";
-
 ## What are schematics?
 
 NanoForge schematics are code generators built on [Angular DevKit](https://github.com/angular/angular-cli/tree/main/packages/angular_devkit/schematics). They produce the boilerplate files that every NanoForge project needs — from the initial application scaffold down to individual ECS components and systems.
@@ -33,18 +31,18 @@ schematics @nanoforge-dev/schematics:<schematic-name> [options]
 ## Available schematics
 
 <CardGroup cols={2}>
-  <Card title="workspace" href="./2-schematics/1-workspace">
+  <Card title="workspace" href="./workspace">
     Scaffold the root of a NanoForge monorepo: `nanoforge.config.ts`, `package.json`, TypeScript or
     JavaScript config, and linting.
   </Card>
-  <Card title="project" href="./2-schematics/2-project">
+  <Card title="project" href="./project">
     Generate a client or server project under `apps/<part>` inside a workspace, including its
     `main.ts` entry point, example component/system, and optional Dockerfile.
   </Card>
-  <Card title="component" href="./2-schematics/3-component">
+  <Card title="component" href="./component">
     Scaffold an ECS component class with an editor manifest for use in the NanoForge editor.
   </Card>
-  <Card title="system" href="./2-schematics/4-system">
+  <Card title="system" href="./system">
     Scaffold an ECS system function with an editor manifest for use in the NanoForge editor.
   </Card>
 </CardGroup>
