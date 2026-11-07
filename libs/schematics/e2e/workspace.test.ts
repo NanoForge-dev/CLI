@@ -267,7 +267,12 @@ describe("workspace schematic", () => {
   });
 
   describe("AGENTS.md", () => {
-    const nfCommands = { npm: "npx nf", pnpm: "pnpm exec nf", yarn: "yarn nf", bun: "bunx nf" };
+    const nfCommands = {
+      npm: "npm exec --no -- nf",
+      pnpm: "pnpm exec nf",
+      yarn: "yarn nf",
+      bun: "bun run nf",
+    };
     const variants = (["ts", "js"] as const).flatMap((language) =>
       (["npm", "pnpm", "yarn", "bun"] as const).map((packageManager) => ({
         language,

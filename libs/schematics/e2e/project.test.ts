@@ -455,9 +455,13 @@ describe("project schematic", () => {
       expect(content).not.toContain("<%");
       expect(content).not.toContain("%>");
       expect(content).toContain(`NanoForge ${options.part} app`);
+      expect(content).not.toContain("subfolder");
+      expect(content).not.toContain("hides build errors");
+      expect(content).not.toContain("npx nf");
+      expect(content).not.toContain("bunx nf");
     });
 
-    it("points a workspace app to the root and documents its network and editor", async () => {
+    it("points a workspace app to the root and documents its network", async () => {
       const tree = await runner.runSchematic("project", {
         part: "client",
         workspaceName: "my-workspace",
@@ -471,12 +475,11 @@ describe("project schematic", () => {
       expect(content).toContain("read `../../AGENTS.md` first");
       expect(content).toContain("`pnpm exec nf build -d apps/client`");
       expect(content).toContain("## Network");
-      expect(content).toContain("## Editor");
-      expect(content).toContain("@side client");
       expect(content).toContain("ctx.graphics.baseLayer");
+      expect(content).toContain("WebRTC data channel");
     });
 
-    it("leaves the network, the editor and the workspace out of a standalone client", async () => {
+    it("leaves the network and the workspace out of a standalone client", async () => {
       const tree = await runner.runSchematic("project", {
         part: "client",
         name: "solo",
@@ -484,12 +487,25 @@ describe("project schematic", () => {
         workspace: false,
       });
       const content = tree.readContent("/solo/AGENTS.md");
-      expect(content).toContain("`npx nf <command>`");
+      expect(content).toContain("`npm exec --no -- nf <command>`");
       expect(content).toContain("http://localhost:3000");
       expect(content).not.toContain("../../AGENTS.md");
       expect(content).not.toContain("## Network");
-      expect(content).not.toContain("## Editor");
-      expect(content).not.toContain("@component");
+    });
+
+    it("has no editor section, with or without editor", async () => {
+      for (const editor of [true, false]) {
+        const tree = await runner.runSchematic("project", {
+          part: "client",
+          directory: "apps/client",
+          editor,
+        });
+        const content = tree.readContent("/apps/client/AGENTS.md");
+        expect(content).not.toContain("## Editor");
+        expect(content).not.toContain("@component");
+        expect(content).not.toContain("@side");
+        expect(content).not.toContain("EDITOR_COMPONENT_MANIFEST");
+      }
     });
 
     it("describes a server without client libraries", async () => {
@@ -502,7 +518,7 @@ describe("project schematic", () => {
       const content = tree.readContent("/apps/server/AGENTS.md");
       expect(content).toContain("runs in Bun");
       expect(content).toContain("NanoforgeFactory.createServer");
-      expect(content).toContain("`bunx nf build -d apps/server`");
+      expect(content).toContain("`bun run nf build -d apps/server`");
       expect(content).toContain("## Network");
       expect(content).not.toContain("ctx.graphics");
     });

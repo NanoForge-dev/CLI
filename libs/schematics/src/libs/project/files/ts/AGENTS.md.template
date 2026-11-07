@@ -1,4 +1,4 @@
-<% var nf = { npm: "npx nf", pnpm: "pnpm exec nf", yarn: "yarn nf", bun: "bunx nf" }[packageManager]; var add = { npm: "npm install", pnpm: "pnpm add", yarn: "yarn add", bun: "bun add" }[packageManager]; var networked = part === "server" || hasServer; %># <%= packageName %>
+<% var nf = { npm: "npm exec --no -- nf", pnpm: "pnpm exec nf", yarn: "yarn nf", bun: "bun run nf" }[packageManager]; var add = { npm: "npm install", pnpm: "pnpm add", yarn: "yarn add", bun: "bun add" }[packageManager]; var networked = part === "server" || hasServer; %># <%= packageName %>
 
 Notes for AI coding agents. This is a NanoForge <%= part %> app, written in TypeScript.
 NanoForge is a game engine built on an entity component system (ECS).
@@ -14,9 +14,8 @@ This app is part of a workspace: read `../../AGENTS.md` first.
   `main.js`, so keep the file name and the export.
 - `src/components/`, `src/systems/`: one component or system per file,
   `<kebab-name>.component.ts` and `<kebab-name>.system.ts`.
-- `assets/`: its files are copied to the root of `dist/` on each build, so `assets/hero.png` is
-  `/hero.png`. Only files at its top level: a subfolder fails the build. Read one with
-  `ctx.assets.getAsset("/hero.png")`, an `NfFile` whose `path` is its URL.
+- `assets/`: copied to the root of `dist/` on each build, so `assets/hero.png` is served as
+  `/hero.png`. Read it with `ctx.assets.getAsset("/hero.png")`, an `NfFile` whose `path` is its URL.
 - `dist/` is the build output, emptied on every build. `.nanoforge/` belongs to the NanoForge
   tools: don't edit it.
 
@@ -25,11 +24,11 @@ This app is part of a workspace: read `../../AGENTS.md` first.
 `nf` comes from the `@nanoforge-dev/cli` dev dependency: run it as `<%= nf %> <command>`.
 <% if (workspace) { %>
 Run `nf dev` and `nf start` from the workspace root: they run this app with the other one, and
-they read `.env` from the folder they run in. To build this app alone, run
-`<%= nf %> build -d apps/<%= part %>` at the root.
+they read the `.env` of their `-d` folder (the current folder by default). To build this app
+alone, run `<%= nf %> build -d apps/<%= part %>` at the root.
 <% } else { %>
-- `nf dev`: rebuilds when a file in `src/` changes and <% if (part === "client") { %>serves the game on http://localhost:3000
-  (`port` in the config)<% } else { %>restarts the server<% } %>. It hides build errors: run `nf build` to see them.
+- `nf dev`: runs `nf build --watch` and `nf start --watch` together.<% if (part === "client") { %> The game is on
+  http://localhost:3000 (`port` in the config).<% } %>
 - `nf build`: bundles `src/main.ts` with Bun into `dist/`. It does not type-check.
 - `nf start`: <% if (part === "client") { %>serves<% } else { %>runs<% } %> the last build.
 <% } %>
@@ -64,33 +63,14 @@ branch and can describe APIs that the installed release lacks: the installed typ
 <% if (networked) { %>
 ## Network
 
-- The client and the server talk over WebSockets. Their address and ports are `NANOFORGE_*`
-  variables in the `.env` of <%= workspace ? "the workspace root" : "this folder" %>. `nf start` gives `NANOFORGE_CLIENT_X` to the client
-  and `NANOFORGE_SERVER_X` to the server, as `X` in `options.env`. Everything the client gets
-  reaches the browser: never put a secret there.
+- The client and the server connect over TCP, a WebSocket, and over UDP, a WebRTC data channel
+  set up through a WebSocket. Their address and ports are `NANOFORGE_*` variables, which `nf start`
+  reads from the `.env` of <%= workspace ? "the workspace root" : "its `-d` folder" %>. It gives
+  `NANOFORGE_CLIENT_X` to the client and `NANOFORGE_SERVER_X` to the server, as `X` in
+  `options.env`. Everything the client gets reaches the browser: never put a secret there.
   https://docs.nanoforge.eu/docs/cli/configuration/environment-variables
 - The generated systems use `ctx.network.tcp` and encode JSON with `TextEncoder`. Check the
   installed `@nanoforge-dev/network` types before using another network API.
-<% } %><% if (editor) { %>
-## Editor
-
-The NanoForge editor builds its lists of components and systems from this code, and edits
-`src/main.ts`. Keep the code in the shape it reads:
-
-- It lists the exported classes with a `name` field in `src/components/`, and the exported
-  functions in `src/systems/`. Tag them `@component` or `@system` in their doc comment, with
-  `@side client`, `@side server` or `@side shared`. Without a tag they show as "untagged", and
-  without `@side` they are `shared`.
-- A component's fields in the editor are its constructor parameters: their types, their defaults
-  and their `@param` descriptions.
-- In `main`, it reads and rewrites the `registry.spawnEntity()`,
-  `registry.addComponent(entity, new X(...))` and `registry.addSystem(fn)` calls, made directly on
-  a variable named `registry`. The variable names are the entity names. Calls inside loops or
-  helpers are shown read-only.
-- The `EDITOR_COMPONENT_MANIFEST`, `EDITOR_SYSTEM_MANIFEST` and `export default X.name` exports
-  of the generated files are an older format: describe new code with doc comments instead.
-
-https://docs.nanoforge.eu/docs/editor/editor/components
 <% } %>
 ## Example
 
@@ -98,19 +78,10 @@ A component and a system, as the rules above want them:
 
 ```ts
 // src/components/velocity-2d.component.ts
-/**
- * Speed of an entity, in pixels per second.<% if (editor) { %>
- *
- * @component
- * @side <%= part %><% } %>
- */
+/** Speed of an entity, in pixels per second. */
 export class Velocity2D {
   name = "Velocity2D";
 
-  /**
-   * @param x - Horizontal speed
-   * @param y - Vertical speed
-   */
   constructor(
     public x = 0,
     public y = 0,
@@ -124,12 +95,7 @@ import { type Registry } from "@nanoforge-dev/ecs";
 import { Position2D } from "../components/position-2d.component";
 import { Velocity2D } from "../components/velocity-2d.component";
 
-/**
- * Moves every entity that has a position and a velocity.<% if (editor) { %>
- *
- * @system
- * @side <%= part %><% } %>
- */
+/** Moves every entity that has a position and a velocity. */
 export const applyVelocity2D = (registry: Registry, ctx: Context): void => {
   const seconds = ctx.app.delta / 1000;
 

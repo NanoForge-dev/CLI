@@ -1,4 +1,4 @@
-<% var nf = { npm: "npx nf", pnpm: "pnpm exec nf", yarn: "yarn nf", bun: "bunx nf" }[packageManager]; %># <%= name %>
+<% var nf = { npm: "npm exec --no -- nf", pnpm: "pnpm exec nf", yarn: "yarn nf", bun: "bun run nf" }[packageManager]; %># <%= name %>
 
 Notes for AI coding agents. This is a NanoForge game workspace, written in TypeScript: a client
 app that runs in the browser and a server app that runs in Bun. NanoForge is a game engine built
@@ -21,20 +21,21 @@ on an entity component system (ECS).
 `nf` comes from the `@nanoforge-dev/cli` dev dependency. Run it from this folder, as
 `<%= nf %> <command>`.
 
-- `nf dev`: rebuilds an app when a file in its `src/` changes, and serves the game on
-  http://localhost:3000 with the server running. It hides build errors: run `nf build` to see
-  them.
+- `nf dev`: runs `nf build --watch` and `nf start --watch` together. The game is on
+  http://localhost:3000, with the server running.
 - `nf build`: bundles every app with Bun into its `dist/`. It does not type-check.
   `-d apps/client` or `-d apps/server` builds one app.
 - `nf start`: runs the last build of both apps.
 
-`nf dev` and `nf start` read `.env` from the folder they run in, so run them here.
+`nf dev` and `nf start` read the `.env` of their `-d` folder (the current folder by default), so
+run them here.
 
 ## Client and server
 
-- They talk over WebSockets. `nf start` gives `NANOFORGE_CLIENT_X` to the client and
-  `NANOFORGE_SERVER_X` to the server, as `X` in the `options.env` of `main`. A plain `NANOFORGE_X`
-  goes to both. Everything the client gets reaches the browser: never put a secret there.
+- They connect over TCP, a WebSocket, and over UDP, a WebRTC data channel set up through a
+  WebSocket. `nf start` gives `NANOFORGE_CLIENT_X` to the client and `NANOFORGE_SERVER_X` to the
+  server, as `X` in the `options.env` of `main`. A plain `NANOFORGE_X` goes to both. Everything
+  the client gets reaches the browser: never put a secret there.
   https://docs.nanoforge.eu/docs/cli/configuration/environment-variables
 - In the generated game, the server moves the entity and sends its position to every client
   (`apps/server/src/systems/move-2d.system.ts`), and the client sets the position it receives
