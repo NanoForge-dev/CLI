@@ -23,16 +23,16 @@ schematics @nanoforge-dev/schematics:workspace --name=my-game
 
 ## Options
 
-| Option           | Type                                 | Default         | Description                                                                                                                                                          |
-| ---------------- | ------------------------------------ | --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`           | `string`                             | `nanoforge-app` | Name of the workspace, and of its root package.                                                                                                                      |
-| `directory`      | `string`                             | the name        | Folder to write to.                                                                                                                                                  |
-| `language`       | `"ts" \| "js"`                       | `ts`            | `tsconfig.json` or `jsconfig.json`.                                                                                                                                  |
-| `strict`         | `boolean`                            | `true`          | Strict type checking.                                                                                                                                                |
-| `packageManager` | `"npm" \| "yarn" \| "pnpm" \| "bun"` | `npm`           | pnpm gets a `pnpm-workspace.yaml`; the others get a `workspaces` field in `package.json`.                                                                            |
-| `allowBuilds`    | `string[]`                           | `[]`            | Packages allowed to run install scripts, on top of `bun` (always allowed). Written for pnpm, npm (`allowScripts`) and Bun (`trustedDependencies`); ignored for yarn. |
-| `docker`         | `boolean`                            | `false`         | Add a `Dockerfile` that builds every app into one image, and a `.dockerignore`.                                                                                      |
-| `agents`         | `boolean`                            | `true`          | Add an `AGENTS.md` for AI coding agents (layout, commands, conventions) and a `CLAUDE.md` that imports it. Each app gets its own from the `project` schematic.       |
+| Option           | Type                                 | Default         | Description                                                                                                                                                               |
+| ---------------- | ------------------------------------ | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`           | `string`                             | `nanoforge-app` | Name of the workspace, and of its root package.                                                                                                                           |
+| `directory`      | `string`                             | the name        | Folder to write to.                                                                                                                                                       |
+| `language`       | `"ts" \| "js"`                       | `ts`            | `tsconfig.json` or `jsconfig.json`.                                                                                                                                       |
+| `strict`         | `boolean`                            | `true`          | Strict type checking.                                                                                                                                                     |
+| `packageManager` | `"npm" \| "yarn" \| "pnpm" \| "bun"` | `npm`           | pnpm gets a `pnpm-workspace.yaml`; the others get a `workspaces` field in `package.json`.                                                                                 |
+| `allowBuilds`    | `string[]`                           | `[]`            | Packages allowed to run install scripts, on top of `bun` (always allowed). Written for pnpm, npm (`allowScripts`) and Bun (`trustedDependencies`); ignored for yarn.      |
+| `docker`         | `boolean`                            | `false`         | Add a `Dockerfile` that builds every app into one image, and a `.dockerignore`.                                                                                           |
+| `agents`         | `boolean`                            | `true`          | Add an `AGENTS.md` for AI coding agents (files, commands, client and server setup) and a `CLAUDE.md` that imports it. Each app gets its own from the `project` schematic. |
 
 ## Generated files
 

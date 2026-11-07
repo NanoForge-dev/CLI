@@ -1,108 +1,127 @@
-# AGENTS.md
+<% var nf = { npm: "npx nf", pnpm: "pnpm exec nf", yarn: "yarn nf", bun: "bunx nf" }[packageManager]; var add = { npm: "npm install", pnpm: "pnpm add", yarn: "yarn add", bun: "bun add" }[packageManager]; var networked = part === "server" || hasServer; %># <%= packageName %>
 
-Instructions for AI coding agents (Codex, Cursor, GitHub Copilot, Claude Code, ...)
-working on this project. Human-oriented documentation lives in `README.md`.
+Notes for AI coding agents. This is a NanoForge <%= part %> app, written in JavaScript: ES modules,
+typed with JSDoc and `jsconfig.json`. NanoForge is a game engine built on an entity component
+system (ECS).
+<% if (part === "client") { %>The game runs in the browser.<% } else { %>This app runs in Bun: it has no graphics, input or DOM.<% } %>
+<% if (workspace) { %>
+This app is part of a workspace: read `../../AGENTS.md` first.
+<% } %>
+## Files
 
-## Project overview
-
-`<%= packageName %>` is a [NanoForge](https://nanoforge.eu) **<%= part %>** app written in
-JavaScript (ES modules, typed with JSDoc<% if (strict) { %>, strict checks enabled in `jsconfig.json`<% } %>),
-using **<%= packageManager %>**.<% if (workspace) { %>
-It is one app of a NanoForge workspace: read the workspace root `AGENTS.md` first.<% } %>
-
-NanoForge is a web game engine built on an ECS (Entity Component System):
-
-- **Entities** are plain ids spawned from the registry.
-- **Components** are classes that only hold data, attached to entities.
-- **Systems** are functions run every tick on the entities that have a given set of components.
-- **Libraries** (graphics, input, network, ...) are plugged into the app with `app.use(...)`.
+- `nanoforge.config.js`: the app config that `nf` reads (`type: "<%= part %>"`). Keep its
+  `entryFile`, `editor.entryFile` and `language: "js"`: the defaults are for TypeScript. Fields
+  and defaults: https://docs.nanoforge.eu/docs/cli/configuration/configuration-file
+- `src/main.js`: the entry file. The loader calls its exported `main(options)` from the bundled
+  `main.js`, so keep the file name and the export.
+- `src/components/`, `src/systems/`: one component or system per file,
+  `<kebab-name>.component.js` and `<kebab-name>.system.js`.
+- `assets/`: its files are copied to the root of `dist/` on each build, so `assets/hero.png` is
+  `/hero.png`. Only files at its top level: a subfolder fails the build. Read one with
+  `ctx.assets.getAsset("/hero.png")`, an `NfFile` whose `path` is its URL.
+- `dist/` is the build output, emptied on every build. `.nanoforge/` belongs to the NanoForge
+  tools: don't edit it.
 
 ## Commands
 
-| Task                         | Command                                          |
-| ---------------------------- | ------------------------------------------------ |
-| Install dependencies         | `<%= packageManager %> install`                  |
-| Rebuild and reload on change | `nf dev`                                         |
-| Build for production         | `nf build` (output in `dist/`)                   |
-| Run the built app            | `nf start`                                       |
-| Scaffold a component         | `nf create component -n <Name>`                  |
-| Scaffold a system            | `nf create system -n <name>`                     |<% if (editor) { %>
-| Open the visual editor       | `nf editor .`                                    |<% } %>
+`nf` comes from the `@nanoforge-dev/cli` dev dependency: run it as `<%= nf %> <command>`.
+<% if (workspace) { %>
+Run `nf dev` and `nf start` from the workspace root: they run this app with the other one, and
+they read `.env` from the folder they run in. To build this app alone, run
+`<%= nf %> build -d apps/<%= part %>` at the root.
+<% } else { %>
+- `nf dev`: rebuilds when a file in `src/` changes and <% if (part === "client") { %>serves the game on http://localhost:3000
+  (`port` in the config)<% } else { %>restarts the server<% } %>. It hides build errors: run `nf build` to see them.
+- `nf build`: bundles `src/main.js` with Bun into `dist/`. It does not check the JSDoc types.
+- `nf start`: <% if (part === "client") { %>serves<% } else { %>runs<% } %> the last build.
+<% } %>
+<% if (workspace && packageManager === "npm") { %>Add a package with `npm install <package> -w apps/<%= part %>` at the workspace root.<% } else { %>Add a package with `<%= add %> <package>` in this folder.<% } %>
 
-<% if (workspace) { %>Install dependencies from the workspace root. <% } %>There is no test runner configured. After a change, run `nf build` to check that the project
-still compiles.
+The `@nanoforge-dev/*` packages are on `^2`. The online docs follow the engine's development
+branch and can describe APIs that the installed release lacks: the installed types
+(`@nanoforge-dev/<package>/dist` in `node_modules`) are the reference.
 
-## Project structure
+## Game code
 
-```
-.
-├── assets/             # Static assets (images, sounds, ...)
-├── src/
-│   ├── main.js         # Entry point: creates the app, registers libraries, entities and systems
-│   ├── components/     # ECS components (*.component.js)
-│   └── systems/        # ECS systems (*.system.js)
-├── nanoforge.config.js # NanoForge project configuration (type: "<%= part %>")
-├── package.json
-└── jsconfig.json
-```
+- `main` creates the app with `NanoforgeFactory.<%= part === "client" ? "createClient" : "createServer" %>`, registers each library with
+  `app.use(...)`, then calls `await app.init(options)`. `app.use` throws after `init`, and
+  `ecs.registry` throws before it. `await app.run()` starts the tick loop and returns.
+- Components are plain classes. The registry keys them by their `name` field: give each class a
+  `name` equal to its class name (the generated ones use `this.constructor.name`), and never store
+  game data in `name`. Names must be unique in the app, and `entity` and `id` are reserved. An
+  entity has one component per class: adding a second one replaces the first.
+- Systems are `(registry, ctx) => void` functions. They run once per tick, in the order of the
+  `registry.addSystem` calls. Their result is ignored, so an async system is not awaited.
+- `registry.getZipper([A, B])` returns one object per entity that has both, keyed by component
+  name: `({ A, B }) => …`. The values are the live components: change them in place.
+  `getIndexedZipper` adds the entity `id`, and `registry.entityFromIndex(id)` turns it back into an
+  entity for `killEntity` or `removeComponent`.
+- `ctx.app.delta` is the time since the last tick, in milliseconds. `tickRate` in `main` is the
+  number of ticks per second. `ctx.app.requestStop()` stops the game.<% if (part === "client") { %>
+- Graphics use Konva: `@nanoforge-dev/graphics-2d` re-exports its shapes (`Circle`, `Rect`,
+  `Layer`…), and `ctx.graphics.baseLayer` is a layer already on the stage. Coordinates are in a
+  1920×1080 design space scaled to the window (the `viewport` option of `createClient`).
+- Keys: `ctx.input.isKeyPressed(InputEnum.KeyW)`, with `InputEnum` from `@nanoforge-dev/input`. Its
+  values are `KeyboardEvent.code` names.<% } %>
+<% if (networked) { %>
+## Network
 
-Do not edit the build output in `dist/`.<% if (editor) { %> `.nanoforge/` holds the editor's settings, cache and
-project plugins: leave it to the editor.<% } %>
+- The client and the server talk over WebSockets. Their address and ports are `NANOFORGE_*`
+  variables in the `.env` of <%= workspace ? "the workspace root" : "this folder" %>. `nf start` gives `NANOFORGE_CLIENT_X` to the client
+  and `NANOFORGE_SERVER_X` to the server, as `X` in `options.env`. Everything the client gets
+  reaches the browser: never put a secret there.
+  https://docs.nanoforge.eu/docs/cli/configuration/environment-variables
+- The generated systems use `ctx.network.tcp` and encode JSON with `TextEncoder`. Check the
+  installed `@nanoforge-dev/network` types before using another network API.
+<% } %><% if (editor) { %>
+## Editor
 
-## Conventions
+The NanoForge editor builds its lists of components and systems from this code, and edits
+`src/main.js`. Keep the code in the shape it reads:
 
-### Components
+- It lists the exported classes with a `name` field in `src/components/`, and the exported
+  functions in `src/systems/`. Tag them `@component` or `@system` in their doc comment, with
+  `@side client`, `@side server` or `@side shared`. Without a tag they show as "untagged", and
+  without `@side` they are `shared`.
+- A component's fields in the editor are its constructor parameters, with their defaults and
+  their `@param` descriptions.
+- In `main`, it reads and rewrites the `registry.spawnEntity()`,
+  `registry.addComponent(entity, new X(...))` and `registry.addSystem(fn)` calls, made directly on
+  a variable named `registry`. The variable names are the entity names. Calls inside loops or
+  helpers are shown read-only.
+- The `EDITOR_COMPONENT_MANIFEST`, `EDITOR_SYSTEM_MANIFEST` and `export default X.name` exports
+  of the generated files are an older format: describe new code with doc comments instead.
 
-- One component per file in `src/components/`, named `<kebab-name>.component.js`.
-- A component is a class with a `name = this.constructor.name;` field and its data assigned
-  in the constructor. Document parameter types with JSDoc.
-- Keep `export default <Component>.name;`: it is required by the code generation.
-- Keep `EDITOR_COMPONENT_MANIFEST` in sync with the constructor parameters (same names, order
-  and types): it is used by the editor.
+https://docs.nanoforge.eu/docs/editor/editor/components
+<% } %>
+## Example
+
+A component and a system, as the rules above want them:
 
 ```js
+// src/components/velocity-2d.component.js
 /**
- * @typedef {import("@nanoforge-dev/ecs").EditorComponentManifest} EditorComponentManifest
+ * Speed of an entity, in pixels per second.<% if (editor) { %>
+ *
+ * @component
+ * @side <%= part %><% } %>
  */
-
 export class Velocity2D {
-  name = this.constructor.name;
+  name = "Velocity2D";
 
   /**
-   * @param {number} x
-   * @param {number} y
+   * @param {number} [x] - Horizontal speed
+   * @param {number} [y] - Vertical speed
    */
-  constructor(x, y) {
+  constructor(x = 0, y = 0) {
     this.x = x;
     this.y = y;
   }
 }
 
-export default Velocity2D.name;
-
-/** @type {EditorComponentManifest} */
-export const EDITOR_COMPONENT_MANIFEST = {
-  name: "Velocity2D",
-  description: "Velocity of an entity in pixel per tick",
-  params: [
-    { type: "number", name: "x", description: "Horizontal velocity", example: 1, default: 0 },
-    { type: "number", name: "y", description: "Vertical velocity", example: 1, default: 0 },
-  ],
-};
-```
-
-### Systems
-
-- One system per file in `src/systems/`, named `<kebab-name>.system.js`.
-- A system is a function `(registry, ctx) => void`. Query entities with
-  `registry.getZipper([ComponentA, ComponentB])`.
-- Keep `export default <system>.name;` and `EDITOR_SYSTEM_MANIFEST`, whose `dependencies` lists
-  the names of the components the system reads.
-
-```js
+// src/systems/apply-velocity-2d.system.js
 /**
  * @typedef {import("@nanoforge-dev/common").Context} Context
- * @typedef {import("@nanoforge-dev/ecs").EditorSystemManifest} EditorSystemManifest
  * @typedef {import("@nanoforge-dev/ecs").Registry} Registry
  */
 
@@ -110,46 +129,26 @@ import { Position2D } from "../components/position-2d.component";
 import { Velocity2D } from "../components/velocity-2d.component";
 
 /**
+ * Moves every entity that has a position and a velocity.<% if (editor) { %>
+ *
+ * @system
+ * @side <%= part %><% } %>
  * @param {Registry} registry
- * @param {Context} _ctx
+ * @param {Context} ctx
  */
-export const applyVelocity = (registry, _ctx) => {
+export const applyVelocity2D = (registry, ctx) => {
+  const seconds = ctx.app.delta / 1000;
+
   registry.getZipper([Position2D, Velocity2D]).forEach(({ Position2D, Velocity2D }) => {
-    Position2D.x += Velocity2D.x;
-    Position2D.y += Velocity2D.y;
+    Position2D.x += Velocity2D.x * seconds;
+    Position2D.y += Velocity2D.y * seconds;
   });
-};
-
-export default applyVelocity.name;
-
-/** @type {EditorSystemManifest} */
-export const EDITOR_SYSTEM_MANIFEST = {
-  name: "applyVelocity",
-  description: "Moves entities according to their velocity",
-  dependencies: ["Position2D", "Velocity2D"],
 };
 ```
 
-### Entry point
+Register it in `main` with `registry.addSystem(applyVelocity2D)`.
 
-`src/main.js` exports `main(options)`, which:
+## Docs
 
-1. creates the app with `NanoforgeFactory.<%= part === "client" ? "createClient" : "createServer" %>(...)`,
-2. registers the libraries with `app.use(...)`, then calls `await app.init(options)`,
-3. spawns entities with `registry.spawnEntity()` and `registry.addComponent(...)`,
-4. registers systems with `registry.addSystem(...)`, then calls `await app.run()`.
-
-Scaffolding a component or a system does not register it: add the system to `src/main.js`
-yourself.
-
-### Imports
-
-- Types (JSDoc `import(...)` only): `@nanoforge-dev/common` (`Context`) and `@nanoforge-dev/ecs`
-  (`Registry`, manifests).
-- Libraries: `@nanoforge-dev/ecs/<%= part %>`, `@nanoforge-dev/network/<%= part %>`<% if (part === "client") { %>,
-  `@nanoforge-dev/graphics-2d` and `@nanoforge-dev/input`<% } %>.
-
-## Documentation
-
-- NanoForge documentation: <https://docs.nanoforge.eu>
-- CLI reference: `nf --help` and `nf <command> --help`
+- `nf` commands: https://docs.nanoforge.eu/docs/cli/commands/overview
+- Everything else: https://docs.nanoforge.eu

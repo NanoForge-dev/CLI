@@ -35,7 +35,7 @@ The "Default" column is the answer that is preselected when `nf new` asks the qu
 | `--docker` / `--no-docker`                     | boolean                        | `true`          | Add a `Dockerfile` and a `.dockerignore`.                                                     |
 | `--git` / `--no-git`                           | boolean                        | `true`          | Run `git init` in the project.                                                                |
 | `--git-remote <gitRemote>` / `--no-git-remote` | URL                            | none            | Add this remote as `origin`. Only asked when git is on. `--no-git-remote` skips the question. |
-| `--editor`                                     | boolean                        | `false`         | Add the `nf editor .` instructions to the generated README.                                   |
+| `--editor`                                     | boolean                        | `false`         | Add the `nf editor .` instructions to the README, and the editor's code rules to `AGENTS.md`. |
 | `--init-functions` / `--no-init-functions`     | boolean                        | none            | Accepted, but has no effect yet.                                                              |
 | `--no-lint`                                    | boolean                        | none            | Accepted, but has no effect yet: `nf new` generates no lint files.                            |
 | `--no-agents`                                  | boolean                        | none            | Don't add the `AGENTS.md` and `CLAUDE.md` files, which are added unless this flag is passed.  |

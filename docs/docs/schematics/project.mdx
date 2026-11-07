@@ -38,11 +38,11 @@ schematics @nanoforge-dev/schematics:project --part=client --directory=apps/clie
 | `workspace`      | `boolean`                            | `true`    | The app is inside a workspace. A standalone app (`false`) allows the install script of `bun` itself, and can get a `Dockerfile`.                                           |
 | `hasServer`      | `boolean`                            | `false`   | Client only: add the `position-sync` system, which takes the entity's position from the server instead of the client.                                                      |
 | `docker`         | `boolean`                            | `false`   | Add a `Dockerfile` and a `.dockerignore`. Ignored when `workspace` is `true`: the workspace has its own.                                                                   |
-| `editor`         | `boolean`                            | `false`   | Add the `nf editor .` instructions to the README.                                                                                                                          |
+| `editor`         | `boolean`                            | `false`   | Add the `nf editor .` instructions to the README, and the editor's code rules to `AGENTS.md`.                                                                              |
 | `initFunctions`  | `boolean`                            | `false`   | Accepted, but not used by the templates yet.                                                                                                                               |
 | `libs`           | `string[]`                           | `[]`      | Accepted, but not written to `nanoforge.config.ts` yet.                                                                                                                    |
 | `allowBuilds`    | `string[]`                           | `[]`      | Accepted, but not used yet: a standalone app always allows `bun` only.                                                                                                     |
-| `agents`         | `boolean`                            | `true`    | Add an `AGENTS.md` for AI coding agents (layout, commands, ECS conventions) and a `CLAUDE.md` that imports it.                                                             |
+| `agents`         | `boolean`                            | `true`    | Add an `AGENTS.md` for AI coding agents (files, commands, ECS rules, network for a networked app) and a `CLAUDE.md` that imports it.                                       |
 
 ## Generated files
 
