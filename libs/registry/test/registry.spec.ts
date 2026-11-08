@@ -422,6 +422,12 @@ describe("registries", () => {
     ]);
   });
 
+  it("refuses an archive origin that is not an address", () => {
+    expect(
+      () => new RegistryClient({ baseUrl: "https://api.test", archiveOrigins: ["cdn.test"] }),
+    ).toThrow(RegistryError);
+  });
+
   it("never sends a request to an origin it was not given", async () => {
     const seen: string[] = [];
     const tarball = (location: string) =>

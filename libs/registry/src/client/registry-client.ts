@@ -51,7 +51,20 @@ export interface RegistryClientOptions {
 
 /** The registry over HTTP (the contract of `docs/api/registry.md`). */
 export class RegistryClient implements Registry {
-  constructor(private readonly _options: RegistryClientOptions) {}
+  /** The origins requests may go to: the registry's, then `archiveOrigins`. */
+  private readonly _origins: ReadonlySet<string>;
+
+  constructor(private readonly _options: RegistryClientOptions) {
+    this._origins = new Set(
+      [_options.baseUrl, ...(_options.archiveOrigins ?? [])].map((address) => {
+        try {
+          return new URL(address).origin;
+        } catch {
+          throw new RegistryError("INVALID", `${address} is not a registry or archive address`);
+        }
+      }),
+    );
+  }
 
   async search(query: SearchQuery = {}): Promise<SearchResult> {
     const { type, q, page, limit } = SearchQuery.parse(query);
@@ -146,10 +159,6 @@ export class RegistryClient implements Registry {
   ): Promise<Response> {
     const base = new URL(this._options.baseUrl);
     const signal = AbortSignal.timeout(this._options.timeoutMs ?? 60_000);
-    const allowed = new Set([
-      base.origin,
-      ...(this._options.archiveOrigins ?? []).map((origin) => new URL(origin).origin),
-    ]);
     let url = new URL(path, base);
     let response: Response;
     for (let redirects = 0; ; redirects++) {
@@ -158,7 +167,7 @@ export class RegistryClient implements Registry {
           "INVALID",
           `The registry gave an address that is not http(s): ${url.protocol}`,
         );
-      if (!allowed.has(url.origin))
+      if (!this._origins.has(url.origin))
         throw new RegistryError(
           "INVALID",
           `The registry gave an address on another origin (${url.origin})`,
