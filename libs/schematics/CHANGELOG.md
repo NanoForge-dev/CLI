@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+# [3.0.0](https://github.com/NanoForge-dev/CLI/compare/2.3.1...3.0.0) - (2026-11-08)
+
+## Breaking Changes
+
+- **cli:** Install, publish and unpublish on the shared registry lib (#263) ([9fb3abf](https://github.com/NanoForge-dev/CLI/commit/9fb3abfc4ff9c8630acb7a559be3129da04af221)) by @Exeloo
+  - **BREAKING CHANGE:** nf install drops --server, and installs into nf_modules instead of copying files into client/ or server/. Manifests must use the registry format (@scope/name, version, type package or plugin): publish.paths and the scope/name format are no longer read.
+
+## Features
+
+- New CLI options for AGENTS.md documentation (#245) ([63a1446](https://github.com/NanoForge-dev/CLI/commit/63a144662840e3d7487b18f34feade8230507831)) by @hvrp3r
+- Add theme plugin (#248) ([e62ec83](https://github.com/NanoForge-dev/CLI/commit/e62ec831e5a87d5221401a3382856738985a507a)) by @Exeloo
+- **schematics:** Add support for generating NanoForge editor plugins (#241) ([0440154](https://github.com/NanoForge-dev/CLI/commit/044015451885e5ef2a3ad6475477ae326fc21406)) by @Exeloo
+
 # [2.3.1](https://github.com/NanoForge-dev/CLI/compare/2.3.0...2.3.1) - (2026-09-25)
 
 # [2.3.0](https://github.com/NanoForge-dev/CLI/compare/1.6.2...2.3.0) - (2026-09-24)
