@@ -84,6 +84,9 @@ export const Messages = {
   PUBLISH_SUCCESS: success("Publish completed!"),
   PUBLISH_FAILED: failure("Publish failed!"),
   PUBLISH_IN_PROGRESS: (name: string) => `Publishing ${name}...`,
+  PUBLISH_FILES: (name: string, count: number, size: string) =>
+    `${name}: ${count} file${count === 1 ? "" : "s"}, ${size} unpacked`,
+  PUBLISH_DRY_RUN_SUCCESS: success("Dry run completed: nothing was published."),
 
   // --- Unpublish ---
   UNPUBLISH_START: "NanoForge Unpublish",

@@ -1,8 +1,8 @@
-import { zipFolder } from "@nanoforge-dev/registry";
+import { readArchive, zipFolder } from "@nanoforge-dev/registry";
 
-import { type Input, getDirectoryInput } from "@lib/input";
+import { type Input, getDirectoryInput, getDryRunInput } from "@lib/input";
 import { loadManifest } from "@lib/manifest";
-import { createAuthenticatedRegistry, isIgnoredWhenPublishing } from "@lib/registry";
+import { createAuthenticatedRegistry, publishIgnore } from "@lib/registry";
 import { Messages } from "@lib/ui";
 
 import { getCwd } from "@utils/path";
@@ -10,24 +10,41 @@ import { withSpinner } from "@utils/spinner";
 
 import { AbstractAction, type HandleResult } from "../abstract.action";
 
+const formatSize = (bytes: number): string =>
+  bytes < 1024
+    ? `${bytes} B`
+    : bytes < 1024 * 1024
+      ? `${(bytes / 1024).toFixed(1)} KiB`
+      : `${(bytes / 1024 / 1024).toFixed(1)} MiB`;
+
 export class PublishAction extends AbstractAction {
   protected startMessage = Messages.PUBLISH_START;
   protected successMessage = Messages.PUBLISH_SUCCESS;
   protected failureMessage = Messages.PUBLISH_FAILED;
 
-  /** Zips the package folder (secrets and installed folders left out) and publishes it. */
+  /**
+   * Zips the package folder (secrets, installed and build folders left out), lists what it packed,
+   * and publishes it; `--dry-run` stops after the list.
+   */
   public async handle(_args: Input, options: Input): Promise<HandleResult> {
     const directory = getDirectoryInput(options);
     const manifest = loadManifest(directory);
-    const registry = createAuthenticatedRegistry(directory);
+    const subject = `${manifest.name}@${manifest.version}`;
+    const archive = await zipFolder(getCwd(directory), { ignore: publishIgnore(manifest) });
 
+    const files = [...readArchive(archive)];
+    for (const [path, content] of files) console.info(`  ${path} (${formatSize(content.length)})`);
+    const unpacked = files.reduce((total, [, content]) => total + content.length, 0);
+    console.info(Messages.PUBLISH_FILES(subject, files.length, formatSize(unpacked)));
+
+    if (getDryRunInput(options)) {
+      this.successMessage = Messages.PUBLISH_DRY_RUN_SUCCESS;
+      return { success: true };
+    }
+    const registry = createAuthenticatedRegistry(directory);
     return withSpinner(
-      async () =>
-        registry.publish(
-          manifest.name,
-          await zipFolder(getCwd(directory), { ignore: isIgnoredWhenPublishing }),
-        ),
-      Messages.PUBLISH_IN_PROGRESS(`${manifest.name}@${manifest.version}`),
+      () => registry.publish(manifest.name, archive),
+      Messages.PUBLISH_IN_PROGRESS(subject),
     );
   }
 }

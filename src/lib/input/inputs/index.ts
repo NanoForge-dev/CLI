@@ -10,3 +10,4 @@ export * from "./editor";
 export * from "./install";
 export * from "./login-out";
 export * from "./new";
+export * from "./publish";

@@ -149,6 +149,40 @@ describe("PublishAction", () => {
     expect([...files.keys()].sort()).toEqual(["nanoforge.manifest.json", "src/index.ts"]);
   });
 
+  it("packs only normal files when secrets sit next to them", async () => {
+    for (const secret of [".npmrc", "id_rsa", "key.pem"]) writeFileSync(join(dir, secret), "x");
+    stubFetch(() => new Response(null, { status: 201 }));
+
+    await new PublishAction().handle(new Map(), input({ directory: dir }));
+
+    const archive = (seen[0]?.body as FormData).get("archive") as File;
+    const files = readArchive(new Uint8Array(await archive.arrayBuffer()));
+    expect([...files.keys()].sort()).toEqual(["nanoforge.manifest.json", "src/index.ts"]);
+  });
+
+  it("lists the packed files and publishes nothing with --dry-run", async () => {
+    rmSync(join(dir, ".nanoforgerc"));
+    vi.stubEnv("XDG_CONFIG_HOME", dir);
+    stubFetch(() => new Response(null, { status: 201 }));
+    const info = vi.spyOn(console, "info").mockImplementation(() => undefined);
+    try {
+      const result = await new PublishAction().handle(
+        new Map(),
+        input({ directory: dir, dryRun: true }),
+      );
+
+      expect(result.success).toBe(true);
+      const printed = info.mock.calls.map(([line]) => String(line));
+      expect(printed).toContain("  src/index.ts (2 B)");
+      expect(printed.some((line) => line.includes("@acme/kit@1.2.0: 2 files"))).toBe(true);
+      expect(printed.join("\n")).not.toContain(".env");
+    } finally {
+      info.mockRestore();
+      vi.unstubAllEnvs();
+    }
+    expect(seen).toHaveLength(0);
+  });
+
   it("refuses an old-format manifest before any request", async () => {
     writeJson(join(dir, "nanoforge.manifest.json"), { name: "acme/kit", type: "component" });
     stubFetch(() => new Response(null, { status: 201 }));

@@ -54,6 +54,7 @@ describe("nf publish --help", () => {
     expect(exitCode).toBe(0);
     expect(stdout).toContain("publish package to Nanoforge registry");
     expect(stdout).toContain("--directory");
+    expect(stdout).toContain("--dry-run");
   });
 });
 
@@ -98,6 +99,24 @@ describe("nf publish", () => {
     });
     // `.nanoforgerc` (written by `nf login --local` above) holds the key: never packed.
     expect(put!.files!.sort()).toEqual(["index.ts", "nanoforge.manifest.json", "src/player.ts"]);
+  });
+
+  it("should list the files and publish nothing with --dry-run", async () => {
+    writeManifest(dir);
+    writePackageFile(dir);
+    writeFileSync(resolve(dir, ".npmrc"), "//registry.npmjs.org/:_authToken=x");
+    rmSync(LOG_PATH, { force: true });
+
+    const { stdout, exitCode } = await runCli(["publish", "--dry-run", "-d", dir], {
+      env: withMockedFetch(),
+    });
+
+    expect(exitCode).toBe(0);
+    expect(stdout).toContain("index.ts");
+    expect(stdout).toContain("@test-org/test-package@1.0.0: 2 files");
+    expect(stdout).not.toContain(".npmrc");
+    expect(stdout).toContain("nothing was published");
+    expect(() => readFileSync(LOG_PATH)).toThrow();
   });
 
   it("should fail when the manifest is in the old format", async () => {
