@@ -1,10 +1,10 @@
 ---
 title: Publish a package
-description: Share a component or a system on the NanoForge registry
+description: Share components, systems or assets on the NanoForge registry
 ---
 
-Once you have written a component or a system that others can use, publish it to the NanoForge
-registry. Other projects can then get it with `nf install`.
+Once you have written components, systems or assets that others can use, publish them as a package
+on the NanoForge registry. Other projects can then get it with `nf install`.
 
 <Steps>
   <Step title="Log in">
@@ -23,19 +23,22 @@ registry. Other projects can then get it with `nf install`.
 
   <Step title="Write the manifest">
 
-    Put the file to share in a folder of its own, with a `nanoforge.manifest.json` next to it:
+    Put what you share in a folder of its own, with a `nanoforge.manifest.json` at its root:
 
     ```json nanoforge.manifest.json
     {
-      "name": "my-org/health-bar",
-      "type": "component",
+      "name": "@my-org/health-bar",
+      "version": "1.0.0",
+      "type": "package",
       "description": "A health bar above each entity",
-      "publish": { "paths": { "package": "health-bar.component.ts" } }
+      "contents": [
+        { "kind": "@nanoforge/ecs:component", "path": "src/health-bar.ts", "export": "HealthBar" }
+      ]
     }
     ```
 
-    `name` is `scope/name`, `type` is `component` or `system`, and `publish.paths.package` is the
-    one file to upload (`index.ts` if you leave it out). The other fields are listed in
+    `name` is `@scope/name`, in a scope your key may publish in (your username's, by default).
+    `version` is a semver version, and `type` is `package`. The other fields are listed in
     [the package manifest](/docs/cli/commands/registry#the-package-manifest).
 
   </Step>
@@ -48,18 +51,25 @@ registry. Other projects can then get it with `nf install`.
     nf publish
     ```
 
-    `nf publish` uploads the manifest and the file, then prints the package's link. Only that
-    file is sent: keep secrets out of it.
+    `nf publish` zips the folder, prints the files it packed, and publishes it as
+    `@my-org/health-bar@1.0.0`. It leaves out secrets (`.env*`, `.npmrc`, `.netrc`,
+    `.nanoforgerc`, keys), `.git`, `node_modules`, `nf_modules` and `.nanoforge` folders, and
+    `dist` unless the manifest points into it. It doesn't read `.gitignore`: every other file is
+    sent. Run `nf publish --dry-run` first to see the list without publishing. Others now install
+    it with `nf install @my-org/health-bar`.
+
+    A version is published once: to publish a change, raise `version` first.
 
   </Step>
 
-  <Step title="Remove it (if needed)">
+  <Step title="Remove a version (if needed)">
 
     ```bash
     nf unpublish
     ```
 
-    `nf unpublish` removes the package named in the manifest of the current folder.
+    `nf unpublish` removes the version named in the manifest of the current folder. Its number
+    can't be published again.
 
   </Step>
 </Steps>

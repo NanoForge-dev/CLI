@@ -4,7 +4,8 @@ description: Authenticate with the NanoForge registry, then publish or remove pa
 ---
 
 These four commands work with the NanoForge registry. `login` and `logout` manage your API key.
-`publish` and `unpublish` send or remove the package described by a `nanoforge.manifest.json`.
+`publish` and `unpublish` send or remove a version of the package described by a
+`nanoforge.manifest.json`.
 To install packages, see [`nf install`](./install).
 
 ## Where the API key is stored
@@ -37,8 +38,8 @@ nf login
 nf login --local --api-key "$NF_REGISTRY_KEY"
 ```
 
-If the registry refuses the key, `nf login` fails with `API Request failed (Status <code>)` and
-saves nothing.
+`nf login` asks the registry who the key belongs to (`/registry/-/whoami`). If the registry refuses
+the key, `nf login` fails with `The registry refused the key (<code>)` and saves nothing.
 
 ## logout
 
@@ -60,49 +61,75 @@ nf logout --local
 
 ## The package manifest
 
-`publish` and `unpublish` read `nanoforge.manifest.json` in the `-d` folder:
+`publish` and `unpublish` read `nanoforge.manifest.json` in the `-d` folder, the registry's format:
 
 ```json nanoforge.manifest.json
 {
-  "name": "my-org/health-bar",
-  "type": "component",
+  "name": "@my-org/health-bar",
+  "version": "1.0.0",
+  "type": "package",
   "description": "A health bar above each entity",
-  "tags": ["ui"],
-  "dependencies": ["my-org/health"],
-  "npmDependencies": { "lodash-es": "^4.17.21" },
-  "publish": { "paths": { "package": "health-bar.component.ts" } }
+  "keywords": ["ui"],
+  "dependencies": { "@my-org/health": "^1.0.0" },
+  "contents": [
+    { "kind": "@nanoforge/ecs:component", "path": "src/health-bar.ts", "export": "HealthBar" }
+  ]
 }
 ```
 
-| Field                   | Required | Description                                                                      |
-| ----------------------- | -------- | -------------------------------------------------------------------------------- |
-| `name`                  | yes      | `scope/name`: letters, digits and dashes on each side of the `/`.                |
-| `type`                  | yes      | `component` or `system`.                                                         |
-| `description`           | no       | Short description.                                                               |
-| `tags`                  | no       | List of tags.                                                                    |
-| `dependencies`          | no       | Other registry packages (`scope/name`) that `nf install` installs with this one. |
-| `npmDependencies`       | no       | npm packages and versions that `nf install` adds to the project.                 |
-| `libDependencies`       | no       | Library packages and versions. `nf install` adds them like `npmDependencies`.    |
-| `publish.paths.package` | no       | The file to upload, relative to the manifest. Default: `index.ts`.               |
+| Field          | Required | Description                                                                                                                                     |
+| -------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`         | yes      | `@scope/name`: lowercase letters, digits and dashes. The scope must be one your key may publish in.                                             |
+| `version`      | yes      | A semver version (`1.2.3`), never published before, even if it was unpublished since.                                                           |
+| `type`         | yes      | `package` (installed by `nf install` into `nf_modules`) or `plugin` (an editor plugin).                                                         |
+| `description`  | no       | Short description.                                                                                                                              |
+| `keywords`     | no       | Words people search with.                                                                                                                       |
+| `dependencies` | no       | Other registry packages with ranges, `{ "@scope/name": "^1.0.0" }`, or a list of names (any version). `nf install` installs them with this one. |
+| `contents`     | no       | What the package holds (`kind`, `path`, `export`…), shown in catalogs and the editor.                                                           |
+
+The registry checks the rest (`contents`, `include`, `engines`, `npmDependencies`…) when you
+publish: its reference is the API's
+[registry documentation](https://github.com/NanoForge-dev/API/blob/main/docs/registry.md).
 
 ## publish
 
-Upload the package file and its manifest to the registry. You must be logged in.
+Zip the `-d` folder and publish it as the manifest's version. You must be logged in.
 
 ```bash
 nf publish [options]
 ```
 
-| Option                        | Type | Default | Description                                  |
-| ----------------------------- | ---- | ------- | -------------------------------------------- |
-| `-d, --directory <directory>` | path | `.`     | Folder that holds `nanoforge.manifest.json`. |
+| Option                        | Type    | Default | Description                                     |
+| ----------------------------- | ------- | ------- | ----------------------------------------------- |
+| `-d, --directory <directory>` | path    | `.`     | Folder that holds `nanoforge.manifest.json`.    |
+| `--dry-run`                   | boolean | `false` | List the files to publish, and publish nothing. |
 
-`nf publish` uploads only the manifest fields and the one file named by `publish.paths.package`.
-It prints the package URL when it is done.
+Before uploading, `nf publish` prints every file it packed, with its size, then their count and
+total size. With `--dry-run` it stops there: check the list before your first publish.
+
+The archive holds every file of the folder, with the manifest at its root, except:
+
+- secrets, in any subfolder: files whose name starts with `.env` (`.env`, `.env.local`,
+  `.envrc`…), `.npmrc`, `.netrc`, `.nanoforgerc` (it holds your key), `*.pem`, `*.key`, and SSH
+  keys (`id_rsa*`, `id_ed25519*`);
+- `.git`, `node_modules`, `nf_modules` and `.nanoforge` folders, in any subfolder;
+- the `dist` folder at the root, unless the manifest points into it (`contents`, `include`,
+  `readme` or a plugin's `entry`);
+- symbolic links.
+
+`.gitignore` is not read: every other file is sent, so keep other secrets out of the folder. For
+an editor plugin, publish its build: `nf publish -d dist`. The registry refuses archives over
+20 MiB, or that unpack to more than 256 MiB or 20,000 files.
+
+```bash
+nf publish --dry-run
+nf publish
+nf publish -d packages/health-bar
+```
 
 ## unpublish
 
-Remove the package named in `nanoforge.manifest.json` from the registry. You must be logged in.
+Remove the version named in `nanoforge.manifest.json` from the registry. You must be logged in.
 
 ```bash
 nf unpublish [options]
@@ -112,14 +139,19 @@ nf unpublish [options]
 | ----------------------------- | ---- | ------- | -------------------------------------------- |
 | `-d, --directory <directory>` | path | `.`     | Folder that holds `nanoforge.manifest.json`. |
 
+The registry deletes that version's archive and keeps its number: it can never be published again.
+The package disappears with its last version, and its name stays yours.
+
 ## Common errors
 
 - **`You must be logged in to perform this action.`** Run `nf login` first.
 - **`Manifest Error: No manifest file found in directory: <folder>`.** Run the command in the
   package folder, or pass it with `-d`.
-- **`Manifest Error: Validation failed`.** A field is missing or wrong: check `name` (`scope/name`)
-  and `type` (`component` or `system`).
-- **`Package not found, please specify path in the nanoforge.manifest.json : publish.paths.package!`**
-  There is no `index.ts` next to the manifest. Set `publish.paths.package` to your file.
-- **`API Request failed (Status <code>)`.** The registry refused the request. The details follow
-  the message.
+- **`Manifest Error: Validation failed: <field>: <problem>`.** A field is missing or wrong: check
+  `name` (`@scope/name`), `version` and `type` (`package` or `plugin`). A manifest of the older
+  format (`scope/name`, `component` or `system`, `publish.paths`) must be rewritten.
+- **`The registry refused the key (401)` or `(403)`.** The key is expired, or may not publish in
+  this scope: check it in your dashboard, then run `nf login` again.
+- **`The registry refused the request (409)`.** That version exists or existed: raise `version`.
+- **`The registry refused the request (400)` or `(413)`.** The archive or the manifest failed a
+  check; the registry's reason follows the message.

@@ -1,28 +1,43 @@
 ---
 title: install / add
-description: Install components, systems or libraries from the NanoForge registry
+description: Install packages from the NanoForge registry, or npm libraries
 ---
 
 ## What it does
 
 `nf install` (or its alias `nf add`) adds packages to your project.
 
-- **Components and systems** (the default) come from the NanoForge registry. For each name, `nf`
-  fetches the package's manifest, then the packages it depends on. It installs their npm and
-  library dependencies with your package manager, as dev dependencies. Then it downloads each
-  file into `client/components/` or `client/systems/` under the `-d` folder (`server/...` with
-  `--server`).
+- **Registry packages** (the default) are named `@scope/name`. For each name, `nf` picks the
+  newest version that fits the range (`^<newest>` when you give none), then the registry packages
+  it depends on, one version of each per project. It downloads each archive, checks its sha256 and
+  its manifest, and writes it read only to `nf_modules/@scope/name` in the `-d` folder.
+- **Without a name**, `nf install` installs what the lock (`nanoforge.packages.lock.json`) lists
+  and `nf_modules` lacks, and removes what the lock no longer lists: run it after a clone or a
+  teammate's change. A package only listed in `nanoforge.packages.json` (added by hand) is not
+  installed: name it.
 - **Libraries** (`--lib`) are npm packages. `nf` adds them as dev dependencies with your project's
   package manager, found from its lock file (npm when there is none).
 
-A registry name has the form `scope/name`. If you are logged in ([`nf login`](./registry)), `nf`
-sends your API key with the requests.
+Reading the registry needs no account. Plugins (packages of type `plugin`) are for the editor:
+`nf install` refuses them.
 
-<Note>
-  The `client/` and `server/` folders come from the older project layout. Projects made by `nf new`
-  keep their code in `src/components` and `src/systems` (or `apps/client/src/...` in a workspace).
-  Move the downloaded files there, and import them from your code.
-</Note>
+## Where files go
+
+| File                           | What                                                                                                   |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| `nanoforge.packages.json`      | The packages you asked for, with their ranges: `{ "packages": { "@acme/kit": "^1.2.0" } }`. Commit it. |
+| `nanoforge.packages.lock.json` | The exact version and sha256 of every installed package, dependencies included. Commit it.             |
+| `nf_modules/@scope/name/`      | The package's files, as published. Don't edit them, and don't commit the folder.                       |
+| `tsconfig.json`                | A `paths` entry per package: `"@acme/kit/*": ["./nf_modules/@acme/kit/*"]`.                            |
+
+Import a package's code through its path entry:
+
+```ts
+import { Velocity } from "@acme/kit/src/player/velocity";
+```
+
+A package's `npmDependencies` and `libDependencies` are not installed: add them with
+`nf install --lib`.
 
 ## Usage
 
@@ -33,25 +48,26 @@ nf add [names...] [options]
 
 ## Options
 
-| Option                        | Type     | Default | Description                                                                     |
-| ----------------------------- | -------- | ------- | ------------------------------------------------------------------------------- |
-| `[names...]`                  | string[] | asked   | Packages to install: `scope/name` from the registry, or npm names with `--lib`. |
-| `-d, --directory <directory>` | path     | `.`     | Project folder.                                                                 |
-| `-l, --lib`                   | boolean  | `false` | Install npm libraries instead of registry components and systems.               |
-| `-s, --server`                | boolean  | `false` | Download components and systems into `server/` instead of `client/`.            |
+| Option                        | Type     | Default                       | Description                                                                        |
+| ----------------------------- | -------- | ----------------------------- | ---------------------------------------------------------------------------------- |
+| `[names...]`                  | string[] | the lock (asked with `--lib`) | Registry packages, `@scope/name` or `@scope/name@<range>`; npm names with `--lib`. |
+| `-d, --directory <directory>` | path     | `.`                           | Project folder.                                                                    |
+| `-l, --lib`                   | boolean  | `false`                       | Install npm libraries with the package manager instead of registry packages.       |
+
+The `--server` option is gone: registry packages go to `nf_modules`, for the client and the server.
 
 ## Examples
 
-Install a component for the client:
+Install a package, and a precise range of another:
 
 ```bash
-nf install my-org/health-bar
+nf install @acme/kit @acme/physics@~1.4.0
 ```
 
-Install two systems for the server:
+Install what the lock lists, after a clone:
 
 ```bash
-nf add my-org/gravity my-org/collisions --server
+nf install
 ```
 
 Add an npm library:
@@ -62,9 +78,10 @@ nf add --lib lodash-es
 
 ## Common errors
 
-- **`API Request failed (Status 404)`.** The package doesn't exist on the registry. Check the
-  `scope/name`.
-- **Another `API Request failed (Status <code>)`.** The registry refused the request: the details
-  follow the message. If the package needs an account, log in with [`nf login`](./registry).
-- **The dependency install fails.** Run your package manager's install in the project folder to
-  see the full error.
+- **`@scope/name was not found`.** The package doesn't exist on the registry. Check its name.
+- **`No version of @scope/name fits <range> (asked by …)`.** No published version matches the
+  ranges asked by your project and by the packages that need it.
+- **`<name> is not a valid package name`.** Registry names are `@scope/name`, in lowercase. For an
+  npm package, add `--lib`.
+- **`@scope/name is a plugin, not a package`.** Install editor plugins from the editor.
+- **`The registry cannot be reached`.** Check your network connection.

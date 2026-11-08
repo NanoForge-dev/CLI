@@ -99,12 +99,11 @@ Used to start the nanoforge editor.
 
 ### `install` or `add`
 
-Used to add nanoforge components, systems or libraries to your project.
+Used to add NanoForge registry packages, or npm libraries, to your project.
 
-- `[names...]` names of the components/systems/libraries to install.
+- `[names...]` registry packages to install into `nf_modules`, `@scope/name` or `@scope/name@<range>` (npm names with `--lib`). Without names, installs what `nanoforge.packages.lock.json` lists.
 - `-d, --directory <directory>` specify the working directory of the command.
-- `-l, --lib` install a library instead of a component/system. (default: `false`)
-- `-s, --server` install on server instead of client. (default: `false`)
+- `-l, --lib` install npm libraries with the package manager instead. (default: `false`)
 
 ### `login`
 
@@ -150,9 +149,10 @@ Used to create a new nanoforge project.
 
 ### `publish`
 
-Used to publish a package to the Nanoforge registry.
+Used to publish a package to the NanoForge registry: zips the folder of its `nanoforge.manifest.json` (without secrets such as `.env*`, `.npmrc`, `.nanoforgerc` and keys, nor `.git`, `node_modules`, `nf_modules`, `.nanoforge` and a root `dist` the manifest doesn't point into), lists the packed files, and publishes it as the manifest's version.
 
 - `-d, --directory <directory>` specify the working directory of the command.
+- `--dry-run` list the files to publish, and publish nothing. (default: `false`)
 
 ### `start`
 
@@ -169,7 +169,7 @@ Used to start your nanoforge project.
 
 ### `unpublish`
 
-Used to unpublish a package from the Nanoforge registry.
+Used to unpublish the version named in `nanoforge.manifest.json` from the NanoForge registry.
 
 - `-d, --directory <directory>` specify the working directory of the command.
 

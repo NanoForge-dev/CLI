@@ -14,7 +14,7 @@ This repo contains the CLI (`nf`) of NanoForge, a game engine for the browser. T
 - **Monorepo**: pnpm workspaces + [Turborepo](https://turbo.build) to orchestrate build/lint/format/test across the root package and the internal libs
 - **Package manager**: pnpm (with version catalogs via `pnpm-workspace.yaml`)
 - **Reproducible dev environment**: Nix (`flake.nix`: Node 24, pnpm, bun)
-- **Internal repo dependencies** (`workspace:*`): `@nanoforge-dev/config` (config management lib, `libs/config` package of this repo) and `@nanoforge-dev/schematics` (schematics lib, `libs/schematics` package of this repo)
+- **Internal repo dependencies** (`workspace:*`): `@nanoforge-dev/config` (config management lib, `libs/config` package of this repo), `@nanoforge-dev/registry` (registry client and installer, `libs/registry` package of this repo, also used by the editor) and `@nanoforge-dev/schematics` (schematics lib, `libs/schematics` package of this repo)
 - **Notable published external dependencies**: `@nanoforge-dev/editor` (`catalog:core`), `@nanoforge-dev/loader-client` and `@nanoforge-dev/loader-server` (`catalog:loader`)
 
 ## Project Structure
@@ -35,11 +35,10 @@ src/
     ├── config/                    # project config loading/resolution
     ├── global-config/              # user global config (e.g. credentials)
     ├── git/                          # git integration (e.g. repo init via --git)
-    ├── http/                          # HTTP client (to the NanoForge API / registry)
-    ├── manifest/                        # project manifest reading
+    ├── manifest/                        # nanoforge.manifest.json reading (the registry's schema)
     ├── package-manager/                   # npm/yarn/pnpm/bun detection/abstraction
     ├── question/                            # interactive prompts (index.ts + one file per question in questions/)
-    ├── registry/                              # interactions with the package registry
+    ├── registry/                              # @nanoforge-dev/registry client with the saved key, publish ignore list
     ├── runner/                                  # child process execution (build/dev/start)
     ├── schematics/                                # bridge to Angular DevKit schematics
     ├── tree-kill/                                   # recursive process tree kill
@@ -50,6 +49,8 @@ src/
 libs/                        # internal packages published separately (pnpm workspace)
 ├── config/                    # @nanoforge-dev/config: config definition/validation/merge
 │   └── src/{defaults,define-config,merge,parse,types}
+├── registry/                  # @nanoforge-dev/registry: registry client, archives, nf_modules installer (shared with the editor)
+│   └── src/{archive,client,directory,install,item,manifest,project,registry,serve,wire}
 └── schematics/                 # @nanoforge-dev/schematics: schematics (component, project, system, workspace, plugin)
     └── src/{libs,utils,collection.json}
 

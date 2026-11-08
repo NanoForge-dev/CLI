@@ -2,65 +2,120 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://docs.nanoforge.eu/docs/cli/manifest.schema.json",
   "title": "NanoForge Manifest",
-  "description": "Manifest file for a NanoForge package (nanoforge.manifest.json)",
+  "description": "Manifest of a NanoForge registry package or editor plugin (nanoforge.manifest.json), at the root of its archive. The registry checks it at publication; other fields are kept as written.",
   "type": "object",
-  "required": ["name", "type"],
-  "additionalProperties": false,
-  "properties": {
+  "required": ["name", "version", "type"],
+  "definitions": {
     "name": {
       "type": "string",
-      "pattern": "^[A-Za-z0-9-]+\\/[A-Za-z0-9-]+$",
-      "minLength": 1,
-      "description": "Package name in the format <namespace>/<name>"
+      "pattern": "^@[a-z0-9][a-z0-9-]*\\/[a-z0-9][a-z0-9-]*$",
+      "description": "@scope/name, lowercase"
+    },
+    "dependencies": {
+      "oneOf": [
+        {
+          "type": "object",
+          "propertyNames": { "$ref": "#/definitions/name" },
+          "additionalProperties": { "type": "string" }
+        },
+        { "type": "array", "items": { "$ref": "#/definitions/name" } }
+      ]
+    },
+    "person": {
+      "oneOf": [
+        { "type": "string" },
+        {
+          "type": "object",
+          "required": ["name"],
+          "properties": {
+            "name": { "type": "string" },
+            "email": { "type": "string" },
+            "url": { "type": "string" }
+          }
+        }
+      ]
+    }
+  },
+  "properties": {
+    "$schema": { "type": "string" },
+    "name": { "$ref": "#/definitions/name", "description": "Package name: @scope/name" },
+    "version": {
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(-[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$",
+      "description": "Semver version, never published before (even if unpublished since)"
     },
     "type": {
       "type": "string",
-      "enum": ["component", "system"],
-      "description": "Type of the package"
+      "enum": ["package", "plugin"],
+      "description": "package: installed in a project's nf_modules; plugin: an editor plugin. Fixed by the first publication"
     },
-    "description": {
+    "description": { "type": "string" },
+    "keywords": { "type": "array", "items": { "type": "string" } },
+    "license": { "type": "string" },
+    "author": { "$ref": "#/definitions/person" },
+    "homepage": { "type": "string" },
+    "repository": { "type": "string" },
+    "readme": {
       "type": "string",
-      "description": "Description of the package"
-    },
-    "tags": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
-      "description": "Tags for the package"
+      "description": "Path of the readme in the archive (default: README.md at the root)"
     },
     "dependencies": {
-      "type": "array",
-      "items": {
-        "type": "string",
-        "minLength": 1
-      },
-      "description": "NanoForge package dependencies"
+      "$ref": "#/definitions/dependencies",
+      "description": "Registry packages installed with this one, with semver ranges, or a list of names (any version)"
+    },
+    "libDependencies": {
+      "type": "object",
+      "additionalProperties": { "type": "string" },
+      "description": "npm engine libraries and their ranges (not installed by nf install)"
     },
     "npmDependencies": {
       "type": "object",
-      "additionalProperties": {
-        "type": "string"
-      },
-      "description": "NPM package dependencies as a map of package name to version"
+      "additionalProperties": { "type": "string" },
+      "description": "Other npm packages and their ranges (not installed by nf install)"
     },
-    "publish": {
+    "engines": {
       "type": "object",
-      "additionalProperties": false,
-      "description": "Publish configuration",
-      "properties": {
-        "paths": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "package": {
-              "type": "string",
-              "minLength": 1,
-              "description": "Path to the package directory to publish"
-            }
+      "additionalProperties": { "type": "string" },
+      "description": "What runs the package, with semver ranges, e.g. { \"editor\": \">=0.1.0\" }"
+    },
+    "suggestedPlugins": {
+      "$ref": "#/definitions/dependencies",
+      "description": "Editor plugins that make the package easier to use"
+    },
+    "contents": {
+      "type": "array",
+      "description": "What the package holds, whatever its folder layout",
+      "items": {
+        "type": "object",
+        "required": ["kind", "path"],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "description": "A core kind (asset, type, enum, file…) or a plugin's kind, prefixed by its name (@nanoforge/ecs:component)"
+          },
+          "path": {
+            "type": "string",
+            "description": "Relative to the manifest; a folder when it ends with /"
+          },
+          "export": { "type": "string", "description": "The exported symbol, for code" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "side": { "type": "string", "enum": ["client", "server", "shared"] },
+          "tags": { "type": "array", "items": { "type": "string" } }
+        },
+        "patternProperties": {
+          "^@[a-z0-9][a-z0-9-]*\\/[a-z0-9][a-z0-9-]*$": {
+            "type": "object",
+            "description": "Data only the named plugin reads"
           }
-        }
+        },
+        "additionalProperties": false
       }
+    },
+    "include": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Sub-manifests: folders (their nanoforge.manifest.json) or .json files, relative to this manifest"
     }
   }
 }
