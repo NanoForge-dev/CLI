@@ -117,7 +117,7 @@ The archive holds only what the manifest names, with the manifest at its root:
 - for a plugin (`"type": "plugin"`): the build output in the folder of each `entry` file and its
   subfolders, since a build writes its chunks, CSS and assets next to it (`.js`, `.cjs`, `.mjs`,
   `.css`, `.map`, `.wasm`, images and fonts only: name anything else in `contents`), and every
-  `path` in `contributes` (icons…).
+  `path` in `contributes` (icons…) and the files of its icon themes (`iconThemes[].icons`).
 
 Inside those, secrets and installed folders stay out, in any subfolder and whatever their case:
 

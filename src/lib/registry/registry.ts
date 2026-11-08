@@ -79,13 +79,21 @@ const pathFields = (value: unknown): unknown[] =>
         )
       : [];
 
+/** The SVG files an icon theme maps its icon names to (`contributes.iconThemes[].icons`). */
+const iconThemeFiles = (contributes: unknown): string[] => {
+  const themes = (contributes as { iconThemes?: unknown } | undefined)?.iconThemes;
+  return Array.isArray(themes)
+    ? themes.flatMap((theme) => strings((theme as { icons?: unknown } | null)?.icons))
+    : [];
+};
+
 const readJson = async (file: string): Promise<unknown> =>
   JSON.parse(await readFile(file, "utf8")) as unknown;
 
 /**
  * What the manifest names, from the package root: its `contents` and older `items`, its
  * sub-manifests (`include`) and their contents, its `readme`; for a plugin, the `path` fields of
- * `contributes`. Folders end with `/`. A plugin's `entry` folders are `buildFolders`.
+ * `contributes` and the files of its icon themes. Folders end with `/`. A plugin's `entry` folders are `buildFolders`.
  */
 const namedPaths = async (root: string, manifest: Record<string, unknown>): Promise<string[]> => {
   const described = await readPackageContents(manifest, (path) => readJson(join(root, path)));
@@ -96,7 +104,12 @@ const namedPaths = async (root: string, manifest: Record<string, unknown>): Prom
     ...described.manifests,
     ...pathFields(manifest.items).flatMap(strings),
     ...strings(manifest.readme),
-    ...(plugin ? pathFields(manifest.contributes).flatMap(strings) : []),
+    ...(plugin
+      ? [
+          ...pathFields(manifest.contributes).flatMap(strings),
+          ...iconThemeFiles(manifest.contributes),
+        ]
+      : []),
   ];
   return named
     .map((path) => path.replace(/^\.\//, ""))

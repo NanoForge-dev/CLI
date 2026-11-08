@@ -126,6 +126,18 @@ describe("publishIgnore", () => {
     expect(inDist("src", true)).toBe(true);
   });
 
+  it("packs the icon files of a plugin's icon themes", async () => {
+    const ignore = await publishIgnore(root, {
+      type: "plugin",
+      contributes: {
+        iconThemes: [{ id: "ocean", label: "Ocean", icons: { folder: "icons/folder.svg" } }],
+      },
+    });
+    expect(ignore("icons", true)).toBe(false);
+    expect(ignore("icons/folder.svg", false)).toBe(false);
+    expect(ignore("icons/other.svg", false)).toBe(true);
+  });
+
   it("packs nothing a package's entry names: entry is for plugins", async () => {
     const ignore = await publishIgnore(root, { type: "package", entry: { client: "index.js" } });
     expect(ignore("index.js", false)).toBe(true);
