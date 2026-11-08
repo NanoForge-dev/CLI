@@ -14,7 +14,7 @@ export class RunnerFactory {
 
   public static createSchematic(): Runner {
     const binaryPath = this.resolveSchematicBinary();
-    return new Runner("node", [`"${binaryPath}"`]);
+    return new Runner("node", [binaryPath]);
   }
 
   private static resolveSchematicBinary(): string {

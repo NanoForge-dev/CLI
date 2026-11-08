@@ -36,11 +36,11 @@ describe("NanoforgeCollection", () => {
       await expect(collection.execute("workspace", [])).resolves.not.toThrow();
     });
 
-    it("should wrap the collection path in portable double quotes", async () => {
+    it("should pass the collection path as one unquoted argument (no shell)", async () => {
       await collection.execute("project", []);
 
       const args = mockRunner.run.mock.calls.at(-1)?.[0];
-      expect(args[3]).toMatch(/^".*:project"$/);
+      expect(args[3]).toMatch(/^[^"].*collection\.json:project$/);
     });
 
     it("should reject an invalid schematic name", async () => {
