@@ -136,3 +136,6 @@ web_modules/
 # Compilation directories
 .nanoforge/client
 .nanoforge/server
+
+# API key written by nf login --local
+.nanoforgerc

@@ -1,3 +1,5 @@
+import { chmodSync, closeSync, openSync } from "node:fs";
+import { resolve } from "node:path";
 import { read, readUserConfig, write, writeUserConfig } from "rc9";
 
 import { GLOBAL_CONFIG_FILE_NAME } from "@lib/constants";
@@ -24,8 +26,14 @@ export class GlobalConfigHandler {
       name: GLOBAL_CONFIG_FILE_NAME,
       dir,
     };
-    if (local) write(config, options);
-    else writeUserConfig(config, options);
+    if (local) {
+      // rc9 only restricts the user config file; this one holds the api key too, so it is made
+      // private before rc9 writes into it.
+      const path = resolve(dir ?? process.cwd(), GLOBAL_CONFIG_FILE_NAME);
+      closeSync(openSync(path, "a", 0o600));
+      chmodSync(path, 0o600);
+      write(config, options);
+    } else writeUserConfig(config, options);
   }
 
   private static _readConfig(func: CReader, force: true): GlobalConfig;

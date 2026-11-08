@@ -139,3 +139,6 @@ web_modules/
 # Build/compilation output
 .nanoforge/
 dist/
+
+# API key written by nf login --local
+.nanoforgerc

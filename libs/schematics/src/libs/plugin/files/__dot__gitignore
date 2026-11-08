@@ -1,2 +1,5 @@
 node_modules
 dist
+
+# API key written by nf login --local
+.nanoforgerc

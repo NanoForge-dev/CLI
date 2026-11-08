@@ -31,9 +31,9 @@ describe("SchematicOption", () => {
       expect(option.toCommandString()).toEqual(["--path=/some/path"]);
     });
 
-    it("should wrap other string values in quotes", () => {
-      const option = new SchematicOption("description", "My project");
-      expect(option.toCommandString()).toEqual(['--description="My project"']);
+    it("should pass other string values as is, with no shell quoting", () => {
+      const option = new SchematicOption("description", 'My "project" $(id)');
+      expect(option.toCommandString()).toEqual(['--description=My "project" $(id)']);
     });
 
     it("should format boolean true", () => {
@@ -57,14 +57,9 @@ describe("SchematicOption", () => {
       expect(option.toCommandString("server")).toEqual(["--server.enable=true"]);
     });
 
-    it("should escape parentheses in name formatting", () => {
-      const option = new SchematicOption("name", "my(app)");
-      expect(option.toCommandString()).toEqual(["--name=my\\(app\\)"]);
-    });
-
-    it("should escape brackets in name formatting", () => {
-      const option = new SchematicOption("name", "my[app]");
-      expect(option.toCommandString()).toEqual(["--name=my\\[app\\]"]);
+    it("should not shell-escape parentheses or brackets in names", () => {
+      expect(new SchematicOption("name", "my(app)").toCommandString()).toEqual(["--name=my(app)"]);
+      expect(new SchematicOption("name", "my[app]").toCommandString()).toEqual(["--name=my[app]"]);
     });
   });
 });
