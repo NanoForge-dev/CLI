@@ -10,6 +10,7 @@ This repository is a [pnpm workspace](https://pnpm.io/workspaces) monorepo orche
 | ----------------- | --------------------------- | ----------------------------------------------------- |
 | `.`               | `@nanoforge-dev/cli`        | The `nf` command line interface                       |
 | `libs/config`     | `@nanoforge-dev/config`     | Config types and helpers for `nanoforge.config.ts`    |
+| `libs/registry`   | `@nanoforge-dev/registry`   | Registry client and installer, shared with the editor |
 | `libs/schematics` | `@nanoforge-dev/schematics` | Schematics used by the CLI to generate projects files |
 
 The CLI depends on the libraries through `workspace:*`, so the libraries must be built before the CLI. The `repo:*` scripts take care of this for you.
@@ -48,7 +49,7 @@ pnpm --filter @nanoforge-dev/schematics build
 
 ## Commits
 
-Commits and pull request titles must follow the [conventional commit format](https://github.com/NanoForge-dev/CLI/blob/main/.github/COMMIT_CONVENTION.md). Use the package as scope when your change targets a single one: `cli`, `config` or `schematics` (e.g. `feat(config): add server port validation`).
+Commits and pull request titles must follow the [conventional commit format](https://github.com/NanoForge-dev/CLI/blob/main/.github/COMMIT_CONVENTION.md). Use the package as scope when your change targets a single one: `cli`, `config`, `registry` or `schematics` (e.g. `feat(config): add server port validation`).
 
 Git hooks are installed automatically by `pnpm install`:
 
