@@ -171,12 +171,6 @@ catalogs:
     chokidar:
       specifier: ^5.0.0
       version: 5.0.0
-    class-transformer:
-      specifier: ^0.5.1
-      version: 0.5.1
-    class-validator:
-      specifier: ^0.15.1
-      version: 0.15.1
     dotenv:
       specifier: ^18.0.3
       version: 18.0.3
@@ -189,9 +183,6 @@ catalogs:
     rc9:
       specifier: ^3.1.0
       version: 3.1.0
-    reflect-metadata:
-      specifier: ^0.2.2
-      version: 0.2.2
     semver:
       specifier: ^7.7.3
       version: 7.8.5
@@ -273,6 +264,9 @@ importers:
       '@nanoforge-dev/loader-server':
         specifier: catalog:loader
         version: 1.6.0
+      '@nanoforge-dev/registry':
+        specifier: workspace:*
+        version: link:libs/registry
       '@nanoforge-dev/schematics':
         specifier: workspace:*
         version: link:libs/schematics
@@ -285,12 +279,6 @@ importers:
       chokidar:
         specifier: catalog:libs
         version: 5.0.0
-      class-transformer:
-        specifier: catalog:libs
-        version: 0.5.1
-      class-validator:
-        specifier: catalog:libs
-        version: 0.15.1
       commander:
         specifier: catalog:cli
         version: 15.0.0
@@ -309,9 +297,6 @@ importers:
       rc9:
         specifier: catalog:libs
         version: 3.1.0
-      reflect-metadata:
-        specifier: catalog:libs
-        version: 0.2.2
     devDependencies:
       '@commitlint/cli':
         specifier: catalog:ci
@@ -2719,9 +2704,6 @@ packages:
     resolution: {integrity: sha512-Kko+Y5XQ6fM+Ce3dq3m9YGxnacYZYl9cA1wZjaF3Vbry2L3i1qVg8+CAgNPsXRArPMUMCaOR7oa9Nqntc43JKA==}
     engines: {node: '>= 20.19.0'}
 
-  reflect-metadata@0.2.2:
-    resolution: {integrity: sha512-urBwgfrvVP/eAyXx4hluJivBKzuEbSQs9rKWCrCkbSxNv8mxPcUZKeuoF3Uy4mJl3Lwprp6yy5/39VWigZ4K6Q==}
-
   require-from-string@2.0.2:
     resolution: {integrity: sha512-Xf0nWe6RseziFMu+Ap9biiUbmplq6S9/p+7w7YXP/JBHhrUDDUhwa+vANyubuqfZWTveU//DYVGsDG7RKL/vEw==}
     engines: {node: '>=0.10.0'}
@@ -5116,8 +5098,6 @@ snapshots:
       destr: 2.0.5
 
   readdirp@5.1.1: {}
-
-  reflect-metadata@0.2.2: {}
 
   require-from-string@2.0.2: {}
 

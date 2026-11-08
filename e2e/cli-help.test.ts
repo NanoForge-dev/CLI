@@ -72,10 +72,10 @@ describe("nf install --help", () => {
     const { stdout, exitCode } = await runCli(["install", "--help"]);
 
     expect(exitCode).toBe(0);
-    expect(stdout).toContain("add Nanoforge components and systems to your project");
+    expect(stdout).toContain("add NanoForge registry packages to your project");
     expect(stdout).toContain("--directory");
     expect(stdout).toContain("--lib");
-    expect(stdout).toContain("--server");
+    expect(stdout).not.toContain("--server");
   });
 });
 

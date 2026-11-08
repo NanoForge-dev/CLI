@@ -1,6 +1,6 @@
 import { GlobalConfigHandler } from "@lib/global-config";
-import { withAuth } from "@lib/http";
 import { type Input, getDirectoryInput, getLocalInput, getLoginApiKeyInputOrAsk } from "@lib/input";
+import { createRegistry } from "@lib/registry";
 import { Messages } from "@lib/ui";
 
 import { AbstractAction, type HandleResult } from "../abstract.action";
@@ -15,7 +15,7 @@ export class LoginAction extends AbstractAction {
     const isLocal = getLocalInput(options);
     const apiKey = await getLoginApiKeyInputOrAsk(options);
 
-    await withAuth(apiKey, true).post("/registry-key/verify");
+    await createRegistry(apiKey).whoami();
 
     GlobalConfigHandler.write(
       {

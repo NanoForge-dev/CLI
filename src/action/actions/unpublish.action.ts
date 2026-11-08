@@ -1,6 +1,6 @@
 import { type Input, getDirectoryInput } from "@lib/input";
 import { loadManifest } from "@lib/manifest";
-import { Registry } from "@lib/registry";
+import { createAuthenticatedRegistry } from "@lib/registry";
 import { Messages } from "@lib/ui";
 
 import { withSpinner } from "@utils/spinner";
@@ -12,14 +12,15 @@ export class UnpublishAction extends AbstractAction {
   protected successMessage = Messages.UNPUBLISH_SUCCESS;
   protected failureMessage = Messages.UNPUBLISH_FAILED;
 
+  /** Unpublishes the version the manifest names: that number can never be published again. */
   public async handle(_args: Input, options: Input): Promise<HandleResult> {
     const directory = getDirectoryInput(options);
-
-    const manifest = await loadManifest(directory);
+    const manifest = loadManifest(directory);
+    const registry = createAuthenticatedRegistry(directory);
 
     return withSpinner(
-      () => Registry.unpublish(manifest, directory),
-      Messages.UNPUBLISH_IN_PROGRESS(manifest.name),
+      () => registry.unpublish(manifest.name, manifest.version),
+      Messages.UNPUBLISH_IN_PROGRESS(`${manifest.name}@${manifest.version}`),
     );
   }
 }

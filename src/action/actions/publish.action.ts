@@ -1,8 +1,11 @@
+import { zipFolder } from "@nanoforge-dev/registry";
+
 import { type Input, getDirectoryInput } from "@lib/input";
 import { loadManifest } from "@lib/manifest";
-import { Registry } from "@lib/registry";
+import { createAuthenticatedRegistry, isIgnoredWhenPublishing } from "@lib/registry";
 import { Messages } from "@lib/ui";
 
+import { getCwd } from "@utils/path";
 import { withSpinner } from "@utils/spinner";
 
 import { AbstractAction, type HandleResult } from "../abstract.action";
@@ -12,23 +15,19 @@ export class PublishAction extends AbstractAction {
   protected successMessage = Messages.PUBLISH_SUCCESS;
   protected failureMessage = Messages.PUBLISH_FAILED;
 
+  /** Zips the package folder (secrets and installed folders left out) and publishes it. */
   public async handle(_args: Input, options: Input): Promise<HandleResult> {
     const directory = getDirectoryInput(options);
+    const manifest = loadManifest(directory);
+    const registry = createAuthenticatedRegistry(directory);
 
-    const manifest = await loadManifest(directory);
-
-    const result = await withSpinner(
-      () => Registry.publish(manifest, directory),
-      Messages.PUBLISH_IN_PROGRESS(manifest.name),
+    return withSpinner(
+      async () =>
+        registry.publish(
+          manifest.name,
+          await zipFolder(getCwd(directory), { ignore: isIgnoredWhenPublishing }),
+        ),
+      Messages.PUBLISH_IN_PROGRESS(`${manifest.name}@${manifest.version}`),
     );
-
-    const registryUrl = process.env.REGISTRY_URL || "https://www.npmjs.com";
-
-    const cleanRegistryUrl = registryUrl.replace(/\/$/, "");
-    const packageUrl = `${cleanRegistryUrl}/package/${manifest.name}`;
-
-    console.log(`\n📦 Package published! View it here: \x1b[36m${packageUrl}\x1b[0m\n`);
-
-    return result;
   }
 }

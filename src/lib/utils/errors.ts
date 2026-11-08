@@ -71,16 +71,6 @@ export class FileSystemError extends CLIError {
   }
 }
 
-export class ApiRequestError extends CLIError {
-  constructor(status: number, cause?: unknown) {
-    const causeStr = cause && typeof cause === "object" ? JSON.stringify(cause, null, 2) : cause;
-    super(
-      `API Request failed (Status ${status})${causeStr ? `\nDetails: ${causeStr}` : ""}`,
-      "Check your network connection, API key, or the registry status.",
-    );
-  }
-}
-
 const getErrorString = (error: Error): string => {
   const stack = error.stack ? error.stack : error.message;
   const cause =
