@@ -42,11 +42,29 @@ export interface RegistryClientOptions {
   readonly headers?: () => Record<string, string>;
   /** How long a request may take (default 60 s). */
   readonly timeoutMs?: number;
+  /**
+   * Other origins the registry may keep archives on (`https://cdn.example.com`). Every request,
+   * redirects included, goes to the registry's own origin or to one of these, never elsewhere.
+   */
+  readonly archiveOrigins?: readonly string[];
 }
 
 /** The registry over HTTP (the contract of `docs/api/registry.md`). */
 export class RegistryClient implements Registry {
-  constructor(private readonly _options: RegistryClientOptions) {}
+  /** The origins requests may go to: the registry's, then `archiveOrigins`. */
+  private readonly _origins: ReadonlySet<string>;
+
+  constructor(private readonly _options: RegistryClientOptions) {
+    this._origins = new Set(
+      [_options.baseUrl, ...(_options.archiveOrigins ?? [])].map((address) => {
+        try {
+          return new URL(address).origin;
+        } catch {
+          throw new RegistryError("INVALID", `${address} is not a registry or archive address`);
+        }
+      }),
+    );
+  }
 
   async search(query: SearchQuery = {}): Promise<SearchResult> {
     const { type, q, page, limit } = SearchQuery.parse(query);
@@ -129,9 +147,9 @@ export class RegistryClient implements Registry {
   }
 
   /**
-   * A request to the registry, or to where it keeps an archive (`dist.tarball` may be anywhere):
-   * http(s) only, and the registry's headers only go to the registry's own origin. Redirects are
-   * followed here, so that the headers stay off an address one leads to on another origin.
+   * A request to the registry, or to where it keeps an archive (`archiveOrigins`): http(s) only,
+   * never to another origin, and the registry's headers only go to the registry's own origin.
+   * Redirects are followed here, so that each address they lead to is checked.
    */
   private async _request(
     path: string,
@@ -148,6 +166,11 @@ export class RegistryClient implements Registry {
         throw new RegistryError(
           "INVALID",
           `The registry gave an address that is not http(s): ${url.protocol}`,
+        );
+      if (!this._origins.has(url.origin))
+        throw new RegistryError(
+          "INVALID",
+          `The registry gave an address on another origin (${url.origin})`,
         );
       try {
         response = await (this._options.fetch ?? fetch)(url.toString(), {

@@ -392,6 +392,7 @@ describe("registries", () => {
     const seen: { url: string; authorization: string | null }[] = [];
     const api = new RegistryClient({
       baseUrl: "https://api.test",
+      archiveOrigins: ["https://elsewhere.test"],
       headers: () => ({ authorization: "Bearer secret" }),
       fetch: (async (input: string, init?: RequestInit) => {
         seen.push({ url: input, authorization: new Headers(init?.headers).get("authorization") });
@@ -419,6 +420,49 @@ describe("registries", () => {
         authorization: null,
       })),
     ]);
+  });
+
+  it("refuses an archive origin that is not an address", () => {
+    expect(
+      () => new RegistryClient({ baseUrl: "https://api.test", archiveOrigins: ["cdn.test"] }),
+    ).toThrow(RegistryError);
+  });
+
+  it("never sends a request to an origin it was not given", async () => {
+    const seen: string[] = [];
+    const tarball = (location: string) =>
+      new RegistryClient({
+        baseUrl: "https://api.test",
+        fetch: (async (input: string) => {
+          seen.push(input);
+          if (new URL(input).pathname === "/registry/@acme/kit")
+            return Response.json({
+              name: "@acme/kit",
+              type: "package",
+              "dist-tags": { latest: "1.0.0" },
+              versions: {
+                "1.0.0": {
+                  name: "@acme/kit",
+                  version: "1.0.0",
+                  type: "package",
+                  dist: { tarball: location, sha256: "0".repeat(64) },
+                },
+              },
+            });
+          return new Response(null, {
+            status: 302,
+            headers: { location: "http://169.254.169.254/latest/meta-data/" },
+          });
+        }) as typeof fetch,
+      });
+
+    await expect(
+      tarball("http://169.254.169.254/latest/meta-data/").download("@acme/kit", "1.0.0"),
+    ).rejects.toMatchObject({ code: "INVALID" });
+    await expect(
+      tarball("https://api.test/registry/@acme/kit/-/kit-1.0.0.zip").download("@acme/kit", "1.0.0"),
+    ).rejects.toMatchObject({ code: "INVALID" });
+    expect(seen.some((url) => url.includes("169.254.169.254"))).toBe(false);
   });
 });
 
