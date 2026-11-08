@@ -30,11 +30,9 @@ Reading the registry needs no account. Plugins (packages of type `plugin`) are f
 | `nf_modules/@scope/name/`      | The package's files, as published. Don't edit them, and don't commit the folder.                       |
 | `tsconfig.json`                | A `paths` entry per package: `"@acme/kit/*": ["./nf_modules/@acme/kit/*"]`.                            |
 
-Import a package's code through its path entry:
-
-```ts
-import { Velocity } from "@acme/kit/src/player/velocity";
-```
+The `paths` entry lets TypeScript resolve a package's files as `@acme/kit/<path>`, for instance
+`@acme/kit/src/player/velocity`. Projects made by `nf new` ignore `nf_modules` in their
+`.gitignore`.
 
 A package's `npmDependencies` and `libDependencies` are not installed: add them with
 `nf install --lib`.
