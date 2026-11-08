@@ -34,10 +34,26 @@ bun add @nanoforge-dev/registry
 ```ts
 import { ProjectPackages, RegistryClient } from "@nanoforge-dev/registry";
 
-const registry = new RegistryClient({ baseUrl: "https://api.nanoforge.eu/registry/" });
+// The API's origin: the routes are absolute (`/registry/…`), a path in `baseUrl` is dropped.
+const registry = new RegistryClient({ baseUrl: "https://api.nanoforge.eu" });
 const packages = new ProjectPackages(process.cwd(), registry);
 
 await packages.install("@acme/kit");
+```
+
+Publishing takes a registry key:
+
+```ts
+import { RegistryClient, zipFolder } from "@nanoforge-dev/registry";
+
+const registry = new RegistryClient({
+  baseUrl: "https://api.nanoforge.eu",
+  headers: () => ({ authorization: `Bearer ${key}` }),
+});
+
+await registry.whoami(); // { username, scopes }
+await registry.publish("@acme/kit", await zipFolder("kit", { ignore: (path) => path === ".env" }));
+await registry.unpublish("@acme/kit", "1.2.0");
 ```
 
 - `@nanoforge-dev/registry/types` holds the schemas and types only (no Node code), for browser code.

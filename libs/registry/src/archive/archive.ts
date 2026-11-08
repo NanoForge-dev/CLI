@@ -114,13 +114,25 @@ export const writeFolder = async (
   if (previous) await rm(backup, { recursive: true, force: true }).catch(() => undefined);
 };
 
-/** Zips a folder with stable bytes (sorted paths, no dates), so its hash only follows its content. */
-export const zipFolder = async (folder: string): Promise<Uint8Array> => {
+export interface ZipFolderOptions {
+  /** Leaves out a file or a folder (and all it holds), by its path from the folder's root. */
+  readonly ignore?: (path: string, isDirectory: boolean) => boolean;
+}
+
+/**
+ * Zips a folder with stable bytes (sorted paths, no dates), so its hash only follows its content.
+ * Symbolic links are left out.
+ */
+export const zipFolder = async (
+  folder: string,
+  { ignore }: ZipFolderOptions = {},
+): Promise<Uint8Array> => {
   const files: Record<string, [Uint8Array, { mtime: Date }]> = {};
   const walk = async (dir: string, prefix: string) => {
     const entries = await readdir(dir, { withFileTypes: true });
     for (const entry of entries.sort((a, b) => a.name.localeCompare(b.name))) {
       const path = prefix ? `${prefix}/${entry.name}` : entry.name;
+      if (ignore?.(path, entry.isDirectory())) continue;
       if (entry.isDirectory()) await walk(join(dir, entry.name), path);
       else if (entry.isFile())
         files[path] = [await readFile(join(dir, entry.name)), { mtime: new Date(315532800000) }];

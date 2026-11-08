@@ -18,6 +18,7 @@ import {
  */
 export const ROUTES = {
   search: "/registry/-/v1/search",
+  whoami: "/registry/-/whoami",
   item: (name: string) => `/registry/${name}`,
   /** `@scope/name` 1.2.3 → `/registry/@scope/name/-/name-1.2.3.zip`. */
   archive: (name: string, version: string) =>
@@ -98,3 +99,9 @@ export const WireSearch = z.object({
   total: z.number().int().nonnegative(),
 });
 export type WireSearch = z.output<typeof WireSearch>;
+
+/** `GET /registry/-/whoami`: the owner of a registry key, and the scopes it may publish in. */
+export const WireWhoami = z
+  .object({ username: z.string(), scopes: z.array(z.string()).default([]) })
+  .loose();
+export type WireWhoami = z.output<typeof WireWhoami>;

@@ -1,16 +1,38 @@
 import semver from "semver";
 
 import { MAX_ARCHIVE_BYTES } from "../archive/archive";
-import { type RegistryItem, SearchQuery, type SearchResult } from "../item/item.schema";
+import {
+  ItemName,
+  ItemVersion,
+  type RegistryItem,
+  SearchQuery,
+  type SearchResult,
+} from "../item/item.schema";
 import { RegistryError } from "../registry/registry.exception";
-import type { Registry } from "../registry/registry.type";
+import type { Registry, RegistryErrorCode } from "../registry/registry.type";
 import { fromPackument, fromSearchObject } from "../wire/packument";
-import { Packument, ROUTES, WireSearch } from "../wire/wire.schema";
+import { Packument, ROUTES, WireSearch, WireWhoami } from "../wire/wire.schema";
 
 const ABBREVIATED = "application/vnd.npm.install-v1+json; q=1.0, application/json; q=0.8";
 /** Statuses whose `location` is followed, and how many redirects in a row at most. */
 const REDIRECTS = new Set([301, 302, 303, 307, 308]);
 const MAX_REDIRECTS = 5;
+/** Redirects that keep the method and the body: the only ones a write follows. */
+const SAME_METHOD_REDIRECTS = new Set([307, 308]);
+/** What a write's refusal means (the contract's statuses); others are `UNAVAILABLE`. */
+const WRITE_ERRORS: Record<number, RegistryErrorCode> = {
+  400: "INVALID",
+  401: "INVALID",
+  403: "INVALID",
+  409: "CONFLICT",
+  413: "INVALID",
+};
+
+/** A request with a `method` reads the reason of a refusal (writes, and `whoami`). */
+interface RequestInitOptions {
+  readonly method?: "GET" | "PUT" | "DELETE";
+  readonly body?: FormData;
+}
 
 export interface RegistryClientOptions {
   /** Base URL of the API holding `/registry/…`. */
@@ -56,6 +78,44 @@ export class RegistryClient implements Registry {
   }
 
   /**
+   * Publishes a version: `archive` is a zip with `nanoforge.manifest.json` at its root, naming
+   * `name` (the registry moves `latest` when the version is the highest stable one). Needs a
+   * registry key in `headers`.
+   * Rejects with `CONFLICT` when the version exists or existed, `INVALID` when the registry
+   * refuses the archive or the key.
+   */
+  async publish(name: string, archive: Uint8Array): Promise<void> {
+    checkName(name);
+    const body = new FormData();
+    body.append("archive", new Blob([archive as BlobPart]), `${name.split("/")[1]}.zip`);
+    await this._request(ROUTES.item(name), name, {}, { method: "PUT", body });
+  }
+
+  /**
+   * Unpublishes a version: its archive is deleted, and its number can never be published again.
+   * Needs a registry key in `headers`. Rejects with `NOT_FOUND` for an unknown version.
+   */
+  async unpublish(name: string, version: string): Promise<void> {
+    checkName(name);
+    if (!ItemVersion.safeParse(version).success)
+      throw new RegistryError("INVALID", `${version} is not a valid version`);
+    await this._request(
+      ROUTES.archive(name, version),
+      `${name}@${version}`,
+      {},
+      {
+        method: "DELETE",
+      },
+    );
+  }
+
+  /** Who the registry key in `headers` belongs to, and the scopes it may publish in. */
+  async whoami(): Promise<WireWhoami> {
+    const response = await this._request(ROUTES.whoami, "whoami", {}, { method: "GET" });
+    return this._parse(WireWhoami, await this._json(response));
+  }
+
+  /**
    * The document of an item. `abbreviated` asks for what installing needs (npm's
    * `application/vnd.npm.install-v1+json`): versions without their contents nor the readme.
    */
@@ -77,6 +137,7 @@ export class RegistryClient implements Registry {
     path: string,
     subject?: string,
     headers: Record<string, string> = {},
+    { method, body }: RequestInitOptions = {},
   ): Promise<Response> {
     const base = new URL(this._options.baseUrl);
     const signal = AbortSignal.timeout(this._options.timeoutMs ?? 60_000);
@@ -96,6 +157,8 @@ export class RegistryClient implements Registry {
           },
           redirect: "manual",
           signal,
+          ...(method && { method }),
+          ...(body && { body }),
         });
       } catch (error) {
         throw new RegistryError(
@@ -105,6 +168,11 @@ export class RegistryClient implements Registry {
       }
       const location = REDIRECTS.has(response.status) ? response.headers.get("location") : null;
       if (location === null) break;
+      if (method && method !== "GET" && !SAME_METHOD_REDIRECTS.has(response.status))
+        throw new RegistryError(
+          "UNAVAILABLE",
+          `The registry answered ${response.status} to a ${method}`,
+        );
       if (redirects >= MAX_REDIRECTS)
         throw new RegistryError("UNAVAILABLE", "The registry redirected too many times");
       url = new URL(location, url);
@@ -113,6 +181,15 @@ export class RegistryClient implements Registry {
       throw subject
         ? new RegistryError("NOT_FOUND", `${subject} was not found`)
         : new RegistryError("UNAVAILABLE", "This registry does not answer searches yet");
+    }
+    if (!response.ok && method) {
+      const reason = reasonOf(await this._json(response));
+      const refused = response.status === 401 || response.status === 403;
+      throw new RegistryError(
+        WRITE_ERRORS[response.status] ?? "UNAVAILABLE",
+        `${refused ? "The registry refused the key" : "The registry refused the request"}` +
+          ` (${response.status})${reason ? `: ${reason}` : ""}`,
+      );
     }
     if (!response.ok)
       throw new RegistryError("UNAVAILABLE", `The registry answered ${response.status}`);
@@ -140,6 +217,21 @@ export class RegistryClient implements Registry {
     return parsed.data as T;
   }
 }
+
+const checkName = (name: string): void => {
+  if (!ItemName.safeParse(name).success)
+    throw new RegistryError("INVALID", `${name} is not a valid name`);
+};
+
+/** The reason an error body gives (`{ message }`, NestJS's `{ message: [...] }`, `{ error }`). */
+const reasonOf = (body: unknown): string | undefined => {
+  if (typeof body !== "object" || body === null) return undefined;
+  const { message, error } = body as { message?: unknown; error?: unknown };
+  if (typeof message === "string") return message;
+  if (Array.isArray(message) && message.every((part) => typeof part === "string"))
+    return message.join(", ");
+  return typeof error === "string" ? error : undefined;
+};
 
 /** The body of a response, stopped as soon as it passes `limit` bytes. */
 const readLimited = async (
