@@ -61,6 +61,9 @@ describe("publishIgnore", () => {
     ["src/ID_RSA", false],
     ["src/id_rsa-old", false],
     ["src/putty.ppk", false],
+    ["src/.ENV", false],
+    ["src/Credentials.json", false],
+    ["src/.AWS", true],
     ["src/KEY.PEM", false],
     ["src/.git", true],
     ["src/node_modules", true],
@@ -79,6 +82,7 @@ describe("publishIgnore", () => {
     ["src", true],
     ["src/player/velocity.ts", false],
     ["src/id_rsa.pub", false],
+    ["src/id_map.ts", false],
     ["assets/sprite.png", false],
     ["lib", true],
     ["lib/one.ts", false],
@@ -97,7 +101,14 @@ describe("publishIgnore", () => {
     expect(atRoot("index.js", false)).toBe(false);
     expect(atRoot("index.css", false)).toBe(false);
     expect(atRoot("chunks", true)).toBe(false);
+    expect(atRoot("chunks/editor.js", false)).toBe(false);
+    expect(atRoot("assets/logo.png", false)).toBe(false);
     expect(atRoot(".env", false)).toBe(true);
+    expect(atRoot("secrets.txt", false)).toBe(true);
+    expect(atRoot("service-account.json", false)).toBe(true);
+    expect(atRoot("kubeconfig", false)).toBe(true);
+    expect(atRoot("terraform.tfstate", false)).toBe(true);
+    expect(atRoot("config/prod.yaml", false)).toBe(true);
 
     const inDist = await publishIgnore(root, {
       type: "plugin",
@@ -106,6 +117,7 @@ describe("publishIgnore", () => {
     });
     expect(inDist("dist", true)).toBe(false);
     expect(inDist("dist/style.css", false)).toBe(false);
+    expect(inDist("dist/notes.txt", false)).toBe(true);
     expect(inDist("icons", true)).toBe(false);
     expect(inDist("icons/leaf.svg", false)).toBe(false);
     expect(inDist("icons/other.svg", false)).toBe(true);

@@ -149,7 +149,7 @@ Used to create a new nanoforge project.
 
 ### `publish`
 
-Used to publish a package to the NanoForge registry: zips what its `nanoforge.manifest.json` names (its `contents` paths, sub-manifests, readme, a plugin's entry folder, and the root's `README*`, `LICENSE*` and `CHANGELOG*`), without secrets such as `.env*`, `.npmrc`, `.nanoforgerc`, credentials and keys, nor `.git`, `node_modules` and `nf_modules`, lists the packed files, and publishes it as the manifest's version.
+Used to publish a package to the NanoForge registry: zips what its `nanoforge.manifest.json` names (its `contents` paths, sub-manifests, readme, a plugin's build output next to its entry, and the root's `README*`, `LICENSE*` and `CHANGELOG*`), without secrets such as `.env*`, `.npmrc`, `.nanoforgerc`, credentials and keys, nor `.git`, `node_modules` and `nf_modules`, lists the packed files, and publishes it as the manifest's version.
 
 - `-d, --directory <directory>` specify the working directory of the command.
 - `--dry-run` list the files to publish, and publish nothing. (default: `false`)

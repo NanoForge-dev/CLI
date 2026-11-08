@@ -38,21 +38,23 @@ const DENIED_FOLDERS = new Set([
 ]);
 /** Files that hold secrets: env files, credentials, keys and keystores, private SSH keys. */
 const DENIED_FILES = [
-  /^\.env/,
-  /^\.npmrc$/,
-  /^\.netrc$/,
-  /^\.git-credentials$/,
-  /^\.pgpass$/,
-  /^credentials\.json$/,
+  /^\.env/i,
+  /^\.npmrc$/i,
+  /^\.netrc$/i,
+  /^\.git-credentials$/i,
+  /^\.pgpass$/i,
+  /^credentials\.json$/i,
   /\.(pem|key|p12|pfx|keystore|ppk)$/i,
-  /^id_(?!.*\.pub$)/i,
+  /^id_(rsa|dsa|ecdsa|ed25519)(?!.*\.pub$)/i,
 ];
+/** What a plugin build writes next to its `entry`: the only files packed from that folder. */
+const BUILD_FILES = /\.(c?js|mjs|css|map|wasm|svg|png|jpe?g|gif|webp|avif|woff2?|ttf|otf)$/i;
 /** Files at the root packed with every package. */
 const ROOT_FILES = /^(readme|license|licence|changelog)(\..*)?$/i;
 
 const isDenied = (path: string, isDirectory: boolean): boolean => {
   const name = basename(path);
-  if (isDirectory) return DENIED_FOLDERS.has(name);
+  if (isDirectory) return DENIED_FOLDERS.has(name.toLowerCase());
   return name === GLOBAL_CONFIG_FILE_NAME || DENIED_FILES.some((pattern) => pattern.test(name));
 };
 
@@ -81,9 +83,8 @@ const readJson = async (file: string): Promise<unknown> =>
 
 /**
  * What the manifest names, from the package root: its `contents` and older `items`, its
- * sub-manifests (`include`) and their contents, its `readme`; for a plugin, the folder of each
- * `entry` file (a build puts its chunks, CSS and assets next to it) and the `path` fields of
- * `contributes`. Folders end with `/`.
+ * sub-manifests (`include`) and their contents, its `readme`; for a plugin, the `path` fields of
+ * `contributes`. Folders end with `/`. A plugin's `entry` folders are `buildFolders`.
  */
 const namedPaths = async (root: string, manifest: Record<string, unknown>): Promise<string[]> => {
   const described = await readPackageContents(manifest, (path) => readJson(join(root, path)));
@@ -94,25 +95,26 @@ const namedPaths = async (root: string, manifest: Record<string, unknown>): Prom
     ...described.manifests,
     ...pathFields(manifest.items).flatMap(strings),
     ...strings(manifest.readme),
-    ...(plugin
-      ? [
-          ...strings(manifest.entry).map((entry) => `${dirname(normalize(entry))}/`),
-          ...pathFields(manifest.contributes).flatMap(strings),
-        ]
-      : []),
+    ...(plugin ? pathFields(manifest.contributes).flatMap(strings) : []),
   ];
   return named
     .map((path) => path.replace(/^\.\//, ""))
-    .map((path) => (path === "./" ? "" : path))
-    .filter((path) => path === "" || isInsidePath(path.replace(/\/$/, "")))
+    .filter((path) => isInsidePath(path.replace(/\/$/, "")))
     .map((path) =>
-      path === "" ||
-      path.endsWith("/") ||
-      !statSync(join(root, path), { throwIfNoEntry: false })?.isDirectory()
+      path.endsWith("/") || !statSync(join(root, path), { throwIfNoEntry: false })?.isDirectory()
         ? path
         : `${path}/`,
     );
 };
+
+/** The folders of a plugin's `entry` files, `""` for the root: only build output is packed there. */
+const buildFolders = (manifest: Record<string, unknown>): string[] =>
+  manifest.type !== "plugin"
+    ? []
+    : strings(manifest.entry)
+        .map((entry) => dirname(normalize(entry)))
+        .filter((folder) => folder === "." || isInsidePath(folder))
+        .map((folder) => (folder === "." ? "" : `${folder}/`));
 
 /**
  * What `nf publish` leaves out of the package at `root`. Only what the manifest names is packed
@@ -124,12 +126,15 @@ const namedPaths = async (root: string, manifest: Record<string, unknown>): Prom
  */
 export const publishIgnore = async (root: string, manifest: Record<string, unknown>) => {
   const named = await namedPaths(root, manifest);
-  const folders = named.filter((path) => path === "" || path.endsWith("/"));
-  const files = new Set(named.filter((path) => path !== "" && !path.endsWith("/")));
+  const builds = buildFolders(manifest);
+  const folders = named.filter((path) => path.endsWith("/"));
+  const files = new Set(named.filter((path) => !path.endsWith("/")));
   const inFolder = (path: string) => folders.some((folder) => path.startsWith(folder));
+  const inBuild = (path: string) => builds.some((folder) => path.startsWith(folder));
   return (path: string, isDirectory: boolean): boolean => {
     if (isDenied(path, isDirectory)) return true;
     if (inFolder(isDirectory ? `${path}/` : path)) return false;
+    if (isDirectory ? inBuild(`${path}/`) : inBuild(path) && BUILD_FILES.test(path)) return false;
     if (isDirectory)
       return ![...folders, ...files].some((allowed) => allowed.startsWith(`${path}/`));
     return !files.has(path) && !(!path.includes("/") && ROOT_FILES.test(path));
