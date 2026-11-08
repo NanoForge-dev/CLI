@@ -34,13 +34,14 @@ describe("handleActionError", () => {
     expect(() =>
       handleActionError(
         "Installation failed!",
-        new RegistryError("NOT_FOUND", "@acme/nope was not found\u001b[2J"),
+        new RegistryError("NOT_FOUND", "@acme/nope was not found\u001b[2J\u009b2J\u202e"),
       ),
     ).toThrow("exit");
 
     const printed = errorSpy.mock.calls.flat().join("\n");
     expect(printed).toContain("@acme/nope was not found");
-    expect(printed).not.toContain("\u001b[2J");
+    const line = printed.split("\n").find((text) => text.includes("@acme/nope")) ?? "";
+    for (const control of ["\u001b", "\u009b", "\u202e"]) expect(line).not.toContain(control);
     expect(printed).not.toMatch(/^\s+at /m);
     expect(infoSpy.mock.calls.flat().join("\n")).toContain("Check the package name");
     expect(exitSpy).toHaveBeenCalledWith(1);

@@ -93,9 +93,16 @@ const REGISTRY_SUGGESTIONS: Partial<Record<RegistryErrorCode, string>> = {
   CONFLICT: "Raise the version in nanoforge.manifest.json before publishing again.",
 };
 
+/** C0 controls but tab and newline, DEL and C1 controls, bidi overrides and isolates. */
+const isControl = (code: number): boolean =>
+  (code < 0x20 && code !== 0x09 && code !== 0x0a) ||
+  (code >= 0x7f && code <= 0x9f) ||
+  (code >= 0x202a && code <= 0x202e) ||
+  (code >= 0x2066 && code <= 0x2069);
+
 /** Registry text comes from the network: no terminal control characters. */
-// eslint-disable-next-line no-control-regex
-const printable = (text: string): string => text.replace(/[\u0000-\u0008\u000b-\u001f\u007f]/g, "");
+const printable = (text: string): string =>
+  [...text].filter((char) => !isControl(char.codePointAt(0) ?? 0)).join("");
 
 export const handleActionError = (context: string, error: unknown): never => {
   console.error();
