@@ -1,3 +1,4 @@
+import { RegistryError, type RegistryErrorCode } from "@nanoforge-dev/registry";
 import { cyan, red } from "ansis";
 
 export class CLIError extends Error {
@@ -86,15 +87,27 @@ export const getErrorMessage = (error: unknown): string | undefined => {
   return undefined;
 };
 
+const REGISTRY_SUGGESTIONS: Partial<Record<RegistryErrorCode, string>> = {
+  NOT_FOUND: "Check the package name and version.",
+  UNAVAILABLE: "Check your connection and REGISTRY_URL, then try again.",
+  CONFLICT: "Raise the version in nanoforge.manifest.json before publishing again.",
+};
+
+/** Registry text comes from the network: no terminal control characters. */
+// eslint-disable-next-line no-control-regex
+const printable = (text: string): string => text.replace(/[\u0000-\u0008\u000b-\u001f\u007f]/g, "");
+
 export const handleActionError = (context: string, error: unknown): never => {
   console.error();
   console.error(red(context));
 
-  if (error instanceof CLIError) {
-    console.error(error.message);
+  if (error instanceof CLIError || error instanceof RegistryError) {
+    console.error(printable(error.message));
 
-    if (error.suggestion) {
-      console.info(cyan(`\n💡 Suggestion: ${error.suggestion}`));
+    const suggestion =
+      error instanceof CLIError ? error.suggestion : REGISTRY_SUGGESTIONS[error.code];
+    if (suggestion) {
+      console.info(cyan(`\n💡 Suggestion: ${suggestion}`));
     }
 
     process.exit(1);
