@@ -139,6 +139,22 @@ describe("RegistryClient writes", () => {
     expect(moved.seen).toHaveLength(1);
   });
 
+  it("refuses a 307 or 308 on a write that leads to another origin", async () => {
+    for (const status of [307, 308]) {
+      const { client, seen } = clientWith(({ url }) =>
+        url.startsWith("https://api.test/")
+          ? new Response(null, { status, headers: { location: "https://elsewhere.test/upload" } })
+          : new Response(null, { status: 201 }),
+      );
+
+      await expect(client.publish("@acme/kit", new Uint8Array([1]))).rejects.toMatchObject({
+        code: "UNAVAILABLE",
+        message: expect.stringContaining("another origin"),
+      });
+      expect(seen.map(({ url }) => url)).toEqual(["https://api.test/registry/@acme/kit"]);
+    }
+  });
+
   it("refuses an invalid name or version before any request", async () => {
     const { client, seen } = clientWith(() => new Response(null, { status: 201 }));
 

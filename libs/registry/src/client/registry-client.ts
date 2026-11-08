@@ -176,6 +176,12 @@ export class RegistryClient implements Registry {
       if (redirects >= MAX_REDIRECTS)
         throw new RegistryError("UNAVAILABLE", "The registry redirected too many times");
       url = new URL(location, url);
+      // A write's body (an archive not published yet) never goes to another origin.
+      if (method && method !== "GET" && url.origin !== base.origin)
+        throw new RegistryError(
+          "UNAVAILABLE",
+          `The registry redirected a ${method} to another origin (${url.origin})`,
+        );
     }
     if (response.status === 404) {
       throw subject
