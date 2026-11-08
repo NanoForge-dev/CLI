@@ -16,7 +16,8 @@ description: Install packages from the NanoForge registry, or npm libraries
   teammate's change. A package only listed in `nanoforge.packages.json` (added by hand) is not
   installed: name it.
 - **Libraries** (`--lib`) are npm packages. `nf` adds them as dev dependencies with your project's
-  package manager, found from its lock file (npm when there is none).
+  package manager, found from its lock file (npm when there is none). On Windows, an argument holding `"`, `%` or a line break is refused
+  with an error.
 
 Reading the registry needs no account. Plugins (packages of type `plugin`) are for the editor:
 `nf install` refuses them.

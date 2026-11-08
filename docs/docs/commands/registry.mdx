@@ -14,10 +14,12 @@ To install packages, see [`nf install`](./install).
 
 - **global** (the default): `.nanoforgerc` in your home folder (or in `$XDG_CONFIG_HOME` when it
   is set), used by every project;
-- **local** (`--local`): `.nanoforgerc` in the `-d` folder, used only there.
+- **local** (`--local`): `.nanoforgerc` in the `-d` folder, used only there. `nf login` makes it
+  readable by you only (mode `0600`; Windows ignores this).
 
 When it needs the key, `nf` reads `.nanoforgerc` in the `-d` folder first, then in the current
-folder, then in your home folder. Don't commit a local `.nanoforgerc`: it holds your key.
+folder, then in your home folder. Don't commit a local `.nanoforgerc`: it holds your key. Projects, workspaces and plugins made by
+`nf new` and `nf create` already ignore it in their `.gitignore`.
 
 ## login
 
