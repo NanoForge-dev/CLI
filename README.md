@@ -99,12 +99,11 @@ Used to start the nanoforge editor.
 
 ### `install` or `add`
 
-Used to add nanoforge components, systems or libraries to your project.
+Used to add NanoForge registry packages, or npm libraries, to your project.
 
-- `[names...]` names of the components/systems/libraries to install.
+- `[names...]` registry packages to install into `nf_modules`, `@scope/name` or `@scope/name@<range>` (npm names with `--lib`). Without names, installs what `nanoforge.packages.lock.json` lists.
 - `-d, --directory <directory>` specify the working directory of the command.
-- `-l, --lib` install a library instead of a component/system. (default: `false`)
-- `-s, --server` install on server instead of client. (default: `false`)
+- `-l, --lib` install npm libraries with the package manager instead. (default: `false`)
 
 ### `login`
 
@@ -141,6 +140,7 @@ Used to create a new nanoforge project.
 - `--docker` generate docker files.
 - `--no-docker` do not generate docker files.
 - `--no-lint` do not generate lint files.
+- `--no-agents` do not generate the `AGENTS.md` and `CLAUDE.md` files for AI coding agents.
 - `--editor` add editor dependencies.
 - `--git` generate a git repository.
 - `--no-git` do not generate a git repository.
@@ -149,9 +149,10 @@ Used to create a new nanoforge project.
 
 ### `publish`
 
-Used to publish a package to the Nanoforge registry.
+Used to publish a package to the NanoForge registry: zips what its `nanoforge.manifest.json` names (its `contents` paths, sub-manifests, readme, a plugin's build output next to its entry, and the root's `README*`, `LICENSE*` and `CHANGELOG*`), without secrets such as `.env*`, `.npmrc`, `.nanoforgerc`, credentials and keys, nor `.git`, `node_modules` and `nf_modules`, lists the packed files, and publishes it as the manifest's version.
 
 - `-d, --directory <directory>` specify the working directory of the command.
+- `--dry-run` list the files to publish, and publish nothing. (default: `false`)
 
 ### `start`
 
@@ -168,7 +169,7 @@ Used to start your nanoforge project.
 
 ### `unpublish`
 
-Used to unpublish a package from the Nanoforge registry.
+Used to unpublish the version named in `nanoforge.manifest.json` from the NanoForge registry.
 
 - `-d, --directory <directory>` specify the working directory of the command.
 

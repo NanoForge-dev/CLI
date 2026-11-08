@@ -42,6 +42,7 @@ schematics @nanoforge-dev/schematics:project --part=client --directory=apps/clie
 | `initFunctions`  | `boolean`                            | `false`   | Accepted, but not used by the templates yet.                                                                                                                               |
 | `libs`           | `string[]`                           | `[]`      | Accepted, but not written to `nanoforge.config.ts` yet.                                                                                                                    |
 | `allowBuilds`    | `string[]`                           | `[]`      | Accepted, but not used yet: a standalone app always allows `bun` only.                                                                                                     |
+| `agents`         | `boolean`                            | `true`    | Add an `AGENTS.md` for AI coding agents (files, commands, ECS rules, network for a networked app) and a `CLAUDE.md` that imports it.                                       |
 
 ## Generated files
 
@@ -54,6 +55,8 @@ schematics @nanoforge-dev/schematics:project --part=client --directory=apps/clie
 ├── pnpm-workspace.yaml      # standalone pnpm app only
 ├── .gitignore
 ├── README.md
+├── AGENTS.md                # agents: true
+├── CLAUDE.md                # agents: true, imports AGENTS.md
 ├── Dockerfile               # docker: true, standalone only
 ├── .dockerignore            # docker: true, standalone only
 ├── assets/

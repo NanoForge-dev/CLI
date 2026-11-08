@@ -76,6 +76,12 @@ lib:config:
           - libs/config/*
           - libs/config/**/*
 
+lib:registry:
+  - changed-files:
+      - any-glob-to-any-file:
+          - libs/registry/*
+          - libs/registry/**/*
+
 lib:schematics:
   - changed-files:
       - any-glob-to-any-file:

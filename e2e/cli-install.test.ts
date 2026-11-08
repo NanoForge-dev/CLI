@@ -5,6 +5,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { runCli } from "./helpers/run-cli";
 
 const tmpDir = resolve(__dirname, "../.tmp-e2e-install");
+const FETCH_MOCK_PATH = resolve(__dirname, "./helpers/fetch-mock.mjs");
 
 beforeAll(async () => {
   mkdirSync(tmpDir, { recursive: true });
@@ -95,7 +96,69 @@ describe("nf install (with invalid directory)", () => {
   });
 });
 
-describe("nf install (without library name)", () => {
+describe("nf install (registry packages)", () => {
+  const registryDir = resolve(tmpDir, "registry");
+  const appDir = resolve(tmpDir, "registry-app");
+  const env = {
+    ...process.env,
+    NODE_OPTIONS: `${process.env.NODE_OPTIONS ?? ""} --import ${FETCH_MOCK_PATH}`.trim(),
+    MOCK_REGISTRY_DIR: registryDir,
+  };
+  const publishVersion = (name: string, version: string, dependencies = {}) => {
+    const folder = resolve(registryDir, name, version);
+    mkdirSync(folder, { recursive: true });
+    writeFileSync(
+      resolve(folder, "nanoforge.manifest.json"),
+      JSON.stringify({ name, version, type: "package", dependencies }),
+    );
+    writeFileSync(resolve(folder, "index.ts"), `export const version = "${version}";`);
+  };
+
+  beforeAll(() => {
+    publishVersion("@test-org/shapes", "1.0.0");
+    publishVersion("@test-org/shapes", "2.0.0");
+    publishVersion("@test-org/kit", "1.0.0", { "@test-org/shapes": "^1.0.0" });
+    mkdirSync(appDir, { recursive: true });
+  });
+
+  it("installs a package and its dependencies into nf_modules", async () => {
+    const { exitCode } = await runCli(["install", "@test-org/kit", "-d", appDir], { env });
+
+    expect(exitCode).toBe(0);
+    expect(
+      readFileSync(resolve(appDir, "nf_modules/@test-org/shapes/index.ts"), "utf-8"),
+    ).toContain("1.0.0");
+    expect(existsSync(resolve(appDir, "nf_modules/@test-org/kit/nanoforge.manifest.json"))).toBe(
+      true,
+    );
+    const list = JSON.parse(readFileSync(resolve(appDir, "nanoforge.packages.json"), "utf-8"));
+    expect(list.packages).toEqual({ "@test-org/kit": "^1.0.0" });
+    const tsconfig = JSON.parse(readFileSync(resolve(appDir, "tsconfig.json"), "utf-8"));
+    expect(tsconfig.compilerOptions.paths["@test-org/kit/*"]).toEqual([
+      "./nf_modules/@test-org/kit/*",
+    ]);
+  });
+
+  it("refuses a range no version fits, and leaves the project as it was", async () => {
+    const { exitCode } = await runCli(["install", "@test-org/kit@^3.0.0", "-d", appDir], { env });
+
+    expect(exitCode).not.toBe(0);
+    const list = JSON.parse(readFileSync(resolve(appDir, "nanoforge.packages.json"), "utf-8"));
+    expect(list.packages).toEqual({ "@test-org/kit": "^1.0.0" });
+  });
+
+  it("restores the locked packages when given no name", async () => {
+    rmSync(resolve(appDir, "nf_modules"), { recursive: true, force: true });
+
+    const { exitCode } = await runCli(["install", "-d", appDir], { env });
+
+    expect(exitCode).toBe(0);
+    expect(existsSync(resolve(appDir, "nf_modules/@test-org/kit/index.ts"))).toBe(true);
+    expect(existsSync(resolve(appDir, "nf_modules/@test-org/shapes/index.ts"))).toBe(true);
+  });
+});
+
+describe("nf install (without package name)", () => {
   const projectDir = resolve(tmpDir, "install-no-name");
   const appDir = resolve(projectDir, "install-no-name-app");
 
@@ -120,11 +183,11 @@ describe("nf install (without library name)", () => {
     ]);
   });
 
-  it("should prompt or fail when no library name is provided", async () => {
-    const { stdout, stderr, killed } = await runCli(["install", "-d", appDir], {
-      timeout: 3_000,
-    });
+  it("succeeds with nothing locked, without asking", async () => {
+    const { exitCode, killed } = await runCli(["install", "-d", appDir], { timeout: 10_000 });
 
-    expect(killed || (stdout + stderr).length > 0).toBe(true);
+    expect(killed).toBe(false);
+    expect(exitCode).toBe(0);
+    expect(existsSync(resolve(appDir, "nf_modules"))).toBe(false);
   });
 });

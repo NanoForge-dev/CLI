@@ -82,6 +82,10 @@ build/Release
 
 # Dependency directories
 node_modules/
+
+# NanoForge registry packages (nf install restores them from nanoforge.packages.lock.json)
+nf_modules/
+
 jspm_packages/
 
 # Snowpack dependency directory (https://snowpack.dev/)
@@ -132,3 +136,6 @@ web_modules/
 # Build/compilation output
 .nanoforge/
 dist/
+
+# API key written by nf login --local
+.nanoforgerc

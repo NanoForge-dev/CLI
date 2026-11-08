@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+# [3.0.1](https://github.com/NanoForge-dev/CLI/compare/3.0.0...3.0.1) - (2026-11-08)
+
+# [3.0.0](https://github.com/NanoForge-dev/CLI/compare/2.3.1...3.0.0) - (2026-11-08)
+
+## Features
+
+- **build:** Build the server app for the browser in p2p workspaces (#246) ([ab74db7](https://github.com/NanoForge-dev/CLI/commit/ab74db74b93f7b6035cd278f52ba46f9d6b7367d)) by @Tchips46
+
 # [2.3.1](https://github.com/NanoForge-dev/CLI/compare/2.3.0...2.3.1) - (2026-09-25)
 
 # [2.3.0](https://github.com/NanoForge-dev/CLI/compare/1.6.2...2.3.0) - (2026-09-24)

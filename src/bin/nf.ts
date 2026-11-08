@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 import { program } from "commander";
-import "reflect-metadata";
 
 import { treeKill } from "@lib/tree-kill";
 

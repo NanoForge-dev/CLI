@@ -13,13 +13,8 @@ export class SchematicOption {
   public toCommandString(prefix?: string): string[] {
     const normalizedName = `${prefix ? `${prefix}.` : ""}${this.normalizedName}`;
     if (typeof this.value === "string") {
-      if (this.name === "name") {
-        return [`--${normalizedName}=${this.format()}`];
-      } else if (this.name === "version" || this.name === "path") {
-        return [`--${normalizedName}=${this.value}`];
-      } else {
-        return [`--${normalizedName}="${this.value}"`];
-      }
+      const value = this.name === "name" ? toKebabCase(this.value) : this.value;
+      return [`--${normalizedName}=${value}`];
     } else if (typeof this.value === "boolean") {
       const str = normalizedName;
       return this.value ? [`--${str}=true`] : [`--${str}=false`];
@@ -34,16 +29,5 @@ export class SchematicOption {
     } else {
       return [`--${normalizedName}=${this.value}`];
     }
-  }
-
-  private format() {
-    return toKebabCase(this.value as string)
-      .split("")
-      .reduce((content, char) => {
-        if (char === "(" || char === ")" || char === "[" || char === "]") {
-          return `${content}\\${char}`;
-        }
-        return `${content}${char}`;
-      }, "");
   }
 }

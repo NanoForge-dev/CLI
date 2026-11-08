@@ -38,7 +38,7 @@ setup() {
     fi
 
     echo "Building workspace packages..."
-    pnpm run build || true
+    pnpm run repo:build || pnpm --recursive run build || pnpm run build || true
 }
 
 discover_unit_packages() {
@@ -249,6 +249,9 @@ run_e2e_tests() {
     # 2. Schematics E2E tests
     if [[ -f "libs/schematics/vitest.config.e2e.ts" ]]; then
         echo "--- Schematics E2E tests ---"
+        if [[ ! -f "libs/schematics/dist/collection.json" ]]; then
+            pnpm --filter @nanoforge-dev/schematics run build || true
+        fi
         local sch_e2e_exit=0
         local sch_results="$RAW_DIR/e2e-schematics.json"
         pnpm --filter @nanoforge-dev/schematics exec vitest run -c vitest.config.e2e.ts \

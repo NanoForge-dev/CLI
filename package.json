@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "@nanoforge-dev/cli",
-  "version": "2.3.1",
+  "version": "3.0.1",
   "description": "NanoForge CLI",
   "keywords": [
     "nanoforge",
@@ -65,19 +65,17 @@
     "@nanoforge-dev/editor": "catalog:core",
     "@nanoforge-dev/loader-client": "catalog:loader",
     "@nanoforge-dev/loader-server": "catalog:loader",
+    "@nanoforge-dev/registry": "workspace:*",
     "@nanoforge-dev/schematics": "workspace:*",
     "ansis": "catalog:cli",
     "bun": "catalog:core",
     "chokidar": "catalog:libs",
-    "class-transformer": "catalog:libs",
-    "class-validator": "catalog:libs",
     "commander": "catalog:cli",
     "dotenv": "catalog:libs",
     "node-emoji": "catalog:cli",
     "open": "catalog:libs",
     "ora": "catalog:cli",
-    "rc9": "catalog:libs",
-    "reflect-metadata": "catalog:libs"
+    "rc9": "catalog:libs"
   },
   "devDependencies": {
     "@commitlint/cli": "catalog:ci",

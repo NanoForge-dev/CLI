@@ -1,43 +1,26 @@
-import { plainToInstance } from "class-transformer";
-import { validate } from "class-validator";
+import { ItemManifest, MANIFEST_FILE } from "@nanoforge-dev/registry";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
-import { MANIFEST_FILE_NAME } from "@lib/constants";
-
 import { ManifestError } from "@utils/errors";
-import { deepMerge } from "@utils/object";
 
-import { Manifest } from "./manifest.type";
-
-const getManifestPath = (directory: string) => {
-  for (const n of [MANIFEST_FILE_NAME]) {
-    const path = join(directory, n);
-    if (existsSync(path)) return path;
-  }
-  throw new ManifestError(`No manifest file found in directory: ${directory}`);
-};
-
-export const loadManifest = async (directory: string): Promise<Manifest> => {
-  let rawData;
-
-  const path = getManifestPath(directory);
+/** The `nanoforge.manifest.json` of a package folder, checked against the registry's schema. */
+export const loadManifest = (directory: string): ItemManifest => {
+  const path = join(directory, MANIFEST_FILE);
+  if (!existsSync(path))
+    throw new ManifestError(`No manifest file found in directory: ${directory}`);
+  let json: unknown;
   try {
-    rawData = deepMerge({}, JSON.parse(readFileSync(path, "utf-8")));
+    json = JSON.parse(readFileSync(path, "utf-8"));
   } catch {
-    rawData = null;
-  }
-  if (!rawData) {
     throw new ManifestError(`Unable to read or parse file at ${path}`);
   }
-
-  const data = plainToInstance(Manifest, rawData, {
-    excludeExtraneousValues: true,
-  });
-
-  const errors = await validate(data);
-  if (errors.length > 0) {
-    throw new ManifestError(`Validation failed\n${errors.toString()}`);
+  const parsed = ItemManifest.safeParse(json);
+  if (!parsed.success) {
+    const issue = parsed.error.issues[0];
+    throw new ManifestError(
+      `Validation failed: ${issue?.path.join(".") || "manifest"}: ${issue?.message ?? "invalid"}`,
+    );
   }
-  return data;
+  return parsed.data;
 };

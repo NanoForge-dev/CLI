@@ -7,60 +7,55 @@ allowBuilds:
 
 catalogs:
   build:
-    cpx2: ^9.0.0
-    tsdown: ^0.23.0
-    turbo: ^2.11.3
+    cpx2: ^9.0.3
+    tsdown: ^0.23.7
+    turbo: ^2.11.10
     typescript: ^6.0.3
   ci:
-    '@commitlint/cli': ^21.2.3
-    '@commitlint/config-conventional': ^21.2.3
+    '@commitlint/cli': ^21.2.4
+    '@commitlint/config-conventional': ^21.2.4
     '@favware/cliff-jumper': ^6.1.0
     husky: ^9.1.7
-    lint-staged: ^17.5.1
+    lint-staged: ^17.6.0
   cli:
-    '@inquirer/prompts': ^8.7.2
+    '@inquirer/prompts': ^8.7.5
     '@types/inquirer': ^9.0.10
-    ansis: ^4.4.0
-    commander: ^15.0.0
+    ansis: ^4.5.0
+    commander: ^15.1.0
     node-emoji: ^2.2.0
     ora: ^9.4.1
   core:
     '@nanoforge-dev/editor': ^0.1.4
     '@types/bun': ^1.3.14
-    '@types/node': ^26.6.2
-    bun: ^1.4.2
+    '@types/node': ^26.6.6
+    bun: ^1.4.4
   libs:
+    '@types/semver': ^7.8.0
     chokidar: ^5.0.0
-    class-transformer: ^0.5.1
-    class-validator: ^0.15.1
-    dotenv: ^18.0.3
+    dotenv: ^18.0.9
+    fflate: ^0.8.3
     open: ^11.0.4
     rc9: ^3.1.0
-    reflect-metadata: ^0.2.2
-    unrun: ^0.3.0
+    semver: ^7.8.6
+    unrun: ^0.3.1
     zod: ^4.6.7
   lint:
     '@nanoforge-dev/utils-eslint-config': ^1.0.2
     '@nanoforge-dev/utils-prettier-config': ^1.0.2
     '@trivago/prettier-plugin-sort-imports': ^6.0.2
-    eslint: ^10.11.0
-    prettier: ^3.9.9
+    eslint: ^10.14.0
+    prettier: ^3.9.10
   loader:
-    '@nanoforge-dev/loader-client': ^1.6.0
-    '@nanoforge-dev/loader-server': ^1.6.0
+    '@nanoforge-dev/loader-client': ^1.7.0
+    '@nanoforge-dev/loader-server': ^1.7.0
   schematics:
-    '@angular-devkit/core': ^22.0.4
-    '@angular-devkit/schematics': ^22.1.8
-    '@angular-devkit/schematics-cli': ^22.1.8
+    '@angular-devkit/core': ^22.2.6
+    '@angular-devkit/schematics': ^22.2.6
+    '@angular-devkit/schematics-cli': ^22.2.6
     rxjs: ^7.8.2
   test:
-    '@vitest/coverage-v8': ^5.0.1
-    vitest: ^5.0.1
-
-minimumReleaseAgeExclude:
-  - '@nanoforge-dev/loader-client@1.6.0'
-  - '@nanoforge-dev/loader-server@1.6.0'
-  - '@nanoforge-dev/loader-website@1.6.0'
+    '@vitest/coverage-v8': ^5.1.0
+    vitest: ^5.1.0
 
 # shortcut: oxfmt (via @nanoforge-dev/utils-eslint-config) pins a vulnerable tinypool; drop once the eslint config moves to a fixed oxfmt.
 overrides:

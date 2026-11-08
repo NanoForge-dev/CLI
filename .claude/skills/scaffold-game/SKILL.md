@@ -1,0 +1,57 @@
+---
+name: scaffold-game
+description: Uses the nf CLI (built from this repo's source code) to scaffold a Nanoforge project, component, or system via the schematics, in order to test the generators during CLI development. Use when the user asks to create a new test project, an ECS component/system, or to verify that a generator works.
+---
+
+# Scaffolding via the nf CLI (local build)
+
+This skill uses the `nf` binary built from this repo's sources (not a version published on npm), to test the schematics (`libs/schematics`) during CLI development.
+
+## 1. Build the CLI
+
+```bash
+pnpm install --frozen-lockfile
+pnpm run repo:build   # builds libs/config and libs/schematics, then the CLI -> dist/nf.js
+```
+
+`pnpm run build` alone builds only the CLI package: on a fresh clone it fails with TS2307 `@nanoforge-dev/config` because the libs aren't built yet.
+
+## 2. Discover the exact command before using it
+
+Do not assume the exact syntax of the options: always check the help before running a scaffolding command, as the flags may evolve with the repo.
+
+```bash
+node dist/nf.js --help
+node dist/nf.js new --help
+node dist/nf.js create --help
+```
+
+Detailed command documentation is also in `docs/docs/commands/` (one page per command; `registry.mdx` covers `login`, `logout`, `publish` and `unpublish`), and the available schematics are listed in `libs/schematics/src/collection.json` (workspace, project, component, system, plugin). `nf new` uses workspace and project; `nf create` uses component, system and plugin (`nf create plugin --template panel|theme`).
+
+## 3. Scaffold in an isolated test directory
+
+Run the chosen command from a test directory **outside this repo** (for example `/tmp` or the scratchpad), never at the root of the CLI repo itself.
+
+`nf new` takes no positional argument, and every option you leave out opens an interactive prompt (with no TTY, the command exits 1). Pass all of them:
+
+```bash
+cd /path/to/a/test/folder
+node <path-to-this-repo>/dist/nf.js new --name demo --package-manager pnpm --language ts --strict --no-server --no-init-functions --skip-install --no-docker --no-git --no-git-remote
+```
+
+For a component/system inside an already-generated project, move into that project and install its dependencies first (`pnpm install`, which needs network access to npm): with `--skip-install`, `nf create` fails with `Cannot find package '@nanoforge-dev/config'`. Then use the `create` command (check its exact usage via `--help`, see step 2), for example:
+
+```bash
+cd demo
+pnpm install
+node <path-to-this-repo>/dist/nf.js create component --name player
+```
+
+## 4. Verify the result
+
+Inspect the generated files (`ls`, `cat`) and compare them against the expected schema in `libs/schematics/src/libs/<schematic-name>/` (the corresponding schematic's `files/` files; `theme-files/` for a theme plugin) to confirm that the applied template is correct.
+
+## Out of scope for this skill
+
+- Never publish a package (`nf publish`) or touch the real package registry without the user's explicit confirmation.
+- Do not modify the global user configuration (`nf login`/`nf logout`) without an explicit request.
