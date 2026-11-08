@@ -30,13 +30,16 @@ catalogs:
     '@types/node': ^26.6.2
     bun: ^1.4.2
   libs:
+    '@types/semver': ^7.7.1
     chokidar: ^5.0.0
     class-transformer: ^0.5.1
     class-validator: ^0.15.1
     dotenv: ^18.0.3
+    fflate: ^0.8.2
     open: ^11.0.4
     rc9: ^3.1.0
     reflect-metadata: ^0.2.2
+    semver: ^7.7.3
     unrun: ^0.3.0
     zod: ^4.6.7
   lint:

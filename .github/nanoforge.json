@@ -3,7 +3,12 @@
   "groups": [
     {
       "name": "cli",
-      "packages": ["@nanoforge-dev/config", "@nanoforge-dev/schematics", "@nanoforge-dev/cli"],
+      "packages": [
+        "@nanoforge-dev/config",
+        "@nanoforge-dev/registry",
+        "@nanoforge-dev/schematics",
+        "@nanoforge-dev/cli"
+      ],
       "mode": "all",
       "versioning": "shared",
       "commitFormat": "chore: release @nanoforge-dev/cli@{version}"

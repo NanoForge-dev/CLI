@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "@nanoforge-dev/registry",
+  "version": "2.3.1",
+  "description": "NanoForge CLI - Registry client and installer for packages and plugins",
+  "keywords": [
+    "nanoforge",
+    "game",
+    "engine",
+    "registry"
+  ],
+  "homepage": "https://github.com/NanoForge-dev/CLI#readme",
+  "bugs": "https://github.com/NanoForge-dev/CLI/issues",
+  "license": "MIT",
+  "contributors": [
+    "Exelo <contact@exelo.dev>",
+    "Fexkoser <martin.fillon@epitech.eu>",
+    "Harper <timothe.jacquot@epitech.eu>",
+    "Josephine <josephine.chicouras@epitech.eu>",
+    "Leo <leo.outmizguine@epitech.eu>"
+  ],
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.cts",
+  "exports": {
+    ".": {
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      },
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./types": {
+      "require": {
+        "types": "./dist/types.d.cts",
+        "default": "./dist/types.cjs"
+      },
+      "import": {
+        "types": "./dist/types.d.ts",
+        "default": "./dist/types.js"
+      }
+    },
+    "./tsconfig-paths": {
+      "require": {
+        "types": "./dist/tsconfig-paths.d.cts",
+        "default": "./dist/tsconfig-paths.cjs"
+      },
+      "import": {
+        "types": "./dist/tsconfig-paths.d.ts",
+        "default": "./dist/tsconfig-paths.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "type": "module",
+  "directories": {
+    "lib": "src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NanoForge-dev/CLI.git",
+    "directory": "libs/registry"
+  },
+  "funding": "https://github.com/NanoForge-dev/CLI?sponsor",
+  "scripts": {
+    "build": "tsc --noEmit && tsdown --config-loader unrun",
+    "lint": "prettier --check . && eslint --format=pretty src test",
+    "format": "prettier --write . && eslint --fix --format=pretty src test",
+    "test:unit": "vitest run --config vitest.config.ts",
+    "test:contract": "vitest run --config vitest.config.ts test/contract",
+    "prepack": "pnpm run build && pnpm run lint",
+    "changelog": "git cliff --prepend ./CHANGELOG.md -u -c ./cliff.toml -r ../../ --include-path 'libs/registry/*'",
+    "release": "cliff-jumper"
+  },
+  "dependencies": {
+    "fflate": "catalog:libs",
+    "semver": "catalog:libs",
+    "zod": "catalog:libs"
+  },
+  "devDependencies": {
+    "@favware/cliff-jumper": "catalog:ci",
+    "@nanoforge-dev/utils-eslint-config": "catalog:lint",
+    "@nanoforge-dev/utils-prettier-config": "catalog:lint",
+    "@trivago/prettier-plugin-sort-imports": "catalog:lint",
+    "@types/node": "catalog:core",
+    "@types/semver": "catalog:libs",
+    "eslint": "catalog:lint",
+    "prettier": "catalog:lint",
+    "tsdown": "catalog:build",
+    "typescript": "catalog:build",
+    "vitest": "catalog:test"
+  },
+  "packageManager": "pnpm@12.0.0",
+  "engines": {
+    "node": "26"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "lint-staged": {
+    "**": [
+      "prettier --ignore-unknown --write"
+    ],
+    "{src,test}/**/*.ts": [
+      "eslint --fix"
+    ]
+  }
+}

@@ -94,6 +94,10 @@
   description: "Related to the @nanoforge-dev/config library"
   color: "c5def5"
 
+- name: "lib:registry"
+  description: "Related to the @nanoforge-dev/registry library"
+  color: "c5def5"
+
 - name: "lib:schematics"
   description: "Related to the @nanoforge-dev/schematics library"
   color: "c5def5"
