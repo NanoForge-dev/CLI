@@ -61,6 +61,8 @@ describe("publishIgnore", () => {
     ["src/ID_RSA", false],
     ["src/id_rsa-old", false],
     ["src/putty.ppk", false],
+    ["src/id_github", false],
+    ["src/id_deploy_key", false],
     ["src/.ENV", false],
     ["src/Credentials.json", false],
     ["src/.AWS", true],

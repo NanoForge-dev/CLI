@@ -45,7 +45,8 @@ const DENIED_FILES = [
   /^\.pgpass$/i,
   /^credentials\.json$/i,
   /\.(pem|key|p12|pfx|keystore|ppk)$/i,
-  /^id_(rsa|dsa|ecdsa|ed25519)(?!.*\.pub$)/i,
+  /^id_[^.]*$/i,
+  /^id_(rsa|dsa|ecdsa|ed25519|xmss)(?!.*\.pub$)/i,
 ];
 /** What a plugin build writes next to its `entry`: the only files packed from that folder. */
 const BUILD_FILES = /\.(c?js|mjs|css|map|wasm|svg|png|jpe?g|gif|webp|avif|woff2?|ttf|otf)$/i;
