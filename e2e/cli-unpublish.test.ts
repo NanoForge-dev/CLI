@@ -1,4 +1,4 @@
-import { mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 
@@ -6,6 +6,7 @@ import { runCli } from "./helpers/run-cli";
 
 const tmpDir = resolve(__dirname, "../.tmp-e2e-unpublish");
 const FETCH_MOCK_PATH = resolve(__dirname, "./helpers/fetch-mock.mjs");
+const LOG_PATH = resolve(tmpDir, "requests.jsonl");
 
 function withMockedFetch(status = 200): NodeJS.ProcessEnv {
   const existing = process.env.NODE_OPTIONS ?? "";
@@ -13,13 +14,15 @@ function withMockedFetch(status = 200): NodeJS.ProcessEnv {
     ...process.env,
     NODE_OPTIONS: `${existing} --import ${FETCH_MOCK_PATH}`.trim(),
     MOCK_REGISTRY_STATUS: String(status),
+    MOCK_REGISTRY_LOG: LOG_PATH,
   };
 }
 
 function writeManifest(dir: string) {
   const manifest = {
-    name: "test-org/test-package",
-    type: "component",
+    name: "@test-org/test-package",
+    version: "1.2.0",
+    type: "package",
   };
   writeFileSync(resolve(dir, "nanoforge.manifest.json"), JSON.stringify(manifest));
 }
@@ -54,10 +57,12 @@ describe("nf unpublish", () => {
 
   afterEach(() => {
     rmSync(dir, { recursive: true, force: true });
+    rmSync(LOG_PATH, { force: true });
   });
 
-  it("should unpublish successfully with a valid manifest", async () => {
+  it("should unpublish the version the manifest names", async () => {
     writeManifest(dir);
+    rmSync(LOG_PATH, { force: true });
 
     const { stdout, exitCode } = await runCli(["unpublish", "-d", dir], {
       env: withMockedFetch(),
@@ -66,6 +71,11 @@ describe("nf unpublish", () => {
     expect(exitCode).toBe(0);
     expect(stdout).toContain("NanoForge Unpublish");
     expect(stdout).toContain("Unpublish completed!");
+    expect(JSON.parse(readFileSync(LOG_PATH, "utf-8").trim())).toMatchObject({
+      method: "DELETE",
+      url: "https://api.nanoforge.eu/registry/@test-org/test-package/-/test-package-1.2.0.zip",
+      authorization: "Bearer test-api-key",
+    });
   });
 
   it("should fail when the manifest file is missing", async () => {

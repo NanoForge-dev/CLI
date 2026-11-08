@@ -1,3 +1,4 @@
+import { RegistryError, type RegistryErrorCode } from "@nanoforge-dev/registry";
 import { cyan, red } from "ansis";
 
 export class CLIError extends Error {
@@ -71,16 +72,6 @@ export class FileSystemError extends CLIError {
   }
 }
 
-export class ApiRequestError extends CLIError {
-  constructor(status: number, cause?: unknown) {
-    const causeStr = cause && typeof cause === "object" ? JSON.stringify(cause, null, 2) : cause;
-    super(
-      `API Request failed (Status ${status})${causeStr ? `\nDetails: ${causeStr}` : ""}`,
-      "Check your network connection, API key, or the registry status.",
-    );
-  }
-}
-
 const getErrorString = (error: Error): string => {
   const stack = error.stack ? error.stack : error.message;
   const cause =
@@ -96,15 +87,34 @@ export const getErrorMessage = (error: unknown): string | undefined => {
   return undefined;
 };
 
+const REGISTRY_SUGGESTIONS: Partial<Record<RegistryErrorCode, string>> = {
+  NOT_FOUND: "Check the package name and version.",
+  UNAVAILABLE: "Check your connection and REGISTRY_URL, then try again.",
+  CONFLICT: "Raise the version in nanoforge.manifest.json before publishing again.",
+};
+
+/** C0 controls but tab and newline, DEL and C1 controls, bidi overrides and isolates. */
+const isControl = (code: number): boolean =>
+  (code < 0x20 && code !== 0x09 && code !== 0x0a) ||
+  (code >= 0x7f && code <= 0x9f) ||
+  (code >= 0x202a && code <= 0x202e) ||
+  (code >= 0x2066 && code <= 0x2069);
+
+/** Registry text comes from the network: no terminal control characters. */
+const printable = (text: string): string =>
+  [...text].filter((char) => !isControl(char.codePointAt(0) ?? 0)).join("");
+
 export const handleActionError = (context: string, error: unknown): never => {
   console.error();
   console.error(red(context));
 
-  if (error instanceof CLIError) {
-    console.error(error.message);
+  if (error instanceof CLIError || error instanceof RegistryError) {
+    console.error(printable(error.message));
 
-    if (error.suggestion) {
-      console.info(cyan(`\n💡 Suggestion: ${error.suggestion}`));
+    const suggestion =
+      error instanceof CLIError ? error.suggestion : REGISTRY_SUGGESTIONS[error.code];
+    if (suggestion) {
+      console.info(cyan(`\n💡 Suggestion: ${suggestion}`));
     }
 
     process.exit(1);

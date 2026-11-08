@@ -75,11 +75,11 @@ the generated files.
 
 ## Install shared ones
 
-Install components and systems that others published on the registry:
+Install packages of components and systems that others published on the registry:
 
 ```bash
-nf install my-org/health-bar
-nf install my-org/gravity --server
+nf install @my-org/health-bar
+nf install @my-org/gravity@^2.0.0
 ```
 
 Add an npm library to the project:
@@ -88,12 +88,8 @@ Add an npm library to the project:
 nf add --lib lodash-es
 ```
 
-`nf install` downloads registry files into `client/components` or `client/systems` (`server/...`
-with `--server`) under the current folder. Move them next to your own components and systems,
-then import them. See [`nf install`](/docs/cli/commands/install).
-
-If a package needs an account, [log in](/docs/cli/commands/registry#login) first:
-
-```bash
-nf login
-```
+`nf install` writes each package, and the packages it needs, read only to
+`nf_modules/@scope/name`, records it in `nanoforge.packages.json` and its lock, and adds a
+`tsconfig.json` path for it, so you import it as `@my-org/health-bar/<file>`. Commit the two
+`nanoforge.packages*.json` files, not `nf_modules`: `nf install` with no name installs what the
+lock lists. See [`nf install`](/docs/cli/commands/install).

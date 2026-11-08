@@ -165,27 +165,27 @@ catalogs:
       specifier: ^1.4.2
       version: 1.4.2
   libs:
+    '@types/semver':
+      specifier: ^7.7.1
+      version: 7.8.0
     chokidar:
       specifier: ^5.0.0
       version: 5.0.0
-    class-transformer:
-      specifier: ^0.5.1
-      version: 0.5.1
-    class-validator:
-      specifier: ^0.15.1
-      version: 0.15.1
     dotenv:
       specifier: ^18.0.3
       version: 18.0.3
+    fflate:
+      specifier: ^0.8.2
+      version: 0.8.3
     open:
       specifier: ^11.0.4
       version: 11.0.4
     rc9:
       specifier: ^3.1.0
       version: 3.1.0
-    reflect-metadata:
-      specifier: ^0.2.2
-      version: 0.2.2
+    semver:
+      specifier: ^7.7.3
+      version: 7.8.5
     unrun:
       specifier: ^0.3.0
       version: 0.3.1
@@ -264,6 +264,9 @@ importers:
       '@nanoforge-dev/loader-server':
         specifier: catalog:loader
         version: 1.6.0
+      '@nanoforge-dev/registry':
+        specifier: workspace:*
+        version: link:libs/registry
       '@nanoforge-dev/schematics':
         specifier: workspace:*
         version: link:libs/schematics
@@ -276,12 +279,6 @@ importers:
       chokidar:
         specifier: catalog:libs
         version: 5.0.0
-      class-transformer:
-        specifier: catalog:libs
-        version: 0.5.1
-      class-validator:
-        specifier: catalog:libs
-        version: 0.15.1
       commander:
         specifier: catalog:cli
         version: 15.0.0
@@ -300,9 +297,6 @@ importers:
       rc9:
         specifier: catalog:libs
         version: 3.1.0
-      reflect-metadata:
-        specifier: catalog:libs
-        version: 0.2.2
     devDependencies:
       '@commitlint/cli':
         specifier: catalog:ci
@@ -377,6 +371,52 @@ importers:
       '@trivago/prettier-plugin-sort-imports':
         specifier: catalog:lint
         version: 6.0.2(prettier@3.9.9)(supports-color@10.2.2)
+      eslint:
+        specifier: catalog:lint
+        version: 10.11.0(jiti@2.6.1)(supports-color@10.2.2)
+      prettier:
+        specifier: catalog:lint
+        version: 3.9.9
+      tsdown:
+        specifier: catalog:build
+        version: 0.23.0(typescript@6.0.3)(unrun@0.3.1(synckit@0.11.13))
+      typescript:
+        specifier: catalog:build
+        version: 6.0.3
+      vitest:
+        specifier: catalog:test
+        version: 5.0.1(@types/node@26.6.2)(@vitest/coverage-v8@5.0.1)(vite@8.3.6(@types/node@26.6.2)(jiti@2.6.1)(yaml@2.9.1))
+
+  libs/registry:
+    dependencies:
+      fflate:
+        specifier: catalog:libs
+        version: 0.8.3
+      semver:
+        specifier: catalog:libs
+        version: 7.8.5
+      zod:
+        specifier: catalog:libs
+        version: 4.6.7
+    devDependencies:
+      '@favware/cliff-jumper':
+        specifier: catalog:ci
+        version: 6.1.0
+      '@nanoforge-dev/utils-eslint-config':
+        specifier: catalog:lint
+        version: 1.0.2(@types/eslint@9.6.1)(eslint@10.11.0(jiti@2.6.1)(supports-color@10.2.2))(prettier@3.9.9)(supports-color@10.2.2)(typescript@6.0.3)
+      '@nanoforge-dev/utils-prettier-config':
+        specifier: catalog:lint
+        version: 1.0.2
+      '@trivago/prettier-plugin-sort-imports':
+        specifier: catalog:lint
+        version: 6.0.2(prettier@3.9.9)(supports-color@10.2.2)
+      '@types/node':
+        specifier: catalog:core
+        version: 26.6.2
+      '@types/semver':
+        specifier: catalog:libs
+        version: 7.8.0
       eslint:
         specifier: catalog:lint
         version: 10.11.0(jiti@2.6.1)(supports-color@10.2.2)
@@ -1430,6 +1470,9 @@ packages:
   '@types/node@26.6.2':
     resolution: {integrity: sha512-X1P21scMv4zGKLYqjdGjaKa7COa0RKVYYZZN/NfvLQ1JegxFhdhpZG/Lyn8AXx6CDUavKAd11v6BvfpkDByK8g==}
 
+  '@types/semver@7.8.0':
+    resolution: {integrity: sha512-1mAINjtQCXXeLkJ9ehXkwOcBpqtLxiVtKhpUf83DdRNdQKV0iXZpaHYqRr7nj+wvxuJzoAmAwXI+sCNMv1CzLQ==}
+
   '@types/through@0.0.33':
     resolution: {integrity: sha512-HsJ+z3QuETzP3cswwtzt2vEIiHBk/dCcHGhbmG5X3ecnwFD/lPrMpliGXxSCg03L9AhrdwA4Oz/qfspkDW+xGQ==}
 
@@ -2094,6 +2137,9 @@ packages:
       picomatch:
         optional: true
 
+  fflate@0.8.3:
+    resolution: {integrity: sha512-tbZNuJrLwGUp3zshBtdy4W+ORxZuIh8a5ilyIEQDC5rY1f3U20JMry0Ll3WBzU58EZKsEuJFXhb5gwv8CsPvgA==}
+
   figures@6.1.0:
     resolution: {integrity: sha512-d+l3qxjSesT4V7v2fh+QnmFnUWv9lSpjarhShNTgBOfA0ttejbQUAlHLitbjkoRiDulW0OPoQPYIGhIC8ohejg==}
     engines: {node: '>=18'}
@@ -2657,9 +2703,6 @@ packages:
   readdirp@5.1.1:
     resolution: {integrity: sha512-Kko+Y5XQ6fM+Ce3dq3m9YGxnacYZYl9cA1wZjaF3Vbry2L3i1qVg8+CAgNPsXRArPMUMCaOR7oa9Nqntc43JKA==}
     engines: {node: '>= 20.19.0'}
-
-  reflect-metadata@0.2.2:
-    resolution: {integrity: sha512-urBwgfrvVP/eAyXx4hluJivBKzuEbSQs9rKWCrCkbSxNv8mxPcUZKeuoF3Uy4mJl3Lwprp6yy5/39VWigZ4K6Q==}
 
   require-from-string@2.0.2:
     resolution: {integrity: sha512-Xf0nWe6RseziFMu+Ap9biiUbmplq6S9/p+7w7YXP/JBHhrUDDUhwa+vANyubuqfZWTveU//DYVGsDG7RKL/vEw==}
@@ -3956,6 +3999,8 @@ snapshots:
     dependencies:
       undici-types: 8.9.0
 
+  '@types/semver@7.8.0': {}
+
   '@types/through@0.0.33':
     dependencies:
       '@types/node': 26.6.2
@@ -4571,6 +4616,8 @@ snapshots:
     optionalDependencies:
       picomatch: 4.0.7
 
+  fflate@0.8.3: {}
+
   figures@6.1.0:
     dependencies:
       is-unicode-supported: 2.1.0
@@ -5051,8 +5098,6 @@ snapshots:
       destr: 2.0.5
 
   readdirp@5.1.1: {}
-
-  reflect-metadata@0.2.2: {}
 
   require-from-string@2.0.2: {}
 

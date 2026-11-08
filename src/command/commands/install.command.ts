@@ -5,7 +5,6 @@ import { AbstractCommand } from "../abstract.command";
 interface InstallOptions {
   directory?: string;
   lib?: boolean;
-  server?: boolean;
 }
 
 export class InstallCommand extends AbstractCommand {
@@ -13,19 +12,13 @@ export class InstallCommand extends AbstractCommand {
     program
       .command("install [names...]")
       .alias("add")
-      .description("add Nanoforge components and systems to your project")
+      .description("add NanoForge registry packages to your project")
       .option("-d, --directory <directory>", "specify the working directory of the command")
-      .option("-l, --lib", "install library instead of component/system", false)
-      .option(
-        "-s, --server",
-        "install components/systems on server (default install on client)",
-        false,
-      )
+      .option("-l, --lib", "install npm libraries with the package manager instead", false)
       .action(async (names: string[], rawOptions: InstallOptions) => {
         const options = AbstractCommand.mapToInput({
           directory: rawOptions.directory,
           lib: rawOptions.lib,
-          server: rawOptions.server,
         });
         const args = AbstractCommand.mapToInput({
           names: names.length ? names : undefined,

@@ -50,6 +50,10 @@ lib:config:
   - "### Which package is this (bug
     report|feature request) for\\?\\n\\n@nanoforge-dev/config\\n"
 
+lib:registry:
+  - "### Which package is this (bug
+    report|feature request) for\\?\\n\\n@nanoforge-dev/registry\\n"
+
 lib:schematics:
   - "### Which package is this (bug
     report|feature request) for\\?\\n\\n@nanoforge-dev/schematics\\n"

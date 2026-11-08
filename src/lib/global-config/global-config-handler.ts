@@ -38,6 +38,6 @@ export class GlobalConfigHandler {
     if (!force) {
       if (isEmpty(res)) return null;
     }
-    return deepMerge(GLOBAL_CONFIG_DEFAULTS, res);
+    return deepMerge({}, GLOBAL_CONFIG_DEFAULTS, res);
   }
 }
