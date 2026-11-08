@@ -7,13 +7,13 @@ const IS_WINDOWS = process.platform === "win32";
 /**
  * Quotes one argument for cmd.exe: npm, pnpm and yarn are `.cmd` shims there, which Node only starts
  * through a shell. Elsewhere, arguments go to the binary as an array, with no shell. cmd.exe has no
- * escape for `"` and expands `%VAR%` inside quotes, so arguments holding them are refused.
- * shortcut: refuses `"`, `%` and line breaks on Windows, use cross-spawn if real arguments need them.
+ * escape for `"` and expands `%VAR%` (and `!VAR!` with delayed expansion) inside quotes, so arguments holding them are refused.
+ * shortcut: refuses `"`, `%`, `!` and line breaks on Windows, use cross-spawn if real arguments need them.
  */
 export const quoteForCmd = (arg: string): string => {
-  if (/["%\r\n]/.test(arg))
+  if (/["%!\r\n]/.test(arg))
     throw new Error(
-      `error: argument not supported on Windows (holds ", % or a line break): ${arg}`,
+      `error: argument not supported on Windows (holds ", %, ! or a line break): ${arg}`,
     );
   // A trailing backslash would escape the closing quote.
   return `"${arg.replace(/(\\+)$/, "$1$1")}"`;
@@ -49,10 +49,8 @@ export class Runner {
         : spawn(this.binary, fullArgs, spawnOpts);
       const output = this.attachOutputHandlers(child, listeners);
 
-      child.on("error", (error) => {
-        this.handleFailure(output, fullArgs, onFail);
-        reject(error);
-      });
+      // A spawn failure (missing binary) is followed by "close", which reports it.
+      child.on("error", reject);
 
       child.on("close", (code) => {
         if (code === 0) {

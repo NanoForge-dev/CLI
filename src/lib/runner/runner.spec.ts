@@ -54,6 +54,7 @@ describe("Runner", () => {
     it("should refuse what cmd.exe can't quote", () => {
       expect(() => quoteForCmd('a" & calc')).toThrow(/error/);
       expect(() => quoteForCmd("%PATH%")).toThrow(/error/);
+      expect(() => quoteForCmd("!PATH!")).toThrow(/error/);
     });
   });
 });
