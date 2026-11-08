@@ -23,14 +23,15 @@ export class PublishAction extends AbstractAction {
   protected failureMessage = Messages.PUBLISH_FAILED;
 
   /**
-   * Zips the package folder (secrets, installed and build folders left out), lists what it packed,
-   * and publishes it; `--dry-run` stops after the list.
+   * Zips what the manifest names (secrets left out), lists what it packed, and publishes it;
+   * `--dry-run` stops after the list.
    */
   public async handle(_args: Input, options: Input): Promise<HandleResult> {
     const directory = getDirectoryInput(options);
     const manifest = loadManifest(directory);
     const subject = `${manifest.name}@${manifest.version}`;
-    const archive = await zipFolder(getCwd(directory), { ignore: publishIgnore(manifest) });
+    const root = getCwd(directory);
+    const archive = await zipFolder(root, { ignore: await publishIgnore(root, manifest) });
 
     const files = [...readArchive(archive)];
     for (const [path, content] of files) console.info(`  ${path} (${formatSize(content.length)})`);

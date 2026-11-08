@@ -51,12 +51,13 @@ on the NanoForge registry. Other projects can then get it with `nf install`.
     nf publish
     ```
 
-    `nf publish` zips the folder, prints the files it packed, and publishes it as
-    `@my-org/health-bar@1.0.0`. It leaves out secrets (`.env*`, `.npmrc`, `.netrc`,
-    `.nanoforgerc`, keys), `.git`, `node_modules`, `nf_modules` and `.nanoforge` folders, and
-    `dist` unless the manifest points into it. It doesn't read `.gitignore`: every other file is
-    sent. Run `nf publish --dry-run` first to see the list without publishing. Others now install
-    it with `nf install @my-org/health-bar`.
+    `nf publish` zips what the manifest names (the manifest, the `contents` paths, the
+    sub-manifests, the readme, and the root's `README*`, `LICENSE*` and `CHANGELOG*`), prints the
+    files it packed, and publishes them as `@my-org/health-bar@1.0.0`. A file the manifest
+    doesn't name is not sent. Secrets stay out even inside a named folder (`.env*`, `.npmrc`,
+    `.nanoforgerc`, credentials files, keys), and so do `.git`, `node_modules` and `nf_modules`.
+    Run `nf publish --dry-run` first to see the list without publishing. Others now install it
+    with `nf install @my-org/health-bar`.
 
     A version is published once: to publish a change, raise `version` first.
 

@@ -85,7 +85,7 @@ nf logout --local
 | `description`  | no       | Short description.                                                                                                                              |
 | `keywords`     | no       | Words people search with.                                                                                                                       |
 | `dependencies` | no       | Other registry packages with ranges, `{ "@scope/name": "^1.0.0" }`, or a list of names (any version). `nf install` installs them with this one. |
-| `contents`     | no       | What the package holds (`kind`, `path`, `export`…), shown in catalogs and the editor.                                                           |
+| `contents`     | no       | What the package holds (`kind`, `path`, `export`…), shown in catalogs; `nf publish` packs only these paths.                                     |
 
 The registry checks the rest (`contents`, `include`, `engines`, `npmDependencies`…) when you
 publish: its reference is the API's
@@ -107,19 +107,30 @@ nf publish [options]
 Before uploading, `nf publish` prints every file it packed, with its size, then their count and
 total size. With `--dry-run` it stops there: check the list before your first publish.
 
-The archive holds every file of the folder, with the manifest at its root, except:
+The archive holds only what the manifest names, with the manifest at its root:
 
-- secrets, in any subfolder: files whose name starts with `.env` (`.env`, `.env.local`,
-  `.envrc`…), `.npmrc`, `.netrc`, `.nanoforgerc` (it holds your key), `*.pem`, `*.key`, and SSH
-  keys (`id_rsa*`, `id_ed25519*`);
-- `.git`, `node_modules`, `nf_modules` and `.nanoforge` folders, in any subfolder;
-- the `dist` folder at the root, unless the manifest points into it (`contents`, `include`,
-  `readme` or a plugin's `entry`);
+- `nanoforge.manifest.json`, and the root's `README*`, `LICENSE*` and `CHANGELOG*` files;
+- every `contents[].path` (and `items[].path`): a file, or a whole folder when the path ends with
+  `/` or is a folder;
+- the sub-manifests `include` lists, and the paths their own `contents` name;
+- the `readme` file;
+- for a plugin (`"type": "plugin"`): the folder of each `entry` file, since a build writes its
+  chunks, CSS and assets next to it (`"client": "index.js"` packs the whole folder), and every
+  `path` in `contributes` (icons…).
+
+Inside those, secrets and installed folders stay out, in any subfolder:
+
+- files whose name starts with `.env` (`.env`, `.env.local`, `.envrc`…), `.npmrc`, `.netrc`,
+  `.git-credentials`, `.pgpass`, `credentials.json`, `.nanoforgerc` (it holds your key);
+- keys and keystores: `*.pem`, `*.key`, `*.p12`, `*.pfx`, `*.keystore`, and private SSH keys
+  (`id_rsa`, `id_ed25519`… but not `id_*.pub`);
+- `.git`, `node_modules`, `nf_modules`, `.nanoforge`, `.aws` and `.docker` folders;
 - symbolic links.
 
-`.gitignore` is not read: every other file is sent, so keep other secrets out of the folder. For
-an editor plugin, publish its build: `nf publish -d dist`. The registry refuses archives over
-20 MiB, or that unpack to more than 256 MiB or 20,000 files.
+A file the manifest doesn't name, such as `notes.txt` next to it, is not sent: list your code and
+assets in `contents`. `.gitignore` is not read. For an editor plugin, publish its build:
+`nf publish -d dist`, the folder with the built manifest and its entry files. The registry refuses
+archives over 20 MiB, or that unpack to more than 256 MiB or 20,000 files.
 
 ```bash
 nf publish --dry-run

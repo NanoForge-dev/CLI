@@ -124,6 +124,7 @@ describe("PublishAction", () => {
       name: "@acme/kit",
       version: "1.2.0",
       type: "package",
+      contents: [{ kind: "file", path: "src/" }],
     });
     writeFileSync(join(dir, ".nanoforgerc"), "apiKey=secret-key\n");
     writeFileSync(join(dir, ".env"), "SECRET=1");
@@ -149,8 +150,11 @@ describe("PublishAction", () => {
     expect([...files.keys()].sort()).toEqual(["nanoforge.manifest.json", "src/index.ts"]);
   });
 
-  it("packs only normal files when secrets sit next to them", async () => {
-    for (const secret of [".npmrc", "id_rsa", "key.pem"]) writeFileSync(join(dir, secret), "x");
+  it("packs only what the manifest names, without the secrets inside it", async () => {
+    for (const secret of [".npmrc", "id_rsa", "key.pem", ".git-credentials", "notes.txt"])
+      writeFileSync(join(dir, secret), "x");
+    writeJson(join(dir, ".aws/credentials"), {});
+    writeFileSync(join(dir, "src/.env"), "SECRET=1");
     stubFetch(() => new Response(null, { status: 201 }));
 
     await new PublishAction().handle(new Map(), input({ directory: dir }));

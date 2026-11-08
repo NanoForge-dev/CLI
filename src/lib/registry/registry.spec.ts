@@ -1,50 +1,115 @@
-import { describe, expect, it, vi } from "vitest";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { createRegistry, publishIgnore } from "./registry";
 
 describe("publishIgnore", () => {
-  const ignore = publishIgnore({ name: "@acme/kit" });
+  let root: string;
+
+  beforeEach(() => {
+    root = mkdtempSync(join(tmpdir(), "nf-publish-ignore-"));
+    mkdirSync(join(root, "assets"));
+    mkdirSync(join(root, "sub"));
+    writeFileSync(
+      join(root, "sub/nanoforge.manifest.json"),
+      JSON.stringify({ contents: [{ kind: "file", path: "a.ts" }] }),
+    );
+  });
+
+  afterEach(() => {
+    rmSync(root, { recursive: true, force: true });
+  });
+
+  const packageIgnore = () =>
+    publishIgnore(root, {
+      name: "@acme/kit",
+      type: "package",
+      contents: [
+        { kind: "file", path: "src/" },
+        { kind: "asset", path: "assets" },
+        { kind: "file", path: "lib/one.ts" },
+      ],
+      include: ["sub"],
+    });
 
   it.each([
-    [".env", false],
-    [".env.local", false],
-    [".envrc", false],
+    ["notes.txt", false],
+    [".git-credentials", false],
+    [".pgpass", false],
+    ["credentials.json", false],
+    [".aws", true],
+    [".docker", true],
+    ["other", true],
+    ["lib/two.ts", false],
+    ["sub/b.ts", false],
+    ["src/.env", false],
     ["src/.env.production", false],
-    [".npmrc", false],
-    [".netrc", false],
-    [".nanoforgerc", false],
-    ["key.pem", false],
-    ["certs/server.key", false],
-    ["id_rsa", false],
-    ["id_ed25519.pub", false],
-    [".git", true],
-    ["node_modules", true],
+    ["src/.npmrc", false],
+    ["src/.netrc", false],
+    ["src/.nanoforgerc", false],
+    ["src/key.pem", false],
+    ["src/server.key", false],
+    ["src/cert.p12", false],
+    ["src/cert.pfx", false],
+    ["src/app.keystore", false],
+    ["src/id_rsa", false],
+    ["src/id_ecdsa", false],
+    ["src/id_ed25519_sk", false],
+    ["src/.git", true],
     ["src/node_modules", true],
-    ["nf_modules", true],
-    [".nanoforge", true],
-    ["dist", true],
-  ])("leaves out %s", (path, isDirectory) => {
-    expect(ignore(path, isDirectory)).toBe(true);
+    ["src/nf_modules", true],
+    ["src/.nanoforge", true],
+    ["src/.aws", true],
+  ])("leaves out %s", async (path, isDirectory) => {
+    expect((await packageIgnore())(path, isDirectory)).toBe(true);
   });
 
   it.each([
-    ["index.ts", false],
-    ["environment.ts", false],
-    ["keys.ts", false],
+    ["nanoforge.manifest.json", false],
+    ["README.md", false],
+    ["LICENSE", false],
+    ["CHANGELOG.md", false],
     ["src", true],
-    ["src/dist", true],
-    ["assets/.git-keep", false],
-  ])("keeps %s", (path, isDirectory) => {
-    expect(ignore(path, isDirectory)).toBe(false);
+    ["src/player/velocity.ts", false],
+    ["src/id_rsa.pub", false],
+    ["assets/sprite.png", false],
+    ["lib", true],
+    ["lib/one.ts", false],
+    ["sub", true],
+    ["sub/nanoforge.manifest.json", false],
+    ["sub/a.ts", false],
+  ])("packs %s", async (path, isDirectory) => {
+    expect((await packageIgnore())(path, isDirectory)).toBe(false);
   });
 
-  it.each([
-    [{ contents: [{ kind: "file", path: "dist/kit.js" }] }],
-    [{ entry: { client: "./dist/index.js" } }],
-    [{ include: ["dist/assets"] }],
-    [{ readme: "dist/README.md" }],
-  ])("keeps dist when the manifest points into it: %j", (fields) => {
-    expect(publishIgnore({ name: "@acme/kit", ...fields })("dist", true)).toBe(false);
+  it("packs the folder of a plugin's entry files and its contributed paths", async () => {
+    const atRoot = await publishIgnore(root, {
+      type: "plugin",
+      entry: { client: "index.js" },
+    });
+    expect(atRoot("index.js", false)).toBe(false);
+    expect(atRoot("index.css", false)).toBe(false);
+    expect(atRoot("chunks", true)).toBe(false);
+    expect(atRoot(".env", false)).toBe(true);
+
+    const inDist = await publishIgnore(root, {
+      type: "plugin",
+      entry: { client: "./dist/index.js" },
+      contributes: { icons: [{ id: "leaf", path: "icons/leaf.svg" }] },
+    });
+    expect(inDist("dist", true)).toBe(false);
+    expect(inDist("dist/style.css", false)).toBe(false);
+    expect(inDist("icons", true)).toBe(false);
+    expect(inDist("icons/leaf.svg", false)).toBe(false);
+    expect(inDist("icons/other.svg", false)).toBe(true);
+    expect(inDist("src", true)).toBe(true);
+  });
+
+  it("packs nothing a package's entry names: entry is for plugins", async () => {
+    const ignore = await publishIgnore(root, { type: "package", entry: { client: "index.js" } });
+    expect(ignore("index.js", false)).toBe(true);
   });
 });
 

@@ -24,6 +24,10 @@ function writeManifest(dir: string, overrides: Record<string, unknown> = {}) {
     name: "@test-org/test-package",
     version: "1.0.0",
     type: "package",
+    contents: [
+      { kind: "file", path: "index.ts" },
+      { kind: "file", path: "src/" },
+    ],
     ...overrides,
   };
   writeFileSync(resolve(dir, "nanoforge.manifest.json"), JSON.stringify(manifest));
@@ -73,7 +77,7 @@ describe("nf publish", () => {
     rmSync(LOG_PATH, { force: true });
   });
 
-  it("should publish the folder as a zip, without secrets nor installed folders", async () => {
+  it("should publish only what the manifest names, without secrets", async () => {
     writeManifest(dir);
     writePackageFile(dir);
     mkdirSync(resolve(dir, "src/node_modules/x"), { recursive: true });
@@ -81,6 +85,10 @@ describe("nf publish", () => {
     writePackageFile(dir, "src/player.ts");
     writeFileSync(resolve(dir, ".env"), "SECRET=1");
     writeFileSync(resolve(dir, "src/.env.local"), "SECRET=2");
+    writeFileSync(resolve(dir, ".git-credentials"), "https://user:token@github.com");
+    mkdirSync(resolve(dir, ".aws"), { recursive: true });
+    writeFileSync(resolve(dir, ".aws/credentials"), "[default]");
+    writeFileSync(resolve(dir, "notes.txt"), "not named by the manifest");
     rmSync(LOG_PATH, { force: true });
 
     const { stdout, exitCode } = await runCli(["publish", "-d", dir], {
