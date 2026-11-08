@@ -44,8 +44,8 @@ const DENIED_FILES = [
   /^\.git-credentials$/,
   /^\.pgpass$/,
   /^credentials\.json$/,
-  /\.(pem|key|p12|pfx|keystore)$/,
-  /^id_[a-z0-9_]+$/,
+  /\.(pem|key|p12|pfx|keystore|ppk)$/i,
+  /^id_(?!.*\.pub$)/i,
 ];
 /** Files at the root packed with every package. */
 const ROOT_FILES = /^(readme|license|licence|changelog)(\..*)?$/i;
@@ -118,7 +118,7 @@ const namedPaths = async (root: string, manifest: Record<string, unknown>): Prom
  * What `nf publish` leaves out of the package at `root`. Only what the manifest names is packed
  * (see `namedPaths`), with the root's `README*`, `LICENSE*` and `CHANGELOG*`; inside that, secrets
  * (`.env*`, `.npmrc`, `.netrc`, `.git-credentials`, `.pgpass`, `credentials.json`, the
- * `.nanoforgerc` of `nf login --local`, `*.pem`, `*.key`, `*.p12`, `*.pfx`, `*.keystore`,
+ * `.nanoforgerc` of `nf login --local`, `*.pem`, `*.key`, `*.p12`, `*.pfx`, `*.keystore`, `*.ppk`,
  * private SSH keys `id_*`) and `.git`, `node_modules`, `nf_modules`, `.nanoforge`, `.aws` and
  * `.docker` folders stay out at any depth. `.gitignore` is not read.
  */
