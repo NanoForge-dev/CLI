@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file.
 
+# [3.0.1](https://github.com/NanoForge-dev/CLI/compare/3.0.0...3.0.1) - (2026-11-08)
+
 # [3.0.0](https://github.com/NanoForge-dev/CLI/compare/2.3.1...3.0.0) - (2026-11-08)
 
 ## Features

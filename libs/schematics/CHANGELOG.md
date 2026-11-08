@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+# [3.0.1](https://github.com/NanoForge-dev/CLI/compare/3.0.0...3.0.1) - (2026-11-08)
+
+## Bug Fixes
+
+- **cli:** Run commands without a shell and keep the local api key private (#268) ([bdbe963](https://github.com/NanoForge-dev/CLI/commit/bdbe963096b9a80f4910996dc04b8c7d0d41d8f9)) by @Exeloo
+
 # [3.0.0](https://github.com/NanoForge-dev/CLI/compare/2.3.1...3.0.0) - (2026-11-08)
 
 ## Breaking Changes
