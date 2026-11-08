@@ -2,6 +2,40 @@
 
 All notable changes to this project will be documented in this file.
 
+# [4.0.0](https://github.com/NanoForge-dev/CLI/compare/2.3.1...4.0.0) - (2026-11-08)
+
+## Breaking Changes
+
+- **cli:** Install, publish and unpublish on the shared registry lib (#263) ([9fb3abf](https://github.com/NanoForge-dev/CLI/commit/9fb3abfc4ff9c8630acb7a559be3129da04af221)) by @Exeloo
+  - **BREAKING CHANGE:** nf install drops --server, and installs into nf_modules instead of copying files into client/ or server/. Manifests must use the registry format (@scope/name, version, type package or plugin): publish.paths and the scope/name format are no longer read.
+
+## Bug Fixes
+
+- **cli:** Run commands without a shell and keep the local api key private (#268) ([bdbe963](https://github.com/NanoForge-dev/CLI/commit/bdbe963096b9a80f4910996dc04b8c7d0d41d8f9)) by @Exeloo
+- **registry:** Keep every request on the registry's origin (#264) ([2ac2f42](https://github.com/NanoForge-dev/CLI/commit/2ac2f424027fac18a6951513dc401990f63f252b)) by @Exeloo
+- **nightly:** Build workspace packages and ensure schematics collection exists before e2e (#257) ([b98ef13](https://github.com/NanoForge-dev/CLI/commit/b98ef1393b6a994c113a8dd9952f6fb34d316be8)) by @MartinFillon
+- **schematics:** Resolve and quote paths correctly on Windows (#240) ([6928a8c](https://github.com/NanoForge-dev/CLI/commit/6928a8c63d8fa492e5fe64eb321cdb8e8d34dc8d)) by @Raphael-Mabille
+
+## Documentation
+
+- Add agents documentation and skill (#243) ([eebe5e1](https://github.com/NanoForge-dev/CLI/commit/eebe5e13b86e3c7e7d43a18550f98eadfdb8e850)) by @hvrp3r
+- Rewrite the cli pages and guides against the current code (#255) ([d71a47c](https://github.com/NanoForge-dev/CLI/commit/d71a47c8e332829e9a403d153e796b176d31cb6b)) by @Exeloo
+- Drop number prefixes from page names and add an explicit navigation (#253) ([42d0e87](https://github.com/NanoForge-dev/CLI/commit/42d0e87997756e3f8af4b569799a066416209cfc)) by @Exeloo
+
+## Features
+
+- New CLI options for AGENTS.md documentation (#245) ([63a1446](https://github.com/NanoForge-dev/CLI/commit/63a144662840e3d7487b18f34feade8230507831)) by @hvrp3r
+- **nightly:** Setup nightly test runner script (#251) ([98d5e78](https://github.com/NanoForge-dev/CLI/commit/98d5e780429d1d0a078b1adc1e76b70c865aebb9)) by @MartinFillon
+- Add theme plugin (#248) ([e62ec83](https://github.com/NanoForge-dev/CLI/commit/e62ec831e5a87d5221401a3382856738985a507a)) by @Exeloo
+- **build:** Build the server app for the browser in p2p workspaces (#246) ([ab74db7](https://github.com/NanoForge-dev/CLI/commit/ab74db74b93f7b6035cd278f52ba46f9d6b7367d)) by @Tchips46
+- **schematics:** Add support for generating NanoForge editor plugins (#241) ([0440154](https://github.com/NanoForge-dev/CLI/commit/044015451885e5ef2a3ad6475477ae326fc21406)) by @Exeloo
+- **editor:** Add support for custom port and project paths via CLI options (#242) ([d792dbb](https://github.com/NanoForge-dev/CLI/commit/d792dbb177095f715bb90092ce6ba14e8c4478eb)) by @Exeloo
+
+### New Contributors
+
+- @hvrp3r made their first contribution in #245
+- @Raphael-Mabille made their first contribution in #240
+
 # [3.0.0](https://github.com/NanoForge-dev/CLI/compare/2.3.1...3.0.0) - (2026-11-08)
 
 ## Breaking Changes
