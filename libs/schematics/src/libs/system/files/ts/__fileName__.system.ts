@@ -1,5 +1,5 @@
 import { type Context } from "@nanoforge-dev/common";
-import { type EditorSystemManifest, type Registry } from "@nanoforge-dev/ecs-<%= part %>";
+import { type EditorSystemManifest, type Registry } from "@nanoforge-dev/ecs";
 
 import { ExampleComponent } from "../components/example.component";
 

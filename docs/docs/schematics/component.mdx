@@ -30,7 +30,7 @@ schematics @nanoforge-dev/schematics:component --part=client --name=health
 `<directory>/<name>.component.ts`, here for `--name=health --part=client`:
 
 ```ts health.component.ts
-import { type EditorComponentManifest } from "@nanoforge-dev/ecs-client";
+import { type EditorComponentManifest } from "@nanoforge-dev/ecs";
 
 export class HealthComponent {
   name = this.constructor.name;
@@ -88,18 +88,6 @@ export const EDITOR_COMPONENT_MANIFEST: EditorComponentManifest = {
 ```
 
 Replace the example parameters, getters and method with your component's data.
-
-<Warning>
-
-The file imports from `@nanoforge-dev/ecs-client` (or `@nanoforge-dev/ecs-server` for the server).
-Projects made by `nf new` depend on `@nanoforge-dev/ecs`, not on these packages. Change the import
-to this one, like the components that `nf new` generates:
-
-```ts
-import type { EditorComponentManifest } from "@nanoforge-dev/ecs";
-```
-
-</Warning>
 
 ## Editor manifest
 

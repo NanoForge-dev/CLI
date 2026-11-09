@@ -30,7 +30,7 @@ schematics @nanoforge-dev/schematics:system --part=client --name=movement
 
 ```ts movement.system.ts
 import { type Context } from "@nanoforge-dev/common";
-import { type EditorSystemManifest, type Registry } from "@nanoforge-dev/ecs-client";
+import { type EditorSystemManifest, type Registry } from "@nanoforge-dev/ecs";
 
 import { ExampleComponent } from "../components/example.component";
 
@@ -65,13 +65,6 @@ export const EDITOR_SYSTEM_MANIFEST: EditorSystemManifest = {
 The example system works on `ExampleComponent`, imported from `../components/example.component`.
 That file exists only if you created a component named `example`. Replace it with your own
 components.
-
-<Warning>
-  The file imports from `@nanoforge-dev/ecs-client` (or `@nanoforge-dev/ecs-server` for the
-  server). Projects made by `nf new` depend on `@nanoforge-dev/ecs`, not on these packages. Change
-  the import to `import type { EditorSystemManifest, Registry } from "@nanoforge-dev/ecs";`, like
-  the systems that `nf new` generates.
-</Warning>
 
 ## System signature
 

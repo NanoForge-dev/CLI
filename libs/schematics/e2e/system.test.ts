@@ -28,9 +28,10 @@ describe("system schematic", () => {
       expect(content).toContain("export const mySystemSystem");
     });
 
-    it("should use the correct part in the import", () => {
+    it("should import its types from @nanoforge-dev/ecs", () => {
       const content = tree.readContent("/my-app/my-system.system.ts");
-      expect(content).toContain("@nanoforge-dev/ecs-client");
+      expect(content).toContain('"@nanoforge-dev/ecs"');
+      expect(content).not.toContain("@nanoforge-dev/ecs-");
     });
 
     it("should export the system name as default", () => {
@@ -61,9 +62,10 @@ describe("system schematic", () => {
       expect(tree.files).toContain("/my-app/my-system.system.ts");
     });
 
-    it("should use the correct part in the import", () => {
+    it("should import its types from @nanoforge-dev/ecs", () => {
       const content = tree.readContent("/my-app/my-system.system.ts");
-      expect(content).toContain("@nanoforge-dev/ecs-server");
+      expect(content).toContain('"@nanoforge-dev/ecs"');
+      expect(content).not.toContain("@nanoforge-dev/ecs-");
     });
   });
 
@@ -88,9 +90,10 @@ describe("system schematic", () => {
       expect(content).toContain("export const mySystemSystem");
     });
 
-    it("should use the correct part in the JSDoc typedef", () => {
+    it("should import its types from @nanoforge-dev/ecs", () => {
       const content = tree.readContent("/my-app/my-system.system.js");
-      expect(content).toContain("@nanoforge-dev/ecs-client");
+      expect(content).toContain('"@nanoforge-dev/ecs"');
+      expect(content).not.toContain("@nanoforge-dev/ecs-");
     });
 
     it("should export the EDITOR_SYSTEM_MANIFEST", () => {
