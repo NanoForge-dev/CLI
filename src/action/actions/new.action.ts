@@ -60,7 +60,7 @@ export class NewAction extends AbstractAction {
       res = await this.installDependencies(values.packageManager, distDir);
     }
 
-    if (values.git) await this.setupGitRepository(values.gitRemote, distDir);
+    if (values.git) res = (await this.setupGitRepository(values.gitRemote, distDir)) && res;
 
     return { success: res };
   }
