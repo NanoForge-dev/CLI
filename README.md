@@ -51,7 +51,6 @@ nf [command] [options]
 Used to build your nanoforge project.
 
 - `-d, --directory <directory>` specify the working directory of the command.
-- `-c, --config <config>` path to the config file.
 - `--client-entry <clientEntry>` specify the entry file of the client.
 - `--server-entry <serverEntry>` specify the entry file of the server.
 - `--client-static-dir <clientStaticDir>` specify the static directory of the client.
@@ -76,10 +75,9 @@ nf create plugin --name @acme/forest --template theme   # a color theme, no code
 
 - `<type>` the type to create (component, system or plugin).
 - `-d, --directory <directory>` specify the working directory of the command.
-- `-c, --config <config>` path to the config file.
-- `-n, --name <name>` name of the component/system.
-- `-s, --server` create on server instead of client. (default: `false`)
-- `-p, --path <path>` path to the component/system folder.
+- `-n, --name <name>` name of the component/system, or @scope/name of the plugin.
+- `-p, --path <path>` path to the component/system folder (default: <part>/<components|systems>), or the folder of the new plugin (default: its name).
+- `-t, --template <template>` what a plugin starts from: panel (a panel, a command and a setting) or theme (a color theme, no code).
 
 ### `dev`
 
@@ -87,6 +85,7 @@ Used to run your nanoforge project in dev mode.
 
 - `-d, --directory <directory>` specify the working directory of the command.
 - `-c, --config <config>` path to the config file.
+- `-e, --editor` run the editor.
 
 ### `editor`
 
@@ -96,6 +95,7 @@ Used to start the nanoforge editor.
 - `-d, --directory <directory>` specify the working directory of the command.
 - `--open` open the editor in the default web browser (default: `true` if path is specified, `false` otherwise).
 - `--no-open` do not open the editor in the default web browser.
+- `-p, --port <port>` port of the editor (default: 5173).
 
 ### `install` or `add`
 
@@ -159,7 +159,6 @@ Used to publish a package to the NanoForge registry: zips what its `nanoforge.ma
 Used to start your nanoforge project.
 
 - `-d, --directory <directory>` specify the working directory of the command.
-- `-c, --config <config>` path to the config file (default: "nanoforge.config.json").
 - `-p, --port <port>` specify the port of the loader (the website to load the game).
 - `--client-dir <clientDirectory>` specify the directory of the client.
 - `--server-dir <serverDirectory>` specify the directory of the server.
@@ -209,4 +208,4 @@ If you don't understand something in the documentation, you are experiencing pro
 [github-releases]: https://github.com/NanoForge-dev/CLI/releases
 [good-first-issue]: https://github.com/NanoForge-dev/CLI/contribute
 
-The config file schema can be found at : [https://nanoforge-dev.github.io/docs/cli/config-schema.json](https://nanoforge-dev.github.io/docs/cli/config-schema.json)
+The config file schema can be found at : [https://docs.nanoforge.eu/docs/cli/config.schema.json](https://docs.nanoforge.eu/docs/cli/config.schema.json)
