@@ -1,12 +1,14 @@
 import { existsSync, mkdirSync, readFileSync, rmSync } from "node:fs";
 import { resolve } from "node:path";
+import { pathToFileURL } from "node:url";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import { runCli } from "./helpers/run-cli";
 
 const tmpDir = resolve(__dirname, "../.tmp-e2e-logout");
 const RC_FILE = ".nanoforgerc";
-const FETCH_MOCK_PATH = resolve(__dirname, "./helpers/fetch-mock.mjs");
+// --import needs a file URL: a raw D:\ path is rejected on Windows.
+const FETCH_MOCK_PATH = pathToFileURL(resolve(__dirname, "./helpers/fetch-mock.mjs")).href;
 
 function withMockedFetch(): NodeJS.ProcessEnv {
   const existing = process.env.NODE_OPTIONS ?? "";
