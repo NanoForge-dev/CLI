@@ -19,6 +19,13 @@ export const quoteForCmd = (arg: string): string => {
   return `"${arg.replace(/(\\+)$/, "$1$1")}"`;
 };
 
+/**
+ * The cmd.exe command line for a binary and its arguments. A bare name (`npm`) stays unquoted:
+ * started as `"npm"`, a `.cmd` shim resolves `%~dp0` to the working directory and can't find itself.
+ */
+export const cmdLine = (binary: string, args: string[]): string =>
+  [/^[\w.-]+$/.test(binary) ? binary : quoteForCmd(binary), ...args.map(quoteForCmd)].join(" ");
+
 export interface RunOptions {
   collect?: boolean;
   cwd?: string;
@@ -45,7 +52,7 @@ export class Runner {
 
     return new Promise<string | null>((resolve, reject) => {
       const child = IS_WINDOWS
-        ? spawn([this.binary, ...fullArgs].map(quoteForCmd).join(" "), spawnOpts)
+        ? spawn(cmdLine(this.binary, fullArgs), spawnOpts)
         : spawn(this.binary, fullArgs, spawnOpts);
       const output = this.attachOutputHandlers(child, listeners);
 
