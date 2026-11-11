@@ -21,3 +21,5 @@ jobs:
       style-scripts: '["repo:lint"]'
       unit-script: repo:test:unit
       e2e-script: repo:test:e2e
+      # nf runs on Windows too (#123).
+      extra-runners: '["windows-latest"]'
