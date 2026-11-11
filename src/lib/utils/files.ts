@@ -1,5 +1,5 @@
 import fs from "fs";
-import { join } from "path";
+import { dirname, join } from "path";
 
 import { FileSystemError } from "@utils/errors";
 
@@ -7,7 +7,12 @@ export const copyFiles = (from: string, to: string) => {
   if (!fs.existsSync(from)) return;
   if (!fs.existsSync(to)) throw new FileSystemError("directory not found", to);
   fs.readdirSync(from, { recursive: true }).forEach((file) => {
-    fs.copyFileSync(join(from, file.toString()), join(to, file.toString()));
+    const name = file.toString();
+    const source = join(from, name);
+    if (fs.statSync(source).isDirectory()) return;
+    const destination = join(to, name);
+    fs.mkdirSync(dirname(destination), { recursive: true });
+    fs.copyFileSync(source, destination);
   });
 };
 
