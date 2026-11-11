@@ -32,7 +32,7 @@ describe("nf install (with existing project)", () => {
   });
 
   it("should run the install command with a library name", async () => {
-    const { exitCode } = await runCli([
+    const { exitCode, stdout, stderr } = await runCli([
       "install",
       "-l",
       "@nanoforge-dev/network-client",
@@ -40,7 +40,7 @@ describe("nf install (with existing project)", () => {
       appDir,
     ]);
 
-    expect(exitCode).toBe(0);
+    expect(exitCode, `${stdout}\n${stderr}`).toBe(0);
 
     const pkgJson = JSON.parse(readFileSync(resolve(appDir, "package.json"), "utf-8"));
     expect(pkgJson.devDependencies).toHaveProperty("@nanoforge-dev/network-client");
@@ -50,7 +50,7 @@ describe("nf install (with existing project)", () => {
   });
 
   it("should run the install command with multiple library names", async () => {
-    const { exitCode } = await runCli([
+    const { exitCode, stdout, stderr } = await runCli([
       "install",
       "-l",
       "@nanoforge-dev/network-client",
@@ -59,7 +59,7 @@ describe("nf install (with existing project)", () => {
       appDir,
     ]);
 
-    expect(exitCode).toBe(0);
+    expect(exitCode, `${stdout}\n${stderr}`).toBe(0);
 
     const pkgJson = JSON.parse(readFileSync(resolve(appDir, "package.json"), "utf-8"));
     expect(pkgJson.devDependencies).toHaveProperty("@nanoforge-dev/network-client");
@@ -73,9 +73,15 @@ describe("nf install (with existing project)", () => {
   });
 
   it("should work with the add alias", async () => {
-    const { exitCode } = await runCli(["add", "-l", "@nanoforge-dev/network-client", "-d", appDir]);
+    const { exitCode, stdout, stderr } = await runCli([
+      "add",
+      "-l",
+      "@nanoforge-dev/network-client",
+      "-d",
+      appDir,
+    ]);
 
-    expect(exitCode).toBe(0);
+    expect(exitCode, `${stdout}\n${stderr}`).toBe(0);
 
     const pkgJson = JSON.parse(readFileSync(resolve(appDir, "package.json"), "utf-8"));
     expect(pkgJson.devDependencies).toHaveProperty("@nanoforge-dev/network-client");
