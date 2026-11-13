@@ -1,23 +1,31 @@
+import { join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { editorUrl, resolveEditorTarget } from "./editor-target";
 
+// Paths are native: "/work" resolves to "D:\work" on Windows.
 describe("resolveEditorTarget", () => {
   it("roots the editor in the working directory", () => {
-    expect(resolveEditorTarget("/work")).toEqual({ fsRoot: "/work" });
+    expect(resolveEditorTarget("/work")).toEqual({ fsRoot: resolve("/work") });
     expect(resolveEditorTarget("/work", "games/pong")).toEqual({
-      fsRoot: "/work",
-      projectPath: "games/pong",
+      fsRoot: resolve("/work"),
+      projectPath: join("games", "pong"),
     });
-    expect(resolveEditorTarget("/work", ".")).toEqual({ fsRoot: "/work", projectPath: "." });
+    expect(resolveEditorTarget("/work", ".")).toEqual({
+      fsRoot: resolve("/work"),
+      projectPath: ".",
+    });
   });
 
   it("roots the editor in the parent of a project outside of it", () => {
     expect(resolveEditorTarget("/work", "/other/pong")).toEqual({
-      fsRoot: "/other",
+      fsRoot: resolve("/other"),
       projectPath: "pong",
     });
-    expect(resolveEditorTarget("/work/a", "../b")).toEqual({ fsRoot: "/work", projectPath: "b" });
+    expect(resolveEditorTarget("/work/a", "../b")).toEqual({
+      fsRoot: resolve("/work"),
+      projectPath: "b",
+    });
   });
 });
 

@@ -1,4 +1,5 @@
 import { SchematicTestRunner, type UnitTestTree } from "@angular-devkit/schematics/testing";
+import { EOL } from "node:os";
 import { resolve } from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -287,7 +288,8 @@ describe("workspace schematic", () => {
         packageManager,
       });
       expect(tree.files).toContain("/my-workspace/AGENTS.md");
-      expect(tree.readContent("/my-workspace/CLAUDE.md")).toBe("@AGENTS.md\n");
+      // The template rule writes the OS line ending (CRLF on Windows).
+      expect(tree.readContent("/my-workspace/CLAUDE.md")).toBe(`@AGENTS.md${EOL}`);
       expect(tree.files.some((file) => file.endsWith(".template"))).toBe(false);
       const content = tree.readContent("/my-workspace/AGENTS.md");
       expect(content).not.toContain("<%");

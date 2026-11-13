@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { Runner, quoteForCmd } from "./runner";
+import { Runner, cmdLine, quoteForCmd } from "./runner";
 
 describe("Runner", () => {
   describe("fullCommand", () => {
@@ -55,6 +55,22 @@ describe("Runner", () => {
       expect(() => quoteForCmd('a" & calc')).toThrow(/error/);
       expect(() => quoteForCmd("%PATH%")).toThrow(/error/);
       expect(() => quoteForCmd("!PATH!")).toThrow(/error/);
+    });
+  });
+
+  describe("cmdLine", () => {
+    it("should leave a bare binary name unquoted", () => {
+      expect(cmdLine("npm", ["install", "a b"])).toBe('npm "install" "a b"');
+    });
+
+    it("should quote a binary path", () => {
+      expect(cmdLine("C:\\Program Files\\nf\\bun.cmd", ["x"])).toBe(
+        '"C:\\Program Files\\nf\\bun.cmd" "x"',
+      );
+    });
+
+    it("should refuse a binary path cmd.exe can't quote", () => {
+      expect(() => cmdLine("C:\\%PATH%\\npm", [])).toThrow(/error/);
     });
   });
 });

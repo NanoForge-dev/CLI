@@ -51,8 +51,8 @@
   "scripts": {
     "build": "tsc --noEmit && tsdown",
     "postbuild": "pnpm run copy:collection && pnpm run copy:lib",
-    "copy:collection": "cpx src/collection.json dist && cpx 'src/libs/**/schema.json' dist/libs",
-    "copy:lib": "cpx 'src/libs/**/{files,theme-files}/**/{.,}*' dist/libs",
+    "copy:collection": "cpx src/collection.json dist && cpx \"src/libs/**/schema.json\" dist/libs",
+    "copy:lib": "cpx \"src/libs/**/{files,theme-files}/**/{.,}*\" dist/libs",
     "lint": "prettier --check . && eslint --format=pretty src",
     "format": "prettier --write . && eslint --fix --format=pretty src",
     "prepack": "pnpm run build && pnpm run lint",
