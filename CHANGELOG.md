@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+# [3.0.2](https://github.com/NanoForge-dev/CLI/compare/3.0.1...3.0.2) - (2026-11-20)
+
+## Bug Fixes
+
+- **cli:** Import the local cli command loader through a file url (#272) ([1a5eec5](https://github.com/NanoForge-dev/CLI/commit/1a5eec5c00a0e52bf6655ed639196240fad9111b)) by @Exeloo
+- **cli:** Make nf and its tests work on windows (#274) ([cf32f31](https://github.com/NanoForge-dev/CLI/commit/cf32f310945f8abd4ec1f3557f8e67e33df3920d)) by @Exeloo
+- **schematics:** Import the ecs types from @nanoforge-dev/ecs in item templates (#271) ([e95b881](https://github.com/NanoForge-dev/CLI/commit/e95b881767113eae330d33b174086fe80461b9e9)) by @Exeloo
+
 # [3.0.1](https://github.com/NanoForge-dev/CLI/compare/3.0.0...3.0.1) - (2026-11-08)
 
 ## Bug Fixes
