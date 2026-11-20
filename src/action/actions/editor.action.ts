@@ -52,7 +52,8 @@ export class EditorAction extends AbstractAction {
         fsRoot,
         editorPath,
         [],
-        { PORT: String(port), FS_ROOT: fsRoot },
+        // Pinned so a game's own `.env` (HOST, PUBLIC_MODE), which Bun loads from fsRoot, can't stop the editor.
+        { PORT: String(port), FS_ROOT: fsRoot, HOST: "127.0.0.1", PUBLIC_MODE: "OFFLINE" },
         [],
         true,
       );
