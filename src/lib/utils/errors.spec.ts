@@ -1,7 +1,7 @@
 import { RegistryError } from "@nanoforge-dev/registry";
 import { describe, expect, it, vi } from "vitest";
 
-import { handleActionError, promptError } from "./errors";
+import { ConfigNotFoundError, handleActionError, promptError } from "./errors";
 
 describe("promptError", () => {
   it("should exit process on ExitPromptError", () => {
@@ -49,5 +49,31 @@ describe("handleActionError", () => {
     exitSpy.mockRestore();
     errorSpy.mockRestore();
     infoSpy.mockRestore();
+  });
+});
+
+describe("error suggestions", () => {
+  it("points a missing config at -d, not at a --config option", () => {
+    const { suggestion } = new ConfigNotFoundError("nanoforge.config.ts");
+
+    expect(suggestion).toContain("-d");
+    expect(suggestion).not.toContain("--config");
+  });
+
+  it("does not suggest REGISTRY_URL for an unreachable registry", () => {
+    vi.spyOn(process, "exit").mockImplementation(() => {
+      throw new Error("exit");
+    });
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const infoSpy = vi.spyOn(console, "info").mockImplementation(() => {});
+
+    expect(() =>
+      handleActionError("Install failed!", new RegistryError("UNAVAILABLE", "unreachable")),
+    ).toThrow("exit");
+
+    const printed = infoSpy.mock.calls.flat().join("\n");
+    expect(printed).toContain("Check your connection and try again.");
+    expect(printed).not.toContain("REGISTRY_URL");
+    vi.restoreAllMocks();
   });
 });

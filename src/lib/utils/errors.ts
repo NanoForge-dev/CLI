@@ -16,7 +16,7 @@ export class ConfigNotFoundError extends CLIError {
   constructor(configPath: string) {
     super(
       `Configuration file not found at path: ${configPath}.`,
-      "Please run 'nf new' or provide a valid --config path.",
+      "Run the command from a project folder, pass it with -d, or run 'nf new'.",
     );
   }
 }
@@ -55,11 +55,11 @@ export class ProjectInitializationError extends CLIError {
 }
 
 export class ManifestError extends CLIError {
-  constructor(detail: string) {
-    super(
-      `Manifest Error: ${detail}`,
-      "Check your nanoforge.manifest.json file for syntax or formatting errors.",
-    );
+  constructor(
+    detail: string,
+    suggestion = "Check your nanoforge.manifest.json file for syntax or formatting errors.",
+  ) {
+    super(`Manifest Error: ${detail}`, suggestion);
   }
 }
 
@@ -89,7 +89,7 @@ export const getErrorMessage = (error: unknown): string | undefined => {
 
 const REGISTRY_SUGGESTIONS: Partial<Record<RegistryErrorCode, string>> = {
   NOT_FOUND: "Check the package name and version.",
-  UNAVAILABLE: "Check your connection and REGISTRY_URL, then try again.",
+  UNAVAILABLE: "Check your connection and try again.",
   CONFLICT: "Raise the version in nanoforge.manifest.json before publishing again.",
 };
 

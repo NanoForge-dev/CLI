@@ -8,7 +8,10 @@ import { ManifestError } from "@utils/errors";
 export const loadManifest = (directory: string): ItemManifest => {
   const path = join(directory, MANIFEST_FILE);
   if (!existsSync(path))
-    throw new ManifestError(`No manifest file found in directory: ${directory}`);
+    throw new ManifestError(
+      `No manifest file found in directory: ${directory}`,
+      "Run the command in a package folder, or pass it with -d.",
+    );
   let json: unknown;
   try {
     json = JSON.parse(readFileSync(path, "utf-8"));
