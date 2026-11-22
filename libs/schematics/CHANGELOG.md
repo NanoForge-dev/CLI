@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+# [3.0.3](https://github.com/NanoForge-dev/CLI/compare/3.0.2...3.0.3) - (2026-11-22)
+
+## Bug Fixes
+
+- **schematics:** Drop the -r option and move the templates to engine 3 packets (#336) ([3d7ac71](https://github.com/NanoForge-dev/CLI/commit/3d7ac71a1e02f867c52994263c9aef088fdfebbe)) by @Exeloo
+- **cli:** One-line errors, checked inputs and no prompts without a terminal (#322) ([3be3ada](https://github.com/NanoForge-dev/CLI/commit/3be3ada76a62f4cf7875d300db0ccf4a9190b657)) by @Exeloo
+
 # [3.0.2](https://github.com/NanoForge-dev/CLI/compare/3.0.1...3.0.2) - (2026-11-20)
 
 ## Bug Fixes

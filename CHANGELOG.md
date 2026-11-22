@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
+# [3.0.3](https://github.com/NanoForge-dev/CLI/compare/3.0.2...3.0.3) - (2026-11-22)
+
+## Bug Fixes
+
+- **schematics:** Drop the -r option and move the templates to engine 3 packets (#336) ([3d7ac71](https://github.com/NanoForge-dev/CLI/commit/3d7ac71a1e02f867c52994263c9aef088fdfebbe)) by @Exeloo
+- **cli:** Mask the api key typed at the nf login prompt (#334) ([5e843d1](https://github.com/NanoForge-dev/CLI/commit/5e843d17f774ee1c24c6da43478e63e01d93fe32)) by @Exeloo
+- **cli:** Preserve line breaks in runner output (#291) ([c0f4569](https://github.com/NanoForge-dev/CLI/commit/c0f45690fe08adaab38599dc441ccf38d467fc7a)) by @arpanjot-coding
+- **tree-kill:** Never throw from the signal path, kill children first, skip helper pids (#290) ([b40a01e](https://github.com/NanoForge-dev/CLI/commit/b40a01e0fe77fe807272b9f567f3e265a00c1db6)) by @tylrcc
+- **new:** Fail when the git repository setup fails (#288) ([4ff4fd3](https://github.com/NanoForge-dev/CLI/commit/4ff4fd33d8d78e8f88a8780e3e783c0a6086ddff)) by @sarankumar1325
+- **cli:** One-line errors, checked inputs and no prompts without a terminal (#322) ([3be3ada](https://github.com/NanoForge-dev/CLI/commit/3be3ada76a62f4cf7875d300db0ccf4a9190b657)) by @Exeloo
+
+## Documentation
+
+- Make the README command options match the commands (#289) ([4173881](https://github.com/NanoForge-dev/CLI/commit/4173881743e9ebf1e446326f78b11ce8f09d3148)) by @tylrcc
+
+## Testing
+
+- **cli:** Add unit tests for files, package manager, build and start actions (#295) ([ab8745b](https://github.com/NanoForge-dev/CLI/commit/ab8745b92e1dfd1236234aecdea4d62345fad57c)) by @tylrcc
+
+### New Contributors
+
+- @tylrcc made their first contribution in #295
+- @arpanjot-coding made their first contribution in #291
+- @sarankumar1325 made their first contribution in #288
+
 # [3.0.2](https://github.com/NanoForge-dev/CLI/compare/3.0.1...3.0.2) - (2026-11-20)
 
 ## Bug Fixes
