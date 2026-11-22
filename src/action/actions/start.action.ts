@@ -251,6 +251,7 @@ export class StartAction extends AbstractAction {
     dotenv.config({
       path: resolve(getCwd(join(dir, ".env"))),
       processEnv: rawEnv,
+      quiet: true,
     });
     const baseEnv = Object.entries(rawEnv).filter(
       ([key, value]) => key.startsWith(prefix) && !!value,
