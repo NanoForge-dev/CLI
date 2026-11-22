@@ -7,6 +7,8 @@ import { getInputOrAsk } from "../ask-inputs";
 import { getStringInput } from "../base-inputs";
 import { type Input } from "../input.type";
 
+const ELEMENT_NAME = /^[A-Za-z][A-Za-z0-9_-]*$/;
+
 const getNameInput = (inputs: Input) => {
   return getStringInput(inputs, "name");
 };
@@ -35,9 +37,7 @@ export const getPluginNameInputOrAsk = (inputs: Input) => {
   );
 };
 
-/** Turns into a class or function name, so it must give a valid identifier. */
-const ELEMENT_NAME = /^[A-Za-z][A-Za-z0-9_-]*$/;
-
+/** The name turns into a class or function name, so it must give a valid identifier. */
 export const getCreateNameInputOrAsk = async (inputs: Input) => {
   const name = await getInputOrAsk(
     getNameInput(inputs),

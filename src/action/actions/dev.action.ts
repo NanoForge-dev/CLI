@@ -39,7 +39,8 @@ export class DevAction extends AbstractAction {
     await runSafe(async () => {
       const packageManager = await PackageManagerFactory.find(directory);
       const args = [command, "--watch", ...extraFlags];
-      // Not collected: `build --watch` never exits, so collected output (errors included) would never show.
+      // Not collected: `build --watch` never exits, so collected output (errors included)
+      // would never show.
       await packageManager.runDev(directory, "nf", {}, args, false);
     });
   }

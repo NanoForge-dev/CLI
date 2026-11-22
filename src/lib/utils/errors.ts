@@ -72,7 +72,10 @@ export class FileSystemError extends CLIError {
   }
 }
 
-/** A question was needed, but stdin is not a terminal (CI, a script, an agent): nothing can answer it. */
+/**
+ * A question was needed, but stdin is not a terminal (CI, a script, an agent): nothing can
+ * answer it.
+ */
 export class NoTerminalError extends CLIError {
   constructor(missing?: string) {
     super(
