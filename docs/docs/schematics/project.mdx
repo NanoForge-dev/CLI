@@ -65,12 +65,12 @@ schematics @nanoforge-dev/schematics:project --part=client --directory=apps/clie
     ├── components/
     │   ├── position-2d.component.ts         # both parts
     │   └── drawable-circle-2d.component.ts  # client only
+    ├── packets/
+    │   └── position.packet.ts               # server, or client with hasServer
     └── systems/
         ├── draw-2d.system.ts                # client only
         ├── position-sync.system.ts          # client only, hasServer: true
         └── move-2d.system.ts                # server only
-    └── packets/
-        └── position.packet.ts               # server, or client with hasServer
 ```
 
 `src/main.ts` creates the app, adds the ECS, network (server, or client with `hasServer`) and, on
