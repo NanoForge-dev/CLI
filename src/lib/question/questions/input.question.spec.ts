@@ -114,8 +114,18 @@ describe("askSecret", () => {
 
     expect(await askSecret("API key?")).toBe("nf_key");
     expect(password).toHaveBeenCalledWith(
-      expect.objectContaining({ message: "API key?", mask: "*" }),
+      expect.objectContaining({ message: "API key?", mask: "*", toggleMask: false }),
     );
+  });
+
+  it("should reject an empty answer", async () => {
+    vi.mocked(password).mockResolvedValue("nf_key");
+
+    await askSecret("API key?");
+    const validate = vi.mocked(password).mock.calls.at(-1)?.[0].validate;
+
+    expect(await validate?.("")).toEqual(expect.any(String));
+    expect(await validate?.("x")).toBe(true);
   });
 
   it("should throw NoTerminalError when stdin is not a terminal", async () => {

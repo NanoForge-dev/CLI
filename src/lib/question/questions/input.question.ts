@@ -57,6 +57,7 @@ export const askSecret = async (question: string): Promise<string | never> => {
   return await password({
     message: question,
     mask: "*",
+    toggleMask: false,
     validate: (value) => value.length > 0 || "A value is required.",
   }).catch(promptError);
 };
