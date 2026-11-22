@@ -1,12 +1,13 @@
-import { input } from "@inquirer/prompts";
+import { input, password } from "@inquirer/prompts";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { NoTerminalError } from "@utils/errors";
 
-import { askInput, askInputArray } from "./input.question";
+import { askInput, askInputArray, askSecret } from "./input.question";
 
 vi.mock("@inquirer/prompts", () => ({
   input: vi.fn(),
+  password: vi.fn(),
 }));
 
 // Vitest's stdin is not a terminal: these tests stand for an interactive run.
@@ -104,5 +105,32 @@ describe("without a terminal", () => {
     await expect(askInput("Name?")).rejects.toThrow(NoTerminalError);
     await expect(askInputArray("Names?")).rejects.toThrow(NoTerminalError);
     expect(input).not.toHaveBeenCalled();
+  });
+});
+
+describe("askSecret", () => {
+  it("should ask with a masked prompt and return the answer", async () => {
+    vi.mocked(password).mockResolvedValue("nf_key");
+
+    expect(await askSecret("API key?")).toBe("nf_key");
+    expect(password).toHaveBeenCalledWith(
+      expect.objectContaining({ message: "API key?", mask: "*", toggleMask: false }),
+    );
+  });
+
+  it("should reject an empty answer", async () => {
+    vi.mocked(password).mockResolvedValue("nf_key");
+
+    await askSecret("API key?");
+    const validate = vi.mocked(password).mock.calls.at(-1)?.[0].validate;
+
+    expect(await validate?.("")).toEqual(expect.any(String));
+    expect(await validate?.("x")).toBe(true);
+  });
+
+  it("should throw NoTerminalError when stdin is not a terminal", async () => {
+    process.stdin.isTTY = false;
+
+    await expect(askSecret("API key?")).rejects.toThrow(NoTerminalError);
   });
 });

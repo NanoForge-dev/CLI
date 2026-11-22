@@ -1,4 +1,4 @@
-import { askInput } from "@lib/question";
+import { askSecret } from "@lib/question";
 import { Messages } from "@lib/ui";
 
 import { getInputOrAsk } from "../../ask-inputs";
@@ -12,10 +12,7 @@ const getApiKeyInput = (inputs: Input) => {
 export const getLoginApiKeyInputOrAsk = (inputs: Input) => {
   return getInputOrAsk(
     getApiKeyInput(inputs),
-    () =>
-      askInput(Messages.LOGIN_API_KEY_QUESTION, {
-        required: true,
-      }),
+    () => askSecret(Messages.LOGIN_API_KEY_QUESTION),
     "--api-key",
   );
 };
