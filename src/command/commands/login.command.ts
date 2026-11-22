@@ -12,12 +12,12 @@ export class LoginCommand extends AbstractCommand {
   public load(program: Command) {
     program
       .command("login")
-      .description("login to Nanoforge registry")
+      .description("login to the NanoForge registry")
       .option("-d, --directory <directory>", "specify the working directory of the command")
       .option("-l, --local", "login only for the project", false)
       .option(
         "-k, --api-key <key>",
-        "api key for Nanoforge registry (find it at https://registry.nanoforge.eu/dashboard/registry)",
+        "api key for the NanoForge registry (find it at https://registry.nanoforge.eu/dashboard/registry)",
       )
       .action(async (rawOptions: LoginOptions) => {
         const options = AbstractCommand.mapToInput({

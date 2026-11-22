@@ -11,7 +11,7 @@ export class LogoutCommand extends AbstractCommand {
   public load(program: Command) {
     program
       .command("logout")
-      .description("logout from Nanoforge registry")
+      .description("logout from the NanoForge registry")
       .option("-d, --directory <directory>", "specify the working directory of the command")
       .option("-l, --local", "logout only for the project")
       .action(async (rawOptions: LogoutOptions) => {

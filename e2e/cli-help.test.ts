@@ -36,7 +36,7 @@ describe("nf new --help", () => {
     const { stdout, exitCode } = await runCli(["new", "--help"]);
 
     expect(exitCode).toBe(0);
-    expect(stdout).toContain("create a new nanoforge project");
+    expect(stdout).toContain("create a new NanoForge project");
     expect(stdout).toContain("--name");
     expect(stdout).toContain("--language");
     expect(stdout).toContain("--package-manager");

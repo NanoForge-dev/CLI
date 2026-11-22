@@ -24,7 +24,7 @@ export class NewCommand extends AbstractCommand {
   public load(program: Command) {
     program
       .command("new")
-      .description("create a new nanoforge project")
+      .description("create a new NanoForge project")
       .option("-d, --directory <directory>", "specify the working directory of the command")
       .option("--name <name>", "specify the name of your project")
       .option(
@@ -55,7 +55,7 @@ export class NewCommand extends AbstractCommand {
       .option("--no-docker", "do not generate docker files")
       .option("--no-lint", "accepted, but has no effect yet (nf new generates no lint files)")
       .option("--no-agents", "do not generate AGENTS.md and CLAUDE.md files for AI coding agents")
-      .option("--editor", "do add editor dependencies")
+      .option("--editor", "add editor dependencies")
       .option("--git", "generate git repository")
       .option("--no-git", "do not generate git repository")
       .option(

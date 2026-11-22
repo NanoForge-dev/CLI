@@ -38,7 +38,7 @@ describe("nf login --help", () => {
     const { stdout, exitCode } = await runCli(["login", "--help"]);
 
     expect(exitCode).toBe(0);
-    expect(stdout).toContain("login to Nanoforge registry");
+    expect(stdout).toContain("login to the NanoForge registry");
     expect(stdout).toContain("--directory");
     expect(stdout).toContain("--local");
     expect(stdout).toContain("--api-key");
