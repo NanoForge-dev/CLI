@@ -72,8 +72,11 @@ export class FileSystemError extends CLIError {
   }
 }
 
+/** Stack traces are for debugging the CLI itself: shown only with `NF_DEBUG` set. */
+const isDebug = (): boolean => Boolean(process.env.NF_DEBUG);
+
 const getErrorString = (error: Error): string => {
-  const stack = error.stack ? error.stack : error.message;
+  const stack = isDebug() && error.stack ? error.stack : error.message;
   const cause =
     error.cause && typeof error.cause === "object"
       ? JSON.stringify(error.cause, null, 2)
@@ -122,6 +125,8 @@ export const handleActionError = (context: string, error: unknown): never => {
 
   const msg = getErrorMessage(error);
   if (msg) console.error(msg);
+  if (msg && !isDebug())
+    console.info(cyan("\n💡 Suggestion: Run it again with NF_DEBUG=1 to see the stack trace."));
   process.exit(1);
 };
 

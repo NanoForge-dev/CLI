@@ -52,4 +52,8 @@ Configuration file not found at path: nanoforge.config.ts.
 ```
 
 An unknown command prints `Invalid command: <name>` and exits with code 1. An unknown option
-prints `error: unknown option '<option>'`.
+prints `error: unknown option '<option>'`, and a value outside an option's choices (such as
+`nf new --language rust`) prints `error: option '<option>' argument '<value>' is invalid`.
+
+An unexpected error prints its message only. Set `NF_DEBUG=1` to see its stack trace, for
+example in a bug report: `NF_DEBUG=1 nf build`.

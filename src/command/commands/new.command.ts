@@ -1,4 +1,4 @@
-import { type Command } from "commander";
+import { type Command, Option } from "commander";
 
 import { AbstractCommand } from "../abstract.command";
 
@@ -31,8 +31,18 @@ export class NewCommand extends AbstractCommand {
         "--path <path>",
         "specify the relative path where your project will be created (default: name of the project)",
       )
-      .option("--package-manager <packageManager>", "specify the package manager of your project")
-      .option("--language <language>", "specify the language of your project")
+      .addOption(
+        new Option(
+          "--package-manager <packageManager>",
+          "specify the package manager of your project",
+        ).choices(["npm", "yarn", "pnpm", "bun"]),
+      )
+      .addOption(
+        new Option("--language <language>", "specify the language of your project").choices([
+          "ts",
+          "js",
+        ]),
+      )
       .option("--strict", "use strict mode")
       .option("--no-strict", "do not use strict mode")
       .option("--server", "create a server")

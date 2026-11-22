@@ -1,5 +1,5 @@
 import { RegistryError } from "@nanoforge-dev/registry";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { ConfigNotFoundError, handleActionError, promptError } from "./errors";
 
@@ -75,5 +75,45 @@ describe("error suggestions", () => {
     expect(printed).toContain("Check your connection and try again.");
     expect(printed).not.toContain("REGISTRY_URL");
     vi.restoreAllMocks();
+  });
+});
+
+describe("unexpected errors", () => {
+  const capture = (error: unknown) => {
+    vi.spyOn(process, "exit").mockImplementation(() => {
+      throw new Error("exit");
+    });
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const infoSpy = vi.spyOn(console, "info").mockImplementation(() => {});
+    expect(() => handleActionError("Editor failed!", error)).toThrow("exit");
+    const printed = {
+      error: errorSpy.mock.calls.flat().join("\n"),
+      info: infoSpy.mock.calls.flat().join("\n"),
+    };
+    vi.restoreAllMocks();
+    return printed;
+  };
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it("prints the message without the stack trace", () => {
+    vi.stubEnv("NF_DEBUG", "");
+
+    const printed = capture(new Error("Something broke"));
+
+    expect(printed.error).toContain("Something broke");
+    expect(printed.error).not.toMatch(/^\s+at /m);
+    expect(printed.info).toContain("NF_DEBUG=1");
+  });
+
+  it("prints the stack trace with NF_DEBUG set", () => {
+    vi.stubEnv("NF_DEBUG", "1");
+
+    const printed = capture(new Error("Something broke"));
+
+    expect(printed.error).toMatch(/^\s+at /m);
+    expect(printed.info).not.toContain("NF_DEBUG=1");
   });
 });
