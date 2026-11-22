@@ -3,7 +3,12 @@ import { describe, expect, it } from "vitest";
 import { InvalidCommandArgumentError } from "@utils/errors";
 
 import { type Input } from "../../input.type";
-import { DEFAULT_EDITOR_PORT, getEditorPortInput, parsePort } from "./port.input";
+import {
+  DEFAULT_EDITOR_PORT,
+  getEditorPortInput,
+  getPortInputWithDefault,
+  parsePort,
+} from "./port.input";
 
 const createInput = (entries: [string, any][]): Input => {
   return new Map(entries.map(([key, value]) => [key, { value }]));
@@ -36,5 +41,21 @@ describe("parsePort", () => {
 
   it.each(["0", "65536", "abc", "", "3000.5", " 3000", "-1", "1e3"])("rejects '%s'", (raw) => {
     expect(() => parsePort(raw)).toThrow(InvalidCommandArgumentError);
+  });
+});
+
+describe("getPortInputWithDefault", () => {
+  it("returns --port, or the default when it is not given", () => {
+    expect(getPortInputWithDefault(createInput([["port", "4600"]]), "3000")).toBe("4600");
+    expect(getPortInputWithDefault(createInput([]), "3000")).toBe("3000");
+  });
+
+  it("rejects an invalid --port or default before anything starts", () => {
+    expect(() => getPortInputWithDefault(createInput([["port", "abc"]]), "3000")).toThrow(
+      InvalidCommandArgumentError,
+    );
+    expect(() => getPortInputWithDefault(createInput([]), "99999")).toThrow(
+      InvalidCommandArgumentError,
+    );
   });
 });

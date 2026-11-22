@@ -1,6 +1,6 @@
 import { InvalidCommandArgumentError } from "@utils/errors";
 
-import { getStringInput } from "../../base-inputs";
+import { getStringInput, getStringInputWithDefault } from "../../base-inputs";
 import { type Input } from "../../input.type";
 
 /** Default port of `nf editor` (the loaders use 3000). */
@@ -19,3 +19,7 @@ export const getEditorPortInput = (inputs: Input): number => {
   const raw = getStringInput(inputs, "port");
   return raw === undefined ? DEFAULT_EDITOR_PORT : parsePort(raw);
 };
+
+/** `--port` of `nf start`, or the config's port, checked before anything starts. */
+export const getPortInputWithDefault = (inputs: Input, defaultPort: string): string =>
+  String(parsePort(getStringInputWithDefault(inputs, "port", defaultPort)));

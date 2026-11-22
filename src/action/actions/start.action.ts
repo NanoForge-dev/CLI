@@ -12,6 +12,7 @@ import {
 import {
   type Input,
   getDirectoryInput,
+  getPortInputWithDefault,
   getStringInput,
   getStringInputWithDefault,
   getWatchInput,
@@ -147,11 +148,7 @@ export class StartAction extends AbstractAction {
         project.config.out?.dir ?? defaultClientConfig.out.dir,
       ),
       platform: "client",
-      port: getStringInputWithDefault(
-        options,
-        "port",
-        project.config.port ?? defaultClientConfig.port,
-      ),
+      port: getPortInputWithDefault(options, project.config.port ?? defaultClientConfig.port),
       tls: this.resolveTLS(options, project.config),
     };
   }
