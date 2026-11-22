@@ -58,7 +58,7 @@
     },
     "hasServer": {
       "type": "boolean",
-      "description": "Only meaningful when part is \"client\": whether the client syncs its entity position from a companion server instead of owning it locally. A server project always simulates and broadcasts its own position, regardless of this flag.",
+      "description": "Only meaningful when part is \"client\": whether the client talks to a companion server. True adds the network library, the position packet and the position-sync system, so the entity position comes from the server; false leaves the network out. A server project always simulates and broadcasts its own position, regardless of this flag.",
       "default": false
     },
     "editor": {

@@ -1,6 +1,7 @@
 import type { Context } from "@nanoforge-dev/common";
 import type { EditorSystemManifest, Registry } from "@nanoforge-dev/ecs";
 
+// Types ctx.network for this file on its own (main.ts already loads the library).
 import "@nanoforge-dev/network/client";
 
 import { Position2D } from "../components/position-2d.component";

@@ -356,11 +356,8 @@ describe("project schematic", () => {
 
   describe("@nanoforge-dev/ecs and @nanoforge-dev/network version resolution", () => {
     it("still writes the ecs/network keys even though they're resolved via their real per-part packages", async () => {
-      // @nanoforge-dev/ecs and @nanoforge-dev/network aren't published under
-      // those names (see ecs-lib/ecs-client/ecs-server and
-      // network-client/network-server) — the factory aliases to the real
-      // package to resolve a trustworthy version, but keeps writing the
-      // existing (unchanged) `ecs`/`network` keys.
+      // The factory resolves a trustworthy version for each package and
+      // writes it under the `ecs`/`network` keys.
       const client = await runner.runSchematic("project", {
         part: "client",
         workspaceName: "ecs-alias-client-workspace",
