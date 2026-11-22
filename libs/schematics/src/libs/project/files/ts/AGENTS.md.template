@@ -34,7 +34,7 @@ alone, run `<%= nf %> build -d apps/<%= part %>` at the root.
 <% } %>
 <% if (workspace && packageManager === "npm") { %>Add a package with `npm install <package> -w apps/<%= part %>` at the workspace root.<% } else { %>Add a package with `<%= add %> <package>` in this folder.<% } %>
 
-The `@nanoforge-dev/*` packages are on `^2`. The online docs follow the engine's development
+The `@nanoforge-dev/*` packages are on `<%= engineVersion %>`. The online docs follow the engine's development
 branch and can describe APIs that the installed release lacks: the installed types
 (`@nanoforge-dev/<package>/dist` in `node_modules`) are the reference.
 

@@ -1,6 +1,6 @@
 import { input } from "@inquirer/prompts";
 
-import { promptError } from "@utils/errors";
+import { assertTerminal, promptError } from "@utils/errors";
 
 interface InputOptions {
   default?: string;
@@ -18,6 +18,7 @@ export const askInput = async (
   question: string,
   baseOptions?: Partial<InputOptions>,
 ): Promise<string | never> => {
+  assertTerminal();
   const options: InputOptions = {
     required: false,
     ...(baseOptions ?? {}),
@@ -33,6 +34,7 @@ export const askInputArray = async (
   question: string,
   baseOptions?: Partial<InputArrayOptions>,
 ): Promise<string[] | never> => {
+  assertTerminal();
   const options: InputArrayOptions = {
     required: false,
     split: " ",

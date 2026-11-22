@@ -21,7 +21,7 @@ schematics @nanoforge-dev/schematics:component --part=client --name=health
 | Option      | Type                   | Default   | Description                                                                          |
 | ----------- | ---------------------- | --------- | ------------------------------------------------------------------------------------ |
 | `name`      | `string`               | `example` | Component name. `health` gives the class `HealthComponent` in `health.component.ts`. |
-| `part`      | `"client" \| "server"` | required  | Picks the package the manifest type is imported from (see the warning below).        |
+| `part`      | `"client" \| "server"` | required  | Required, but the generated file is the same for both.                               |
 | `directory` | `string`               | `.`       | Folder to write to.                                                                  |
 | `language`  | `"ts" \| "js"`         | `ts`      | `.ts` or `.js` file.                                                                 |
 

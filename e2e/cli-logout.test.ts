@@ -37,7 +37,7 @@ describe("nf logout --help", () => {
     const { stdout, exitCode } = await runCli(["logout", "--help"]);
 
     expect(exitCode).toBe(0);
-    expect(stdout).toContain("logout from Nanoforge registry");
+    expect(stdout).toContain("logout from the NanoForge registry");
     expect(stdout).toContain("--directory");
     expect(stdout).toContain("--local");
   });

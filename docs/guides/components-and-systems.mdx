@@ -32,8 +32,9 @@ them from the registry.
     nf create system --name regen
     ```
 
-    It writes `src/systems/regen.system.ts`, with a `regenSystem` function. Fix the import the
-    same way, and replace `ExampleComponent` with your component:
+    It writes `src/systems/regen.system.ts`, with a `regenSystem` function. It imports
+    `ExampleComponent` from `../components/example.component`, a file `nf new` doesn't create:
+    replace that import and `ExampleComponent` with your component:
 
     ```ts src/systems/regen.system.ts
     import type { Context } from "@nanoforge-dev/common";

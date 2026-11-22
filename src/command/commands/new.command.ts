@@ -1,4 +1,4 @@
-import { type Command } from "commander";
+import { type Command, Option } from "commander";
 
 import { AbstractCommand } from "../abstract.command";
 
@@ -24,28 +24,38 @@ export class NewCommand extends AbstractCommand {
   public load(program: Command) {
     program
       .command("new")
-      .description("create a new nanoforge project")
+      .description("create a new NanoForge project")
       .option("-d, --directory <directory>", "specify the working directory of the command")
       .option("--name <name>", "specify the name of your project")
       .option(
         "--path <path>",
         "specify the relative path where your project will be created (default: name of the project)",
       )
-      .option("--package-manager <packageManager>", "specify the package manager of your project")
-      .option("--language <language>", "specify the language of your project")
+      .addOption(
+        new Option(
+          "--package-manager <packageManager>",
+          "specify the package manager of your project",
+        ).choices(["npm", "yarn", "pnpm", "bun"]),
+      )
+      .addOption(
+        new Option("--language <language>", "specify the language of your project").choices([
+          "ts",
+          "js",
+        ]),
+      )
       .option("--strict", "use strict mode")
       .option("--no-strict", "do not use strict mode")
       .option("--server", "create a server")
       .option("--no-server", "do not create a server")
-      .option("--init-functions", "initialize functions")
-      .option("--no-init-functions", "do not initialize functions")
+      .option("--init-functions", "accepted, but has no effect yet")
+      .option("--no-init-functions", "accepted, but has no effect yet")
       .option("--skip-install", "skip installing dependencies")
       .option("--no-skip-install", "do not skip installing dependencies")
       .option("--docker", "generate docker files")
       .option("--no-docker", "do not generate docker files")
-      .option("--no-lint", "do not generate lint files")
+      .option("--no-lint", "accepted, but has no effect yet (nf new generates no lint files)")
       .option("--no-agents", "do not generate AGENTS.md and CLAUDE.md files for AI coding agents")
-      .option("--editor", "do add editor dependencies")
+      .option("--editor", "add editor dependencies")
       .option("--git", "generate git repository")
       .option("--no-git", "do not generate git repository")
       .option(

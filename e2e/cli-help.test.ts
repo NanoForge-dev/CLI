@@ -36,7 +36,7 @@ describe("nf new --help", () => {
     const { stdout, exitCode } = await runCli(["new", "--help"]);
 
     expect(exitCode).toBe(0);
-    expect(stdout).toContain("create a new nanoforge project");
+    expect(stdout).toContain("create a new NanoForge project");
     expect(stdout).toContain("--name");
     expect(stdout).toContain("--language");
     expect(stdout).toContain("--package-manager");
@@ -46,6 +46,14 @@ describe("nf new --help", () => {
     expect(stdout).toContain("--skip-install");
     expect(stdout).toContain("--directory");
     expect(stdout).toContain("--docker");
+  });
+
+  it("should not claim that --init-functions or --no-lint do something", async () => {
+    const { stdout } = await runCli(["new", "--help"]);
+
+    expect(stdout).not.toContain("initialize functions");
+    expect(stdout).not.toContain("do not generate lint files");
+    expect(stdout).toContain("has no effect yet");
   });
 });
 

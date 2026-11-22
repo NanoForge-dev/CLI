@@ -1,11 +1,16 @@
 import { confirm } from "@inquirer/prompts";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { askConfirm } from "./confirm.question";
 
 vi.mock("@inquirer/prompts", () => ({
   confirm: vi.fn(),
 }));
+
+// Vitest's stdin is not a terminal: these tests stand for an interactive run.
+beforeEach(() => {
+  process.stdin.isTTY = true;
+});
 
 describe("askConfirm", () => {
   it("should call confirm with the question message", async () => {

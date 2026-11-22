@@ -1,5 +1,6 @@
 import { type ClientConfig, defaultClientConfig, defaultServerConfig } from "@nanoforge-dev/config";
 import dotenv from "dotenv";
+import { existsSync } from "node:fs";
 import { join, resolve } from "path";
 
 import {
@@ -12,6 +13,7 @@ import {
 import {
   type Input,
   getDirectoryInput,
+  getPortInputWithDefault,
   getStringInput,
   getStringInputWithDefault,
   getWatchInput,
@@ -77,6 +79,9 @@ export class StartAction extends AbstractAction {
       );
     }
 
+    // Under --watch (nf dev) the build runs alongside and creates the folder.
+    if (!watch) this.assertBuilds(targets);
+
     const env = this.parseEnv(directory);
     if (isPeerToPeer(workspaceConfig)) {
       env.client.NANOFORGE_NETWORK_MODE = env.server.NANOFORGE_NETWORK_MODE = "p2p";
@@ -86,6 +91,18 @@ export class StartAction extends AbstractAction {
     await Promise.all(tasks);
 
     return { keepAlive: true };
+  }
+
+  private assertBuilds(targets: StartTarget[]): void {
+    for (const target of targets) {
+      const outDir = getCwd(join(target.directory, target.outDir));
+      if (!existsSync(outDir)) {
+        throw new CLIError(
+          Messages.START_NO_BUILD(outDir),
+          "Run 'nf build' first, or use 'nf dev'.",
+        );
+      }
+    }
   }
 
   private resolveTLS(options: Input, config: ClientConfig): TLSOptions | undefined {
@@ -147,11 +164,7 @@ export class StartAction extends AbstractAction {
         project.config.out?.dir ?? defaultClientConfig.out.dir,
       ),
       platform: "client",
-      port: getStringInputWithDefault(
-        options,
-        "port",
-        project.config.port ?? defaultClientConfig.port,
-      ),
+      port: getPortInputWithDefault(options, project.config.port ?? defaultClientConfig.port),
       tls: this.resolveTLS(options, project.config),
     };
   }
@@ -251,6 +264,7 @@ export class StartAction extends AbstractAction {
     dotenv.config({
       path: resolve(getCwd(join(dir, ".env"))),
       processEnv: rawEnv,
+      quiet: true,
     });
     const baseEnv = Object.entries(rawEnv).filter(
       ([key, value]) => key.startsWith(prefix) && !!value,

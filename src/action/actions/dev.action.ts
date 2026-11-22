@@ -25,8 +25,8 @@ export class DevAction extends AbstractAction {
     const tasks: Promise<void>[] = [];
     const extraFlags = editor ? ["--editor"] : [];
 
-    tasks.push(this.runSubCommand("build", directory, { silent: true, extraFlags }));
-    tasks.push(this.runSubCommand("start", directory, { silent: false }));
+    tasks.push(this.runSubCommand("build", directory, extraFlags));
+    tasks.push(this.runSubCommand("start", directory));
 
     return tasks;
   }
@@ -34,12 +34,14 @@ export class DevAction extends AbstractAction {
   private async runSubCommand(
     command: string,
     directory: string,
-    options: { silent: boolean; extraFlags?: string[] },
+    extraFlags: string[] = [],
   ): Promise<void> {
     await runSafe(async () => {
       const packageManager = await PackageManagerFactory.find(directory);
-      const args = [command, "--watch", ...(options.extraFlags ?? [])];
-      await packageManager.runDev(directory, "nf", {}, args, options.silent);
+      const args = [command, "--watch", ...extraFlags];
+      // Not collected: `build --watch` never exits, so collected output (errors included)
+      // would never show.
+      await packageManager.runDev(directory, "nf", {}, args, false);
     });
   }
 }

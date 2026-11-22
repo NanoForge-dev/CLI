@@ -10,9 +10,12 @@ const getApiKeyInput = (inputs: Input) => {
 };
 
 export const getLoginApiKeyInputOrAsk = (inputs: Input) => {
-  return getInputOrAsk(getApiKeyInput(inputs), () =>
-    askInput(Messages.LOGIN_API_KEY_QUESTION, {
-      required: true,
-    }),
+  return getInputOrAsk(
+    getApiKeyInput(inputs),
+    () =>
+      askInput(Messages.LOGIN_API_KEY_QUESTION, {
+        required: true,
+      }),
+    "--api-key",
   );
 };

@@ -1,5 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
+import { NoTerminalError } from "@utils/errors";
+
 import { getInputOrAsk } from "./ask-inputs";
 
 describe("getInputOrAsk", () => {
@@ -20,7 +22,7 @@ describe("getInputOrAsk", () => {
   it("should return defaultValue when both baseInput and askCb return undefined", async () => {
     const askCb = vi.fn().mockResolvedValue(undefined);
 
-    expect(await getInputOrAsk(undefined, askCb, "fallback")).toBe("fallback");
+    expect(await getInputOrAsk(undefined, askCb, undefined, "fallback")).toBe("fallback");
   });
 
   it("should throw when no input, askCb returns undefined, and no default", async () => {
@@ -48,5 +50,21 @@ describe("getInputOrAsk", () => {
 
     expect(await getInputOrAsk(0, askCb)).toBe(0);
     expect(askCb).not.toHaveBeenCalled();
+  });
+});
+
+describe("getInputOrAsk without a terminal", () => {
+  it("names the missing option", async () => {
+    const askCb = vi.fn().mockRejectedValue(new NoTerminalError());
+
+    await expect(getInputOrAsk(undefined, askCb, "--name")).rejects.toThrow(
+      "--name is required when not running in a terminal.",
+    );
+  });
+
+  it("lets other errors through", async () => {
+    const askCb = vi.fn().mockRejectedValue(new Error("boom"));
+
+    await expect(getInputOrAsk(undefined, askCb, "--name")).rejects.toThrow("boom");
   });
 });

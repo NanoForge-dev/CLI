@@ -11,7 +11,7 @@ export class PublishCommand extends AbstractCommand {
   public load(program: Command) {
     program
       .command("publish")
-      .description("publish package to Nanoforge registry")
+      .description("publish a package to the NanoForge registry")
       .option("-d, --directory <directory>", "specify the working directory of the command")
       .option("--dry-run", "list the files to publish, and publish nothing", false)
       .action(async (rawOptions: PublishOptions) => {

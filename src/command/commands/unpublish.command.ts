@@ -10,7 +10,7 @@ export class UnpublishCommand extends AbstractCommand {
   public load(program: Command) {
     program
       .command("unpublish")
-      .description("unpublish package to Nanoforge registry")
+      .description("unpublish a package from the NanoForge registry")
       .option("-d, --directory <directory>", "specify the working directory of the command")
       .action(async (rawOptions: UnpublishOptions) => {
         const options = AbstractCommand.mapToInput({

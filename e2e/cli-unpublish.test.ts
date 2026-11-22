@@ -42,7 +42,7 @@ describe("nf unpublish --help", () => {
     const { stdout, exitCode } = await runCli(["unpublish", "--help"]);
 
     expect(exitCode).toBe(0);
-    expect(stdout).toContain("unpublish package to Nanoforge registry");
+    expect(stdout).toContain("unpublish a package from the NanoForge registry");
     expect(stdout).toContain("--directory");
   });
 });

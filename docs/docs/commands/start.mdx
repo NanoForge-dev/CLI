@@ -96,9 +96,13 @@ nf start --client-dir build/client --server-dir build/server
 - **The client fails to start with `--cert` and `--key`.** Check that both paths are absolute.
 - **The page shows `Storage issue: The game must be hosted with SSL (HTTPS)...`.** You opened the
   game on an address that isn't `localhost` over HTTP. Use HTTPS (see above).
+- **`No build found at <folder>`.** The build folder doesn't exist, and `nf start` stops: run
+  `nf build` first, or use `nf dev`. `--watch` skips this check.
 - **The page shows `Could not find main function`, or the server logs `No main.js found`.** There
   is no `main.js` in the build folder: run `nf build` first, and check that the entry file is
   named `main.ts`.
 - **The port is already used.** Pass another `--port`, or stop the other process.
+- **`Invalid argument 'port'. Expected: an integer from 1 to 65535`.** `--port` (or `port` in the
+  client config) is not a port number: nothing was started.
 
 More browser-side problems are in the [loader troubleshooting](/docs/loader/overview#troubleshooting).

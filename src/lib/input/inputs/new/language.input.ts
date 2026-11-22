@@ -10,9 +10,12 @@ const getLanguageInput = (inputs: Input) => {
 };
 
 export const getNewLanguageInputOrAsk = (inputs: Input) => {
-  return getInputOrAsk(getLanguageInput(inputs), () =>
-    askSelect<"ts" | "js">(Messages.NEW_LANGUAGE_QUESTION, [{ value: "ts" }, { value: "js" }], {
-      default: "ts",
-    }),
+  return getInputOrAsk(
+    getLanguageInput(inputs),
+    () =>
+      askSelect<"ts" | "js">(Messages.NEW_LANGUAGE_QUESTION, [{ value: "ts" }, { value: "js" }], {
+        default: "ts",
+      }),
+    "--language",
   );
 };

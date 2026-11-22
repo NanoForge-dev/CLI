@@ -40,6 +40,9 @@ nf login
 nf login --local --api-key "$NF_REGISTRY_KEY"
 ```
 
+Without a terminal, pass `--api-key` from an environment variable, as above: the command doesn't
+prompt, and a key typed in the command stays in the shell history.
+
 `nf login` asks the registry who the key belongs to (`/registry/-/whoami`). If the registry refuses
 the key, `nf login` fails with `The registry refused the key (<code>)` and saves nothing.
 
@@ -90,8 +93,7 @@ nf logout --local
 | `contents`     | no       | What the package holds (`kind`, `path`, `export`…), shown in catalogs; `nf publish` packs only these paths.                                     |
 
 The registry checks the rest (`contents`, `include`, `engines`, `npmDependencies`…) when you
-publish: its reference is the API's
-[registry documentation](https://github.com/NanoForge-dev/API/blob/main/docs/registry.md).
+publish.
 
 ## publish
 

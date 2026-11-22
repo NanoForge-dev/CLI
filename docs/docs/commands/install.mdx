@@ -53,6 +53,8 @@ nf add [names...] [options]
 | `-d, --directory <directory>` | path     | `.`                           | Project folder.                                                                    |
 | `-l, --lib`                   | boolean  | `false`                       | Install npm libraries with the package manager instead of registry packages.       |
 
+With `--lib` and no terminal, pass the names: `nf install` doesn't prompt for them.
+
 The `--server` option is gone: registry packages go to `nf_modules`, for the client and the server.
 
 ## Examples

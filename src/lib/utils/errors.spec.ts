@@ -1,7 +1,7 @@
 import { RegistryError } from "@nanoforge-dev/registry";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { handleActionError, promptError } from "./errors";
+import { ConfigNotFoundError, handleActionError, promptError } from "./errors";
 
 describe("promptError", () => {
   it("should exit process on ExitPromptError", () => {
@@ -49,5 +49,71 @@ describe("handleActionError", () => {
     exitSpy.mockRestore();
     errorSpy.mockRestore();
     infoSpy.mockRestore();
+  });
+});
+
+describe("error suggestions", () => {
+  it("points a missing config at -d, not at a --config option", () => {
+    const { suggestion } = new ConfigNotFoundError("nanoforge.config.ts");
+
+    expect(suggestion).toContain("-d");
+    expect(suggestion).not.toContain("--config");
+  });
+
+  it("does not suggest REGISTRY_URL for an unreachable registry", () => {
+    vi.spyOn(process, "exit").mockImplementation(() => {
+      throw new Error("exit");
+    });
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const infoSpy = vi.spyOn(console, "info").mockImplementation(() => {});
+
+    expect(() =>
+      handleActionError("Install failed!", new RegistryError("UNAVAILABLE", "unreachable")),
+    ).toThrow("exit");
+
+    const printed = infoSpy.mock.calls.flat().join("\n");
+    expect(printed).toContain("Check your connection and try again.");
+    expect(printed).not.toContain("REGISTRY_URL");
+    vi.restoreAllMocks();
+  });
+});
+
+describe("unexpected errors", () => {
+  const capture = (error: unknown) => {
+    vi.spyOn(process, "exit").mockImplementation(() => {
+      throw new Error("exit");
+    });
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const infoSpy = vi.spyOn(console, "info").mockImplementation(() => {});
+    expect(() => handleActionError("Editor failed!", error)).toThrow("exit");
+    const printed = {
+      error: errorSpy.mock.calls.flat().join("\n"),
+      info: infoSpy.mock.calls.flat().join("\n"),
+    };
+    vi.restoreAllMocks();
+    return printed;
+  };
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it("prints the message without the stack trace", () => {
+    vi.stubEnv("NF_DEBUG", "");
+
+    const printed = capture(new Error("Something broke"));
+
+    expect(printed.error).toContain("Something broke");
+    expect(printed.error).not.toMatch(/^\s+at /m);
+    expect(printed.info).toContain("NF_DEBUG=1");
+  });
+
+  it("prints the stack trace with NF_DEBUG set", () => {
+    vi.stubEnv("NF_DEBUG", "1");
+
+    const printed = capture(new Error("Something broke"));
+
+    expect(printed.error).toMatch(/^\s+at /m);
+    expect(printed.info).not.toContain("NF_DEBUG=1");
   });
 });

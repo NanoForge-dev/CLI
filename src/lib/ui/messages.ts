@@ -22,7 +22,7 @@ export const Messages = {
   INSTALL_SUCCESS: success("Installation completed!"),
   INSTALL_FAILED: failure("Installation failed!"),
   INSTALL_NAMES_QUESTION: "Which libraries do you want to install?",
-  INSTALL_PACKAGES_IN_PROGRESS: "Install Nanoforge Packages",
+  INSTALL_PACKAGES_IN_PROGRESS: "Install NanoForge packages",
 
   // --- Login ---
   LOGIN_START: "NanoForge Login",
@@ -71,6 +71,7 @@ export const Messages = {
   START_START: "NanoForge Start",
   START_SUCCESS: success("Start completed!"),
   START_FAILED: failure("Start failed!"),
+  START_NO_BUILD: (outDir: string) => `No build found at ${outDir}.`,
   START_PART_IN_PROGRESS: (part: string) => `Starting ${part}...`,
   START_PART_SUCCESS: (part: string) => success(`${part} terminated.`),
   START_PART_FAILED: (part: string) => failure(`${part} failed!`),

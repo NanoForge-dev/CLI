@@ -48,11 +48,16 @@ code 1. For example, outside a project:
 🙀  Build failed!
 Configuration file not found at path: nanoforge.config.ts.
 
-💡 Suggestion: Please run 'nf new' or provide a valid --config path.
+💡 Suggestion: Run the command from a project folder, pass it with -d, or run 'nf new'.
 ```
 
-Run the command from the project folder, or pass that folder with `-d`. The "--config" in the
-suggestion is outdated: only `-d` sets where the configuration is read.
-
 An unknown command prints `Invalid command: <name>` and exits with code 1. An unknown option
-prints `error: unknown option '<option>'`.
+prints `error: unknown option '<option>'`, and a value outside an option's choices (such as
+`nf new --language rust`) prints `error: option '<option>' argument '<value>' is invalid`.
+
+Commands that ask questions (`nf new`, `nf create`, `nf login`, `nf install`) never prompt when
+stdin is not a terminal (CI, a script): they stop with `<option> is required when not running in a
+terminal.`, so pass the option.
+
+An unexpected error prints its message only. Set `NF_DEBUG=1` to see its stack trace, for
+example in a bug report: `NF_DEBUG=1 nf build`.

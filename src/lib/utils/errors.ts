@@ -16,7 +16,7 @@ export class ConfigNotFoundError extends CLIError {
   constructor(configPath: string) {
     super(
       `Configuration file not found at path: ${configPath}.`,
-      "Please run 'nf new' or provide a valid --config path.",
+      "Run the command from a project folder, pass it with -d, or run 'nf new'.",
     );
   }
 }
@@ -55,11 +55,11 @@ export class ProjectInitializationError extends CLIError {
 }
 
 export class ManifestError extends CLIError {
-  constructor(detail: string) {
-    super(
-      `Manifest Error: ${detail}`,
-      "Check your nanoforge.manifest.json file for syntax or formatting errors.",
-    );
+  constructor(
+    detail: string,
+    suggestion = "Check your nanoforge.manifest.json file for syntax or formatting errors.",
+  ) {
+    super(`Manifest Error: ${detail}`, suggestion);
   }
 }
 
@@ -72,8 +72,31 @@ export class FileSystemError extends CLIError {
   }
 }
 
+/**
+ * A question was needed, but stdin is not a terminal (CI, a script, an agent): nothing can
+ * answer it.
+ */
+export class NoTerminalError extends CLIError {
+  constructor(missing?: string) {
+    super(
+      missing
+        ? `${missing} is required when not running in a terminal.`
+        : "An answer is required, but stdin is not a terminal.",
+      "Pass the missing options on the command line (see --help).",
+    );
+  }
+}
+
+/** Throws a `NoTerminalError` before a prompt that nobody could answer. */
+export const assertTerminal = (): void => {
+  if (!process.stdin.isTTY) throw new NoTerminalError();
+};
+
+/** Stack traces are for debugging the CLI itself: shown only with `NF_DEBUG` set. */
+const isDebug = (): boolean => Boolean(process.env.NF_DEBUG);
+
 const getErrorString = (error: Error): string => {
-  const stack = error.stack ? error.stack : error.message;
+  const stack = isDebug() && error.stack ? error.stack : error.message;
   const cause =
     error.cause && typeof error.cause === "object"
       ? JSON.stringify(error.cause, null, 2)
@@ -89,7 +112,7 @@ export const getErrorMessage = (error: unknown): string | undefined => {
 
 const REGISTRY_SUGGESTIONS: Partial<Record<RegistryErrorCode, string>> = {
   NOT_FOUND: "Check the package name and version.",
-  UNAVAILABLE: "Check your connection and REGISTRY_URL, then try again.",
+  UNAVAILABLE: "Check your connection and try again.",
   CONFLICT: "Raise the version in nanoforge.manifest.json before publishing again.",
 };
 
@@ -122,6 +145,8 @@ export const handleActionError = (context: string, error: unknown): never => {
 
   const msg = getErrorMessage(error);
   if (msg) console.error(msg);
+  if (msg && !isDebug())
+    console.info(cyan("\n💡 Suggestion: Run it again with NF_DEBUG=1 to see the stack trace."));
   process.exit(1);
 };
 

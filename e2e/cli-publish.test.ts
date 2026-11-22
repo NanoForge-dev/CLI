@@ -58,7 +58,7 @@ describe("nf publish --help", () => {
     const { stdout, exitCode } = await runCli(["publish", "--help"]);
 
     expect(exitCode).toBe(0);
-    expect(stdout).toContain("publish package to Nanoforge registry");
+    expect(stdout).toContain("publish a package to the NanoForge registry");
     expect(stdout).toContain("--directory");
     expect(stdout).toContain("--dry-run");
   });
