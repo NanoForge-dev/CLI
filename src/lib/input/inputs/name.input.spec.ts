@@ -2,6 +2,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { askInput } from "@lib/question";
 
+import { InvalidCommandArgumentError } from "@utils/errors";
+
 import { type Input } from "../input.type";
 import { getCreateNameInputOrAsk, getNewNameInputOrAsk } from "./name.input";
 
@@ -48,5 +50,26 @@ describe("getCreateNameInputOrAsk", () => {
 
     expect(await getCreateNameInputOrAsk(input)).toBe("asked-name");
     expect(askInput).toHaveBeenCalledOnce();
+  });
+
+  it.each(["health", "Health_Bar", "sprite-2d"])("should accept '%s'", async (name) => {
+    expect(await getCreateNameInputOrAsk(createInput([["name", name]]))).toBe(name);
+  });
+
+  it.each(["2d sprite", "bad name!", "my.component", "-health", ""])(
+    "should reject '%s', which gives no valid identifier",
+    async (name) => {
+      await expect(getCreateNameInputOrAsk(createInput([["name", name]]))).rejects.toThrow(
+        InvalidCommandArgumentError,
+      );
+    },
+  );
+
+  it("should check an asked name too", async () => {
+    vi.mocked(askInput).mockResolvedValue("2d sprite");
+
+    await expect(getCreateNameInputOrAsk(createInput([]))).rejects.toThrow(
+      InvalidCommandArgumentError,
+    );
   });
 });

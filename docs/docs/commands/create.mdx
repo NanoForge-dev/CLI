@@ -95,4 +95,7 @@ changes. The [first plugin guide](/docs/editor/plugins/create-your-first-plugin)
 - **`'<folder>' already exists and is not empty.`** The plugin folder exists. Choose another one
   with `--path`.
 - **`'<template>' is not a plugin template.`** Use `--template panel` or `--template theme`.
+- **`Invalid argument 'name'. Expected: letters, digits, '-' and '_', starting with a letter`.** A
+  component or system name becomes a class or function name: `2d sprite` or `bad!` can't. Use
+  `sprite-2d`.
 - **`"<name>" is not a plugin name.`** Use `@scope/name` in lowercase, for example `@acme/counter`.
