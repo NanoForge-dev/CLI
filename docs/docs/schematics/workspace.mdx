@@ -54,12 +54,6 @@ my-game/
 
 The `.env` values are described in [environment variables](../configuration/environment-variables).
 
-<Warning>
-  The `dev`, `build` and `start` scripts of the generated `package.json` run `nf dev -r`, `nf build
-  -r` and `nf start -r`. The CLI has no `-r` option, so they fail, and so does the `Dockerfile`,
-  which runs the `build` script. Remove `-r` from the three scripts.
-</Warning>
-
 ## Examples
 
 A TypeScript workspace for npm:

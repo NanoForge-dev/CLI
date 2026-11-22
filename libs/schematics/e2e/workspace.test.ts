@@ -47,6 +47,11 @@ describe("workspace schematic", () => {
       expect(packageJson.name).toBe("my-workspace");
     });
 
+    it("runs the nf commands without the -r option the CLI does not have", () => {
+      expect(packageJson.scripts).toEqual({ dev: "nf dev", build: "nf build", start: "nf start" });
+      expect(tree.readContent("/my-workspace/README.md")).not.toMatch(/nf \w+ -r/);
+    });
+
     it("should declare npm workspaces in package.json (apps only, no libs)", () => {
       expect(packageJson.workspaces).toEqual(["apps/*"]);
     });

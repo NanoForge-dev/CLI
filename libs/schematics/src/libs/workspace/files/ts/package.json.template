@@ -2,9 +2,9 @@
   "$schema": "https://json.schemastore.org/package.json",
   "name": "<%= name %>",
   "scripts": {
-    "dev": "nf dev -r",
-    "build": "nf build -r",
-    "start": "nf start -r"
+    "dev": "nf dev",
+    "build": "nf build",
+    "start": "nf start"
   },
   "devDependencies": {
     "@nanoforge-dev/cli": "<%= cliVersion %>",
