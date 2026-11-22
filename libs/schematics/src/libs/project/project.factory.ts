@@ -126,6 +126,9 @@ const generate = (options: ProjectOptions, path: string): Source => {
       if (filename.startsWith("move-2d.system")) {
         return options.part === "server";
       }
+      if (filename.startsWith("position.packet")) {
+        return options.part === "server" || options.hasServer;
+      }
       if (filename.startsWith("position-sync.system")) {
         return options.part === "client" && options.hasServer;
       }

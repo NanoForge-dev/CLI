@@ -14,8 +14,8 @@ a [workspace](./workspace) (`apps/client`, `apps/server`).
 server side by side, run it twice with `--directory=apps/client` and `--directory=apps/server`.
 
 Every app depends on `@nanoforge-dev/cli`, `core`, `common`, `config`, `asset` and `ecs`. A client
-also gets `env`, `graphics-2d`, `input` and `network`. A server gets `network` as a runtime
-dependency. The versions are pinned to the newest release published at least 48 hours before
+also gets `env`, `graphics-2d` and `input`, plus `network` with `hasServer`. A server gets `network`
+as a runtime dependency. The versions are pinned to the newest release published at least 48 hours before
 generation.
 
 ## Usage
@@ -26,23 +26,23 @@ schematics @nanoforge-dev/schematics:project --part=client --directory=apps/clie
 
 ## Options
 
-| Option           | Type                                 | Default   | Description                                                                                                                                                                |
-| ---------------- | ------------------------------------ | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `part`           | `"client" \| "server"`               | required  | The app to generate.                                                                                                                                                       |
-| `directory`      | `string`                             | `apps`    | Full destination path.                                                                                                                                                     |
-| `name`           | `string`                             | see below | Package name, in kebab-case. With `workspaceName`, the package is `<workspaceName>-<name>`, and `name` defaults to `part`. Without it, `name` defaults to `nanoforge-app`. |
-| `workspaceName`  | `string`                             | none      | Name of the parent workspace, used as a package name prefix.                                                                                                               |
-| `language`       | `"ts" \| "js"`                       | `ts`      | Language of the generated files.                                                                                                                                           |
-| `strict`         | `boolean`                            | `true`    | Strict type checking.                                                                                                                                                      |
-| `packageManager` | `"npm" \| "yarn" \| "pnpm" \| "bun"` | `npm`     | Used in the `Dockerfile` and the install-script settings.                                                                                                                  |
-| `workspace`      | `boolean`                            | `true`    | The app is inside a workspace. A standalone app (`false`) allows the install script of `bun` itself, and can get a `Dockerfile`.                                           |
-| `hasServer`      | `boolean`                            | `false`   | Client only: add the `position-sync` system, which takes the entity's position from the server instead of the client.                                                      |
-| `docker`         | `boolean`                            | `false`   | Add a `Dockerfile` and a `.dockerignore`. Ignored when `workspace` is `true`: the workspace has its own.                                                                   |
-| `editor`         | `boolean`                            | `false`   | Add the `nf editor .` instructions to the README.                                                                                                                          |
-| `initFunctions`  | `boolean`                            | `false`   | Accepted, but not used by the templates yet.                                                                                                                               |
-| `libs`           | `string[]`                           | `[]`      | Accepted, but not written to `nanoforge.config.ts` yet.                                                                                                                    |
-| `allowBuilds`    | `string[]`                           | `[]`      | Accepted, but not used yet: a standalone app always allows `bun` only.                                                                                                     |
-| `agents`         | `boolean`                            | `true`    | Add an `AGENTS.md` for AI coding agents (files, commands, ECS rules, network for a networked app) and a `CLAUDE.md` that imports it.                                       |
+| Option           | Type                                 | Default   | Description                                                                                                                                                                            |
+| ---------------- | ------------------------------------ | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `part`           | `"client" \| "server"`               | required  | The app to generate.                                                                                                                                                                   |
+| `directory`      | `string`                             | `apps`    | Full destination path.                                                                                                                                                                 |
+| `name`           | `string`                             | see below | Package name, in kebab-case. With `workspaceName`, the package is `<workspaceName>-<name>`, and `name` defaults to `part`. Without it, `name` defaults to `nanoforge-app`.             |
+| `workspaceName`  | `string`                             | none      | Name of the parent workspace, used as a package name prefix.                                                                                                                           |
+| `language`       | `"ts" \| "js"`                       | `ts`      | Language of the generated files.                                                                                                                                                       |
+| `strict`         | `boolean`                            | `true`    | Strict type checking.                                                                                                                                                                  |
+| `packageManager` | `"npm" \| "yarn" \| "pnpm" \| "bun"` | `npm`     | Used in the `Dockerfile` and the install-script settings.                                                                                                                              |
+| `workspace`      | `boolean`                            | `true`    | The app is inside a workspace. A standalone app (`false`) allows the install script of `bun` itself, and can get a `Dockerfile`.                                                       |
+| `hasServer`      | `boolean`                            | `false`   | Client only: add the `network` library, the `position` packet and the `position-sync` system, which takes the entity's position from the server. Without it the client has no network. |
+| `docker`         | `boolean`                            | `false`   | Add a `Dockerfile` and a `.dockerignore`. Ignored when `workspace` is `true`: the workspace has its own.                                                                               |
+| `editor`         | `boolean`                            | `false`   | Add the `nf editor .` instructions to the README.                                                                                                                                      |
+| `initFunctions`  | `boolean`                            | `false`   | Accepted, but not used by the templates yet.                                                                                                                                           |
+| `libs`           | `string[]`                           | `[]`      | Accepted, but not written to `nanoforge.config.ts` yet.                                                                                                                                |
+| `allowBuilds`    | `string[]`                           | `[]`      | Accepted, but not used yet: a standalone app always allows `bun` only.                                                                                                                 |
+| `agents`         | `boolean`                            | `true`    | Add an `AGENTS.md` for AI coding agents (files, commands, ECS rules, network for a networked app) and a `CLAUDE.md` that imports it.                                                   |
 
 ## Generated files
 
@@ -65,17 +65,20 @@ schematics @nanoforge-dev/schematics:project --part=client --directory=apps/clie
     ├── components/
     │   ├── position-2d.component.ts         # both parts
     │   └── drawable-circle-2d.component.ts  # client only
+    ├── packets/
+    │   └── position.packet.ts               # server, or client with hasServer
     └── systems/
         ├── draw-2d.system.ts                # client only
         ├── position-sync.system.ts          # client only, hasServer: true
         └── move-2d.system.ts                # server only
 ```
 
-`src/main.ts` creates the app, adds the ECS, network (and, on the client, 2D graphics and input)
-libraries, spawns one entity with a position, and adds the systems:
+`src/main.ts` creates the app, adds the ECS, network (server, or client with `hasServer`) and, on
+the client, 2D graphics and input libraries, spawns one entity with a position, and adds the systems:
 
 - the client draws a red circle at the entity's position;
-- the server moves the entity one pixel per tick and sends its position to every client;
+- the server moves the entity one pixel per tick and sends its position to every client in the
+  `position` packet (`src/packets/position.packet.ts`);
 - with `hasServer`, the client takes that position from the server.
 
 ## Examples

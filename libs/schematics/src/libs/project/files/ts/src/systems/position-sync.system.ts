@@ -1,20 +1,19 @@
 import type { Context } from "@nanoforge-dev/common";
 import type { EditorSystemManifest, Registry } from "@nanoforge-dev/ecs";
 
+// Types ctx.network for this file on its own (main.ts already loads the library).
+import "@nanoforge-dev/network/client";
+
 import { Position2D } from "../components/position-2d.component";
+import { PositionPacket } from "../packets/position.packet";
 
 export function positionSync(registry: Registry, ctx: Context) {
-  const network = ctx.network;
-  const packets = network.tcp
-    .getReceivedPackets()
-    .map((packet) => JSON.parse(new TextDecoder().decode(packet)) as { x: number; y: number });
-
+  const position = ctx.network.packets.read(PositionPacket).at(-1)?.data;
   const [entity] = registry.getZipper([Position2D]);
+  if (!position || !entity) return;
 
-  packets.forEach((packet) => {
-    entity.Position2D.x = packet.x;
-    entity.Position2D.y = packet.y;
-  });
+  entity.Position2D.x = position.x;
+  entity.Position2D.y = position.y;
 }
 // * Required to generate code
 export default positionSync.name;

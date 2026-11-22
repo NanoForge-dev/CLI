@@ -21,17 +21,17 @@ client or server app lives under `apps/<part>` (generated separately with the `p
 ## Development
 
 ```bash
-nf dev -r
+nf dev
 ```
 
-`-r` runs the command across every app in the workspace. `nf dev` serves the game and watches your
+In a workspace these commands run every app. `nf dev` serves the game and watches your
 files, so changes are picked up as you work. Target a single app instead with `-d apps/<part>`.
 
 ## Build & start
 
 ```bash
-nf build -r
-nf start -r
+nf build
+nf start
 ```
 
 `nf build` compiles every app for production, and `nf start` serves the build.
@@ -43,7 +43,6 @@ nf start -r
 | `nf dev`   | Develop with hot reload               |
 | `nf build` | Build for production                  |
 | `nf start` | Run a built app                       |
-| `-r`       | Apply the command to every app        |
 
 ## More info
 

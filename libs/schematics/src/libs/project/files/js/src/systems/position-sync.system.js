@@ -5,23 +5,19 @@
  */
 
 import { Position2D } from "../components/position-2d.component";
+import { PositionPacket } from "../packets/position.packet";
 
 /**
  * @param {Registry} registry
  * @param {Context} ctx
  */
 export function positionSync(registry, ctx) {
-  const network = ctx.network;
-  const packets = network.tcp
-    .getReceivedPackets()
-    .map((packet) => JSON.parse(new TextDecoder().decode(packet)));
-
+  const position = ctx.network.packets.read(PositionPacket).at(-1)?.data;
   const [entity] = registry.getZipper([Position2D]);
+  if (!position || !entity) return;
 
-  packets.forEach((packet) => {
-    entity.Position2D.x = packet.x;
-    entity.Position2D.y = packet.y;
-  });
+  entity.Position2D.x = position.x;
+  entity.Position2D.y = position.y;
 }
 // * Required to generate code
 export default positionSync.name;

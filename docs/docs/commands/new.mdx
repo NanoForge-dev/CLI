@@ -77,13 +77,6 @@ my-game/
 
 The [schematics pages](../schematics/overview) describe every generated file.
 
-<Warning>
-  In a workspace, the root `package.json` scripts run `nf dev -r`, `nf build -r` and `nf start -r`.
-  The CLI has no `-r` option, so `npm run dev` (and the workspace `Dockerfile`, which runs the
-  `build` script) fails with `error: unknown option '-r'`. Run `nf dev`, `nf build` and `nf start`
-  directly, or remove `-r` from those scripts.
-</Warning>
-
 ## Examples
 
 Answer the questions one by one:
