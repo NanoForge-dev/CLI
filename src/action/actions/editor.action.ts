@@ -1,3 +1,4 @@
+import { cyan } from "ansis";
 import open from "open";
 import { join } from "path";
 
@@ -30,7 +31,7 @@ export class EditorAction extends AbstractAction {
     const target = resolveEditorTarget(getCwd(directory), path);
     const url = editorUrl(port, target);
 
-    console.log(`\n🔗 Editor running! Open it in your browser: \x1b[36m${url}\x1b[0m\n`);
+    console.log(`\n🔗 Editor running! Open it in your browser: ${cyan(url)}\n`);
 
     void this.startEditor(target.fsRoot, port);
     if (shouldOpen && (await this.waitForEditor(port))) await this.openBrowser(url);
