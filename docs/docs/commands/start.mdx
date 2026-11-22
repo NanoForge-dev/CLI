@@ -96,8 +96,8 @@ nf start --client-dir build/client --server-dir build/server
 - **The client fails to start with `--cert` and `--key`.** Check that both paths are absolute.
 - **The page shows `Storage issue: The game must be hosted with SSL (HTTPS)...`.** You opened the
   game on an address that isn't `localhost` over HTTP. Use HTTPS (see above).
-- **`Warning: no build found at <folder>`.** The build folder doesn't exist: run `nf build`
-  first, or use `nf dev`. `nf start` still starts, on an empty folder. `--watch` skips this check.
+- **`No build found at <folder>`.** The build folder doesn't exist, and `nf start` stops: run
+  `nf build` first, or use `nf dev`. `--watch` skips this check.
 - **The page shows `Could not find main function`, or the server logs `No main.js found`.** There
   is no `main.js` in the build folder: run `nf build` first, and check that the entry file is
   named `main.ts`.

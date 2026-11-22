@@ -1,5 +1,4 @@
 import { type ClientConfig, defaultClientConfig, defaultServerConfig } from "@nanoforge-dev/config";
-import { yellow } from "ansis";
 import dotenv from "dotenv";
 import { existsSync } from "node:fs";
 import { join, resolve } from "path";
@@ -81,7 +80,7 @@ export class StartAction extends AbstractAction {
     }
 
     // Under --watch (nf dev) the build runs alongside and creates the folder.
-    if (!watch) this.warnMissingBuilds(targets);
+    if (!watch) this.assertBuilds(targets);
 
     const env = this.parseEnv(directory);
     if (isPeerToPeer(workspaceConfig)) {
@@ -94,10 +93,15 @@ export class StartAction extends AbstractAction {
     return { keepAlive: true };
   }
 
-  private warnMissingBuilds(targets: StartTarget[]): void {
+  private assertBuilds(targets: StartTarget[]): void {
     for (const target of targets) {
       const outDir = getCwd(join(target.directory, target.outDir));
-      if (!existsSync(outDir)) console.warn(yellow(Messages.START_NO_BUILD(outDir)));
+      if (!existsSync(outDir)) {
+        throw new CLIError(
+          Messages.START_NO_BUILD(outDir),
+          "Run 'nf build' first, or use 'nf dev'.",
+        );
+      }
     }
   }
 
