@@ -20,7 +20,7 @@ schematics @nanoforge-dev/schematics:system --part=client --name=movement
 | Option      | Type                   | Default   | Description                                                                          |
 | ----------- | ---------------------- | --------- | ------------------------------------------------------------------------------------ |
 | `name`      | `string`               | `example` | System name. `movement` gives the function `movementSystem` in `movement.system.ts`. |
-| `part`      | `"client" \| "server"` | required  | Picks the package the types are imported from (see the warning below).               |
+| `part`      | `"client" \| "server"` | required  | Required. Only the JS file uses it, in a JSDoc comment.                              |
 | `directory` | `string`               | `.`       | Folder to write to.                                                                  |
 | `language`  | `"ts" \| "js"`         | `ts`      | `.ts` or `.js` file.                                                                 |
 
