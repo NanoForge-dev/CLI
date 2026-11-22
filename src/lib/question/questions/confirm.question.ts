@@ -1,6 +1,6 @@
 import { confirm } from "@inquirer/prompts";
 
-import { promptError } from "@utils/errors";
+import { assertTerminal, promptError } from "@utils/errors";
 
 interface ConfirmOptions {
   default: boolean;
@@ -10,6 +10,7 @@ export const askConfirm = async (
   question: string,
   baseOptions?: Partial<ConfirmOptions>,
 ): Promise<boolean | never> => {
+  assertTerminal();
   const options: ConfirmOptions = {
     default: false,
     ...(baseOptions ?? {}),

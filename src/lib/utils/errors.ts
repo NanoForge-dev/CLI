@@ -72,6 +72,23 @@ export class FileSystemError extends CLIError {
   }
 }
 
+/** A question was needed, but stdin is not a terminal (CI, a script, an agent): nothing can answer it. */
+export class NoTerminalError extends CLIError {
+  constructor(missing?: string) {
+    super(
+      missing
+        ? `${missing} is required when not running in a terminal.`
+        : "An answer is required, but stdin is not a terminal.",
+      "Pass the missing options on the command line (see --help).",
+    );
+  }
+}
+
+/** Throws a `NoTerminalError` before a prompt that nobody could answer. */
+export const assertTerminal = (): void => {
+  if (!process.stdin.isTTY) throw new NoTerminalError();
+};
+
 /** Stack traces are for debugging the CLI itself: shown only with `NF_DEBUG` set. */
 const isDebug = (): boolean => Boolean(process.env.NF_DEBUG);
 

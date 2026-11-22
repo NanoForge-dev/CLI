@@ -12,20 +12,26 @@ const getNameInput = (inputs: Input) => {
 };
 
 export const getNewNameInputOrAsk = (inputs: Input) => {
-  return getInputOrAsk(getNameInput(inputs), () =>
-    askInput(Messages.NEW_NAME_QUESTION, {
-      required: true,
-      default: "nanoforge-app",
-    }),
+  return getInputOrAsk(
+    getNameInput(inputs),
+    () =>
+      askInput(Messages.NEW_NAME_QUESTION, {
+        required: true,
+        default: "nanoforge-app",
+      }),
+    "--name",
   );
 };
 
 export const getPluginNameInputOrAsk = (inputs: Input) => {
-  return getInputOrAsk(getNameInput(inputs), () =>
-    askInput(Messages.CREATE_PLUGIN_NAME_QUESTION, {
-      required: true,
-      default: "@nanoforge/ecs",
-    }),
+  return getInputOrAsk(
+    getNameInput(inputs),
+    () =>
+      askInput(Messages.CREATE_PLUGIN_NAME_QUESTION, {
+        required: true,
+        default: "@nanoforge/ecs",
+      }),
+    "--name",
   );
 };
 
@@ -33,11 +39,14 @@ export const getPluginNameInputOrAsk = (inputs: Input) => {
 const ELEMENT_NAME = /^[A-Za-z][A-Za-z0-9_-]*$/;
 
 export const getCreateNameInputOrAsk = async (inputs: Input) => {
-  const name = await getInputOrAsk(getNameInput(inputs), () =>
-    askInput(Messages.CREATE_NAME_QUESTION, {
-      required: true,
-      default: "example",
-    }),
+  const name = await getInputOrAsk(
+    getNameInput(inputs),
+    () =>
+      askInput(Messages.CREATE_NAME_QUESTION, {
+        required: true,
+        default: "example",
+      }),
+    "--name",
   );
   if (!ELEMENT_NAME.test(name)) {
     throw new InvalidCommandArgumentError(

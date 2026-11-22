@@ -252,3 +252,13 @@ describe("nf new (with typescript with docker option)", () => {
     expect(existsSync(resolve(appDir, ".dockerignore"))).toBe(true);
   });
 });
+
+describe("nf new without a terminal", () => {
+  it("should name the missing option instead of exiting silently", async () => {
+    const { exitCode, stdout, stderr } = await runCli(["new"], { cwd: tmpDir, stdinData: "" });
+
+    expect(exitCode).toBe(1);
+    expect(stderr).toContain("--name is required when not running in a terminal.");
+    expect(stdout).not.toContain("What is the name");
+  });
+});

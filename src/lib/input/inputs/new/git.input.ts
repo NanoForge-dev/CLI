@@ -10,7 +10,9 @@ const getNewGitInput = (inputs: Input) => {
 };
 
 export const getNewGitOrAsk = (inputs: Input) => {
-  return getInputOrAsk(getNewGitInput(inputs), () =>
-    askConfirm(Messages.NEW_GIT_QUESTION, { default: true }),
+  return getInputOrAsk(
+    getNewGitInput(inputs),
+    () => askConfirm(Messages.NEW_GIT_QUESTION, { default: true }),
+    "--git or --no-git",
   );
 };

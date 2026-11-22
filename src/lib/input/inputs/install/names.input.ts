@@ -10,7 +10,9 @@ const getNamesInput = (inputs: Input) => {
 };
 
 export const getInstallNamesInputOrAsk = (inputs: Input) => {
-  return getInputOrAsk(getNamesInput(inputs), () =>
-    askInputArray(Messages.INSTALL_NAMES_QUESTION, { required: true }),
+  return getInputOrAsk(
+    getNamesInput(inputs),
+    () => askInputArray(Messages.INSTALL_NAMES_QUESTION, { required: true }),
+    "At least one package name",
   );
 };

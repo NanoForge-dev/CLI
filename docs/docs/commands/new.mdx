@@ -7,6 +7,8 @@ description: Create a new NanoForge project
 
 `nf new` creates a NanoForge project, installs its dependencies, and can set up a git repository.
 It asks a question for each choice. Give the answer as a flag to skip that question.
+Without a terminal (CI, a script), it asks nothing: a missing answer stops it with
+`<option> is required when not running in a terminal.`, so pass every choice as a flag.
 
 - **Without a server** (the default), the project is one client app at the root of its folder.
 - **With a server** (`--server`), the project is a workspace: a root `nanoforge.config.ts` that

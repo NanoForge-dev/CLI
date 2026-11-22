@@ -1,5 +1,5 @@
 import { checkbox, select } from "@inquirer/prompts";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { askMultiSelect, askSelect } from "./select.question";
 
@@ -7,6 +7,11 @@ vi.mock("@inquirer/prompts", () => ({
   select: vi.fn(),
   checkbox: vi.fn(),
 }));
+
+// Vitest's stdin is not a terminal: these tests stand for an interactive run.
+beforeEach(() => {
+  process.stdin.isTTY = true;
+});
 
 describe("askSelect", () => {
   it("should call select with question and choices", async () => {

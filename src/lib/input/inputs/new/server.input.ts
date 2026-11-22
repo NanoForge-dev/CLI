@@ -10,7 +10,9 @@ const getNewServerInput = (inputs: Input) => {
 };
 
 export const getNewServerOrAsk = (inputs: Input) => {
-  return getInputOrAsk(getNewServerInput(inputs), () =>
-    askConfirm(Messages.NEW_SERVER_QUESTION, { default: false }),
+  return getInputOrAsk(
+    getNewServerInput(inputs),
+    () => askConfirm(Messages.NEW_SERVER_QUESTION, { default: false }),
+    "--server or --no-server",
   );
 };

@@ -10,7 +10,9 @@ const getNewDockerInput = (inputs: Input) => {
 };
 
 export const getNewDockerOrAsk = (inputs: Input) => {
-  return getInputOrAsk(getNewDockerInput(inputs), () =>
-    askConfirm(Messages.NEW_DOCKER_QUESTION, { default: true }),
+  return getInputOrAsk(
+    getNewDockerInput(inputs),
+    () => askConfirm(Messages.NEW_DOCKER_QUESTION, { default: true }),
+    "--docker or --no-docker",
   );
 };

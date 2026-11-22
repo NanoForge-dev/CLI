@@ -10,10 +10,13 @@ const getGitRemoteInput = (inputs: Input) => {
 };
 
 export const getNewGitRemoteInputOrAsk = (inputs: Input) => {
-  return getInputOrAsk(getGitRemoteInput(inputs), () =>
-    askInput(Messages.NEW_GIT_REMOTE_QUESTION, {
-      required: false,
-      default: "",
-    }),
+  return getInputOrAsk(
+    getGitRemoteInput(inputs),
+    () =>
+      askInput(Messages.NEW_GIT_REMOTE_QUESTION, {
+        required: false,
+        default: "",
+      }),
+    "--git-remote or --no-git-remote",
   );
 };

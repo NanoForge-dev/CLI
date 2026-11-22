@@ -10,7 +10,9 @@ const getNewSkipInstallInput = (inputs: Input) => {
 };
 
 export const getNewSkipInstallOrAsk = (inputs: Input) => {
-  return getInputOrAsk(getNewSkipInstallInput(inputs), () =>
-    askConfirm(Messages.NEW_SKIP_INSTALL_QUESTION, { default: false }),
+  return getInputOrAsk(
+    getNewSkipInstallInput(inputs),
+    () => askConfirm(Messages.NEW_SKIP_INSTALL_QUESTION, { default: false }),
+    "--skip-install or --no-skip-install",
   );
 };

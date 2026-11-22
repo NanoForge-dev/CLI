@@ -1,6 +1,6 @@
 import { number } from "@inquirer/prompts";
 
-import { CLIError, promptError } from "@utils/errors";
+import { CLIError, assertTerminal, promptError } from "@utils/errors";
 
 interface NumberOptions {
   default?: number;
@@ -14,6 +14,7 @@ export const askNumber = async (
   question: string,
   baseOptions?: Partial<NumberOptions>,
 ): Promise<number | never> => {
+  assertTerminal();
   const options: NumberOptions = {
     required: false,
     ...(baseOptions ?? {}),

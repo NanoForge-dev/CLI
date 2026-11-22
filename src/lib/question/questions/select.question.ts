@@ -1,6 +1,6 @@
 import { checkbox, select } from "@inquirer/prompts";
 
-import { promptError } from "@utils/errors";
+import { assertTerminal, promptError } from "@utils/errors";
 
 interface SelectChoice<T> {
   value: T;
@@ -40,6 +40,7 @@ export const askSelect = async <T extends string = string>(
   choices: SelectChoices<T>,
   baseOptions?: Partial<SelectOptions<T>>,
 ): Promise<T | never> => {
+  assertTerminal();
   const options: SelectOptions<T> = {
     loop: true,
     ...(baseOptions ?? {}),
@@ -57,6 +58,7 @@ export const askMultiSelect = async <T extends string = string>(
   choices: MultiSelectChoices<T>,
   baseOptions?: Partial<MultiSelectOptions>,
 ): Promise<T[] | never> => {
+  assertTerminal();
   const options: MultiSelectOptions = {
     loop: true,
     required: false,

@@ -10,7 +10,9 @@ const getNewStrictInput = (inputs: Input) => {
 };
 
 export const getNewStrictOrAsk = (inputs: Input) => {
-  return getInputOrAsk(getNewStrictInput(inputs), () =>
-    askConfirm(Messages.NEW_STRICT_QUESTION, { default: true }),
+  return getInputOrAsk(
+    getNewStrictInput(inputs),
+    () => askConfirm(Messages.NEW_STRICT_QUESTION, { default: true }),
+    "--strict or --no-strict",
   );
 };

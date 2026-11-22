@@ -1,11 +1,18 @@
 import { input } from "@inquirer/prompts";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+import { NoTerminalError } from "@utils/errors";
 
 import { askInput, askInputArray } from "./input.question";
 
 vi.mock("@inquirer/prompts", () => ({
   input: vi.fn(),
 }));
+
+// Vitest's stdin is not a terminal: these tests stand for an interactive run.
+beforeEach(() => {
+  process.stdin.isTTY = true;
+});
 
 describe("askInput", () => {
   it("should call input with the question message", async () => {
@@ -86,5 +93,16 @@ describe("askInputArray", () => {
     const result = await askInputArray("Items?");
 
     expect(result).toEqual([]);
+  });
+});
+
+describe("without a terminal", () => {
+  it("throws a NoTerminalError instead of prompting", async () => {
+    process.stdin.isTTY = false;
+    vi.mocked(input).mockClear();
+
+    await expect(askInput("Name?")).rejects.toThrow(NoTerminalError);
+    await expect(askInputArray("Names?")).rejects.toThrow(NoTerminalError);
+    expect(input).not.toHaveBeenCalled();
   });
 });

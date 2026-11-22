@@ -187,6 +187,33 @@ describe("nf create (error cases)", () => {
     const { exitCode } = await runCli(["create", "invalid-type", "--name", "test", "-d", appDir]);
     expect(exitCode).not.toBe(0);
   });
+
+  it("should name the missing --name instead of prompting without a terminal", async () => {
+    const appDir = resolve(tmpDir, "create-js/create-js-app");
+    const { exitCode, stdout, stderr } = await runCli(["create", "component", "-d", appDir], {
+      stdinData: "",
+    });
+
+    expect(exitCode).toBe(1);
+    expect(stderr).toContain("--name is required when not running in a terminal.");
+    expect(stdout).not.toContain("What is the name");
+  });
+
+  it("should reject a name that gives no valid identifier", async () => {
+    const appDir = resolve(tmpDir, "create-js/create-js-app");
+    const { exitCode, stderr } = await runCli([
+      "create",
+      "component",
+      "--name",
+      "2d sprite",
+      "-d",
+      appDir,
+    ]);
+
+    expect(exitCode).toBe(1);
+    expect(stderr).toContain("Invalid argument 'name'");
+    expect(existsSync(resolve(appDir, "src/components/2d-sprite.component.js"))).toBe(false);
+  });
 });
 
 describe("nf create plugin", () => {
