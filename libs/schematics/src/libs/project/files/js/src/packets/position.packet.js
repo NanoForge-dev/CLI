@@ -1,18 +1,19 @@
-import { Channel, definePacket } from "@nanoforge-dev/network";
+import { definePacket } from "@nanoforge-dev/network";
 
 /**
  * Server to every client, each tick: where the entity is. The client and the server declare it
- * with the same name. A position is replaced every tick, so a lost one is not sent again.
+ * with the same name.
  *
  * @type {import("@nanoforge-dev/network").PacketDefinition<{ x: number; y: number }>}
  */
 export const PositionPacket = definePacket("position", {
-  channel: Channel.UnreliableOrdered,
   // Never trust what arrives from the network: anything but two numbers is dropped.
   /** @returns {data is { x: number; y: number }} */
   validate: (data) =>
     typeof data === "object" &&
     data !== null &&
+    "x" in data &&
     typeof data.x === "number" &&
+    "y" in data &&
     typeof data.y === "number",
 });

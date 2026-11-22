@@ -43,7 +43,6 @@ nf start
 | `nf dev`   | Develop with hot reload               |
 | `nf build` | Build for production                  |
 | `nf start` | Run a built app                       |
-| `-r`       | Apply the command to every app        |
 
 ## More info
 
