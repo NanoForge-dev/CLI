@@ -14,8 +14,8 @@ a [workspace](./workspace) (`apps/client`, `apps/server`).
 server side by side, run it twice with `--directory=apps/client` and `--directory=apps/server`.
 
 Every app depends on `@nanoforge-dev/cli`, `core`, `common`, `config`, `asset` and `ecs`. A client
-also gets `env`, `graphics-2d`, `input` and `network`. A server gets `network` as a runtime
-dependency. The versions are pinned to the newest release published at least 48 hours before
+also gets `env`, `graphics-2d` and `input`, plus `network` with `hasServer`. A server gets `network`
+as a runtime dependency. The versions are pinned to the newest release published at least 48 hours before
 generation.
 
 ## Usage
@@ -69,13 +69,16 @@ schematics @nanoforge-dev/schematics:project --part=client --directory=apps/clie
         ├── draw-2d.system.ts                # client only
         ├── position-sync.system.ts          # client only, hasServer: true
         └── move-2d.system.ts                # server only
+    └── packets/
+        └── position.packet.ts               # server, or client with hasServer
 ```
 
-`src/main.ts` creates the app, adds the ECS, network (and, on the client, 2D graphics and input)
-libraries, spawns one entity with a position, and adds the systems:
+`src/main.ts` creates the app, adds the ECS, network (server, or client with `hasServer`) and, on
+the client, 2D graphics and input libraries, spawns one entity with a position, and adds the systems:
 
 - the client draws a red circle at the entity's position;
-- the server moves the entity one pixel per tick and sends its position to every client;
+- the server moves the entity one pixel per tick and sends its position to every client in the
+  `position` packet (`src/packets/position.packet.ts`);
 - with `hasServer`, the client takes that position from the server.
 
 ## Examples

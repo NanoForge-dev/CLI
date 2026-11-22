@@ -49,9 +49,9 @@ describe("project schematic", () => {
       expect(packageJson.devDependencies["@nanoforge-dev/input"]).toBeDefined();
     });
 
-    it("should declare network as a dev dependency", () => {
+    it("should leave network out of a client without a server", () => {
       const packageJson = JSON.parse(tree.readContent("/apps/client/package.json"));
-      expect(packageJson.devDependencies["@nanoforge-dev/network"]).toBeDefined();
+      expect(packageJson.devDependencies["@nanoforge-dev/network"]).toBeUndefined();
       expect(packageJson).not.toHaveProperty("dependencies");
     });
 
@@ -66,7 +66,8 @@ describe("project schematic", () => {
       expect(content).toContain('from "@nanoforge-dev/ecs/client"');
       expect(content).toContain("Graphics2DLibrary");
       expect(content).toContain("InputLibrary");
-      expect(content).toContain("NetworkClientLibrary");
+      // Without a server the network library would fail its env check and stop the game.
+      expect(content).not.toContain("NetworkClientLibrary");
     });
 
     it("should access the graphics library directly off ctx, not through ctx.libs", () => {
@@ -192,6 +193,36 @@ describe("project schematic", () => {
       const content = tree.readContent("/has-server-apps/client/src/main.ts");
       expect(content).toContain('import { positionSync } from "./systems/position-sync.system"');
       expect(content).toContain("registry.addSystem(positionSync)");
+      expect(content).toContain("app.use(new NetworkClientLibrary())");
+      const packageJson = JSON.parse(tree.readContent("/has-server-apps/client/package.json"));
+      expect(packageJson.devDependencies["@nanoforge-dev/network"]).toMatch(RESOLVED_VERSION);
+    });
+
+    it("sends and reads the position through the shared packet, not raw tcp", async () => {
+      for (const part of ["client", "server"] as const) {
+        const tree = await runner.runSchematic("project", {
+          part,
+          workspaceName: "packet-workspace",
+          directory: `packet-apps/${part}`,
+          hasServer: true,
+        });
+        const packet = tree.readContent(`/packet-apps/${part}/src/packets/position.packet.ts`);
+        expect(packet).toContain('definePacket<{ x: number; y: number }>("position"');
+        const system = tree.readContent(
+          `/packet-apps/${part}/src/systems/${part === "client" ? "position-sync" : "move-2d"}.system.ts`,
+        );
+        expect(system).toContain("ctx.network.packets");
+        expect(system).not.toContain(".tcp");
+      }
+    });
+
+    it("has no packet file without a server", async () => {
+      const tree = await runner.runSchematic("project", {
+        part: "client",
+        workspaceName: "no-packet-workspace",
+        directory: "no-packet-apps/client",
+      });
+      expect(tree.files).not.toContain("/no-packet-apps/client/src/packets/position.packet.ts");
     });
 
     it("is ignored for a server project - position handling is always active there", async () => {
@@ -335,6 +366,8 @@ describe("project schematic", () => {
         workspaceName: "ecs-alias-client-workspace",
         directory: "ecs-alias-client-apps/client",
         workspace: false,
+        // A client gets network only when it talks to a server.
+        hasServer: true,
       });
       const clientPackageJson = JSON.parse(
         client.readContent("/ecs-alias-client-apps/client/package.json"),

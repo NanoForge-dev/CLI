@@ -71,8 +71,10 @@ branch and can describe APIs that the installed release lacks: the installed typ
   `NANOFORGE_CLIENT_X` to the client and `NANOFORGE_SERVER_X` to the server, as `X` in
   `options.env`. Everything the client gets reaches the browser: never put a secret there.
   https://docs.nanoforge.eu/docs/cli/configuration/environment-variables
-- The generated systems use `ctx.network.tcp` and encode JSON with `TextEncoder`. Check the
-  installed `@nanoforge-dev/network` types before using another network API.
+- The client and the server exchange typed packets declared with `definePacket` in
+  `src/packets/` (the same name on both sides): the server calls `ctx.network.packets.sendToAll`,
+  the client `ctx.network.packets.read`. Check the installed `@nanoforge-dev/network` types
+  before using another network API.
 <% } %>
 ## Example
 

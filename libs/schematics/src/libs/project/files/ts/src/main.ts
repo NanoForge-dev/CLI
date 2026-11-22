@@ -1,10 +1,10 @@
-import { type <%= part === "client" ? "ClientRunOptions" : "ServerRunOptions" %> } from "@nanoforge-dev/common";
+<% var networked = part === "server" || hasServer; %>import { type <%= part === "client" ? "ClientRunOptions" : "ServerRunOptions" %> } from "@nanoforge-dev/common";
 import { NanoforgeFactory } from "@nanoforge-dev/core";
 import { EcsLibrary } from "@nanoforge-dev/ecs/<%= part %>";<% if (part === "client") { %>
 import { Graphics2DLibrary } from "@nanoforge-dev/graphics-2d";
 import { InputLibrary } from "@nanoforge-dev/input";<% } %>
-import { <%= part === "client" ? "NetworkClientLibrary" : "NetworkServerLibrary" %> } from "@nanoforge-dev/network/<%= part %>";
-<% if (part === "client") { %>
+<% if (networked) { %>import { <%= part === "client" ? "NetworkClientLibrary" : "NetworkServerLibrary" %> } from "@nanoforge-dev/network/<%= part %>";
+<% } %><% if (part === "client") { %>
 import { DrawableCircle2D } from "./components/drawable-circle-2d.component";<% } %>
 import { Position2D } from "./components/position-2d.component";<% if (part === "client") { %>
 import { draw2D } from "./systems/draw-2d.system";<% if (hasServer) { %>
@@ -18,8 +18,8 @@ export const main = async (options: <%= part === "client" ? "ClientRunOptions" :
   app.use(ecs);<% if (part === "client") { %>
   app.use(new Graphics2DLibrary());
   app.use(new InputLibrary());<% } %>
-  app.use(new <%= part === "client" ? "NetworkClientLibrary" : "NetworkServerLibrary" %>());
-
+<% if (networked) { %>  app.use(new <%= part === "client" ? "NetworkClientLibrary" : "NetworkServerLibrary" %>());
+<% } %>
   await app.init(options);
 
   const registry = ecs.registry;

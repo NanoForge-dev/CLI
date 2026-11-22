@@ -5,21 +5,19 @@
  */
 
 import { Position2D } from "../components/position-2d.component";
+import { PositionPacket } from "../packets/position.packet";
 
 /**
  * @param {Registry} registry
  * @param {Context} ctx
  */
 export function move2D(registry, ctx) {
-  const network = ctx.network;
   const entities = registry.getZipper([Position2D]);
 
   entities.forEach(({ Position2D }) => {
     Position2D.x += 1;
 
-    network.tcp.sendToEverybody(
-      new TextEncoder().encode(JSON.stringify({ x: Position2D.x, y: Position2D.y })),
-    );
+    ctx.network.packets.sendToAll(PositionPacket, { x: Position2D.x, y: Position2D.y });
   });
 }
 // * Required to generate code
