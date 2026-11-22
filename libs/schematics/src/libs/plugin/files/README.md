@@ -20,4 +20,12 @@ The <%= title %> panel opens in the bottom right dock. _View › Panels › <%= 
 
 Build it (`pnpm build`), then copy `dist/` to `~/.nanoforge/editor/plugins/<%= name %>` (every project) or to `<project>/.nanoforge/plugins/<%= name %>` (that project).
 
+## Publish it
+
+The build writes the plugin and its manifest to `dist/`: publish that folder to the NanoForge registry (run `nf login` first).
+
+```sh
+pnpm build && nf publish -d dist
+```
+
 The plugin authoring guide has the rest: the manifest, the SDK, extension points, settings, history.
