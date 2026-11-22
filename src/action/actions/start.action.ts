@@ -1,5 +1,7 @@
 import { type ClientConfig, defaultClientConfig, defaultServerConfig } from "@nanoforge-dev/config";
+import { yellow } from "ansis";
 import dotenv from "dotenv";
+import { existsSync } from "node:fs";
 import { join, resolve } from "path";
 
 import {
@@ -78,6 +80,9 @@ export class StartAction extends AbstractAction {
       );
     }
 
+    // Under --watch (nf dev) the build runs alongside and creates the folder.
+    if (!watch) this.warnMissingBuilds(targets);
+
     const env = this.parseEnv(directory);
     if (isPeerToPeer(workspaceConfig)) {
       env.client.NANOFORGE_NETWORK_MODE = env.server.NANOFORGE_NETWORK_MODE = "p2p";
@@ -87,6 +92,13 @@ export class StartAction extends AbstractAction {
     await Promise.all(tasks);
 
     return { keepAlive: true };
+  }
+
+  private warnMissingBuilds(targets: StartTarget[]): void {
+    for (const target of targets) {
+      const outDir = getCwd(join(target.directory, target.outDir));
+      if (!existsSync(outDir)) console.warn(yellow(Messages.START_NO_BUILD(outDir)));
+    }
   }
 
   private resolveTLS(options: Input, config: ClientConfig): TLSOptions | undefined {

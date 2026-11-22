@@ -71,6 +71,8 @@ export const Messages = {
   START_START: "NanoForge Start",
   START_SUCCESS: success("Start completed!"),
   START_FAILED: failure("Start failed!"),
+  START_NO_BUILD: (outDir: string) =>
+    `Warning: no build found at ${outDir}. Run 'nf build' first, or use 'nf dev'.`,
   START_PART_IN_PROGRESS: (part: string) => `Starting ${part}...`,
   START_PART_SUCCESS: (part: string) => success(`${part} terminated.`),
   START_PART_FAILED: (part: string) => failure(`${part} failed!`),
