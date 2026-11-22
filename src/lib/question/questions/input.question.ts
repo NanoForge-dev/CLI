@@ -1,4 +1,4 @@
-import { input } from "@inquirer/prompts";
+import { input, password } from "@inquirer/prompts";
 
 import { assertTerminal, promptError } from "@utils/errors";
 
@@ -49,4 +49,14 @@ export const askInputArray = async (
     }).catch(promptError)
   ).split(options.split);
   return options.filter ? res.filter((r) => r.length) : res;
+};
+
+/** Like `askInput`, but the answer is masked: for secrets such as API keys. */
+export const askSecret = async (question: string): Promise<string | never> => {
+  assertTerminal();
+  return await password({
+    message: question,
+    mask: "*",
+    validate: (value) => value.length > 0 || "A value is required.",
+  }).catch(promptError);
 };

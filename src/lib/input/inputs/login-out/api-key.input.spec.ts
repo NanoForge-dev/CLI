@@ -1,12 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { askInput } from "@lib/question";
+import { askSecret } from "@lib/question";
 
 import { type Input } from "../../input.type";
 import { getLoginApiKeyInputOrAsk } from "./api-key.input";
 
 vi.mock("@lib/question", () => ({
-  askInput: vi.fn(),
+  askSecret: vi.fn(),
 }));
 
 const createInput = (entries: [string, any][]): Input => {
@@ -18,14 +18,14 @@ describe("getLoginApiKeyInputOrAsk", () => {
     const input = createInput([["apiKey", "my-api-key"]]);
 
     expect(await getLoginApiKeyInputOrAsk(input)).toBe("my-api-key");
-    expect(askInput).not.toHaveBeenCalled();
+    expect(askSecret).not.toHaveBeenCalled();
   });
 
-  it("should call askInput when apiKey is not provided", async () => {
-    vi.mocked(askInput).mockResolvedValue("asked-api-key");
+  it("should call askSecret when apiKey is not provided", async () => {
+    vi.mocked(askSecret).mockResolvedValue("asked-api-key");
     const input = createInput([]);
 
     expect(await getLoginApiKeyInputOrAsk(input)).toBe("asked-api-key");
-    expect(askInput).toHaveBeenCalledOnce();
+    expect(askSecret).toHaveBeenCalledOnce();
   });
 });
