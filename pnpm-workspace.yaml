@@ -25,7 +25,7 @@ catalogs:
     node-emoji: ^2.2.0
     ora: ^9.4.1
   core:
-    '@nanoforge-dev/editor': ^1.0.0
+    '@nanoforge-dev/editor': ^1.1.0
     '@types/bun': ^1.3.14
     '@types/node': ^26.6.6
     bun: ^1.4.4
@@ -56,6 +56,10 @@ catalogs:
   test:
     '@vitest/coverage-v8': ^5.1.0
     vitest: ^5.1.0
+
+# shortcut: editor 1.1.0 is younger than pnpm's minimum release age, drop after 2026-11-23.
+minimumReleaseAgeExclude:
+  - '@nanoforge-dev/editor@1.1.0'
 
 # shortcut: oxfmt (via @nanoforge-dev/utils-eslint-config) pins a vulnerable tinypool; drop once the eslint config moves to a fixed oxfmt.
 overrides:
