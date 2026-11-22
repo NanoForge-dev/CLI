@@ -47,6 +47,14 @@ describe("nf new --help", () => {
     expect(stdout).toContain("--directory");
     expect(stdout).toContain("--docker");
   });
+
+  it("should not claim that --init-functions or --no-lint do something", async () => {
+    const { stdout } = await runCli(["new", "--help"]);
+
+    expect(stdout).not.toContain("initialize functions");
+    expect(stdout).not.toContain("do not generate lint files");
+    expect(stdout).toContain("has no effect yet");
+  });
 });
 
 describe("nf build --help", () => {
