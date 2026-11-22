@@ -37,6 +37,11 @@ describe("Runner", () => {
       expect(await echo.run(["my project/dir"], { collect: true })).toBe("my project/dir");
     });
 
+    it("should preserve internal line breaks in collected output", async () => {
+      const output = "first\r\nsecond\n\nthird\n";
+      expect(await echo.run([output], { collect: true })).toBe("first\r\nsecond\n\nthird");
+    });
+
     it("should reject when the binary is missing", async () => {
       await expect(new Runner("nf-missing-binary").run([], { collect: true })).rejects.toThrow();
     });

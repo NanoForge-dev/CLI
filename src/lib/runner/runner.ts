@@ -60,10 +60,11 @@ export class Runner {
       child.on("error", reject);
 
       child.on("close", (code) => {
+        const captured = output.join("").replace(/\r?\n$/, "");
         if (code === 0) {
-          resolve(this.formatOutput(output, collect));
+          resolve(collect && output.length ? captured : null);
         } else {
-          this.handleFailure(output, fullArgs, onFail);
+          this.handleFailure(captured, fullArgs, onFail);
           reject(this.createError(fullArgs, code));
         }
       });
@@ -89,7 +90,7 @@ export class Runner {
 
   private attachOutputHandlers(child: ChildProcess, listeners?: RunnerListeners): string[] {
     const output: string[] = [];
-    const defaultHandler = (data: Buffer) => output.push(data.toString().replace(/\r\n|\n/, ""));
+    const defaultHandler = (data: Buffer) => output.push(data.toString());
 
     child.stdout?.on("data", listeners?.onStdout ?? defaultHandler);
     child.stderr?.on("data", listeners?.onStderr ?? defaultHandler);
@@ -97,11 +98,7 @@ export class Runner {
     return output;
   }
 
-  private formatOutput(output: string[], collect: boolean): string | null {
-    return collect && output.length ? output.join("\n") : null;
-  }
-
-  private handleFailure(output: string[], args: string[], onFail?: () => void): void {
+  private handleFailure(output: string, args: string[], onFail?: () => void): void {
     if (onFail) onFail();
     this.logFailedCommand(args);
     this.logCapturedOutput(output);
@@ -111,10 +108,10 @@ export class Runner {
     console.error(red(`\nFailed to execute command: ${this.binary} ${args.join(" ")}`));
   }
 
-  private logCapturedOutput(output: string[]): void {
-    if (output.length) {
+  private logCapturedOutput(output: string): void {
+    if (output) {
       console.error();
-      console.error(output.join("\n"));
+      console.error(output);
       console.error();
     }
   }
