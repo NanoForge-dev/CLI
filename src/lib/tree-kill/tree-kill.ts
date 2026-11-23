@@ -5,8 +5,8 @@ type ProcessTree = { [key: number]: number[] };
 const killPid = (pid: number, signal: NodeJS.Signals): void => {
   try {
     process.kill(pid, signal);
-  } catch (err) {
-    if ((err as NodeJS.ErrnoException).code !== "ESRCH") throw err;
+  } catch {
+    // Already gone (ESRCH) or not ours to signal (EPERM): skip it, this runs from a signal handler.
   }
 };
 
@@ -51,6 +51,8 @@ const buildProcessTree = (
   // The listing helpers are children of this process: when the root is this process
   // (the signal handler kills its own tree) a helper would list itself as a child.
   if (ps.pid !== undefined) helpers.add(ps.pid);
+  // A missing helper (ENOENT) is followed by a non-zero "close": its pid is then a leaf.
+  ps.on("error", () => {});
   let allData = "";
   ps.stdout.on("data", (data: Buffer) => {
     allData += data.toString("ascii");

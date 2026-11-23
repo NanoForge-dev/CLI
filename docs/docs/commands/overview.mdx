@@ -59,5 +59,6 @@ Commands that ask questions (`nf new`, `nf create`, `nf login`, `nf install`) ne
 stdin is not a terminal (CI, a script): they stop with `<option> is required when not running in a
 terminal.`, so pass the option.
 
-An unexpected error prints its message only. Set `NF_DEBUG=1` to see its stack trace, for
-example in a bug report: `NF_DEBUG=1 nf build`.
+An unexpected error prints its message only. Set `NF_DEBUG=1` (or `true`) to see its stack
+trace, for example in a bug report: `NF_DEBUG=1 nf build`. An empty value, `0` or `false` keeps
+it off.

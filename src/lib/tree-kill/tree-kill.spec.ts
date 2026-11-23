@@ -1,8 +1,14 @@
+import type * as ChildProcess from "node:child_process";
 import { execFileSync, spawn } from "node:child_process";
 import { readFileSync } from "node:fs";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { treeKill } from "./tree-kill";
+
+vi.mock("node:child_process", async (importOriginal) => {
+  const actual = await importOriginal<typeof ChildProcess>();
+  return { ...actual, spawn: vi.fn(actual.spawn) };
+});
 
 const isAlive = (pid: number): boolean => {
   // A zombie is dead for our purposes: it cannot run anymore, it is only waiting
@@ -65,5 +71,41 @@ describe.skipIf(process.platform === "win32")("treeKill", () => {
     const dead = spawn("sh", ["-c", "exit 0"], { stdio: "ignore" });
     await new Promise((resolve) => dead.on("exit", resolve));
     await expect(treeKill(dead.pid as number, "SIGTERM")).resolves.toBeUndefined();
+  });
+
+  describe("when a kill or a listing fails", () => {
+    afterEach(() => {
+      vi.restoreAllMocks();
+      // restoreAllMocks only undoes vi.spyOn: put the real spawn back behind the vi.fn.
+      vi.mocked(spawn).mockReset();
+    });
+
+    it("skips a pid it may not signal and still kills the rest", { timeout: 30_000 }, async () => {
+      const root = spawn("sh", ["-c", "sleep 300 & wait"], { stdio: "ignore" });
+      const rootPid = root.pid as number;
+      let children: number[] = [];
+      await waitFor(() => (children = childPids(rootPid)).length >= 1);
+
+      const realKill = process.kill.bind(process);
+      vi.spyOn(process, "kill").mockImplementation((pid, signal) => {
+        if (children.includes(pid)) throw Object.assign(new Error("kill EPERM"), { code: "EPERM" });
+        return realKill(pid, signal);
+      });
+
+      await expect(treeKill(rootPid, "SIGKILL")).resolves.toBeUndefined();
+      vi.restoreAllMocks();
+      await waitFor(() => !isAlive(rootPid));
+      for (const pid of children) realKill(pid, "SIGKILL");
+    });
+
+    it("resolves when the listing helper is missing", { timeout: 30_000 }, async () => {
+      const root = spawn("sh", ["-c", "sleep 300"], { stdio: "ignore" });
+      const rootPid = root.pid as number;
+      const actual = await vi.importActual<typeof ChildProcess>("node:child_process");
+      vi.mocked(spawn).mockImplementation(() => actual.spawn("nf-missing-ps-binary", []));
+
+      await expect(treeKill(rootPid, "SIGKILL")).resolves.toBeUndefined();
+      await waitFor(() => !isAlive(rootPid));
+    });
   });
 });

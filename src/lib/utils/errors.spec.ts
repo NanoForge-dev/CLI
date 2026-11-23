@@ -108,6 +108,21 @@ describe("unexpected errors", () => {
     expect(printed.info).toContain("NF_DEBUG=1");
   });
 
+  it.each(["0", "false", "FALSE"])("hides the stack trace with NF_DEBUG=%s", (value) => {
+    vi.stubEnv("NF_DEBUG", value);
+
+    const printed = capture(new Error("Something broke"));
+
+    expect(printed.error).not.toMatch(/^\s+at /m);
+    expect(printed.info).toContain("NF_DEBUG=1");
+  });
+
+  it.each(["1", "true"])("prints the stack trace with NF_DEBUG=%s", (value) => {
+    vi.stubEnv("NF_DEBUG", value);
+
+    expect(capture(new Error("Something broke")).error).toMatch(/^\s+at /m);
+  });
+
   it("prints the stack trace with NF_DEBUG set", () => {
     vi.stubEnv("NF_DEBUG", "1");
 

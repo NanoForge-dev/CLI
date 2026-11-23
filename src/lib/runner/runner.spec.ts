@@ -42,6 +42,14 @@ describe("Runner", () => {
       expect(await echo.run([output], { collect: true })).toBe("first\r\nsecond\n\nthird");
     });
 
+    it("should keep a multi-byte character split across chunks whole", async () => {
+      const split = new Runner("node", [
+        "-e",
+        'const b = Buffer.from("é"); process.stdout.write(b.subarray(0, 1)); setTimeout(() => process.stdout.write(b.subarray(1)), 50)',
+      ]);
+      expect(await split.run([], { collect: true })).toBe("é");
+    });
+
     it("should reject when the binary is missing", async () => {
       await expect(new Runner("nf-missing-binary").run([], { collect: true })).rejects.toThrow();
     });

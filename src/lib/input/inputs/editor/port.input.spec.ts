@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { InvalidCommandArgumentError } from "@utils/errors";
+import { InvalidCommandArgumentError, InvalidConfigValueError } from "@utils/errors";
 
 import { type Input } from "../../input.type";
 import {
@@ -50,12 +50,22 @@ describe("getPortInputWithDefault", () => {
     expect(getPortInputWithDefault(createInput([]), "3000")).toBe("3000");
   });
 
-  it("rejects an invalid --port or default before anything starts", () => {
+  it("rejects an invalid --port as an argument before anything starts", () => {
     expect(() => getPortInputWithDefault(createInput([["port", "abc"]]), "3000")).toThrow(
       InvalidCommandArgumentError,
     );
-    expect(() => getPortInputWithDefault(createInput([]), "99999")).toThrow(
-      InvalidCommandArgumentError,
+  });
+
+  it("names the config file, not an argument, when the config's port is invalid", () => {
+    const read = () => getPortInputWithDefault(createInput([]), "abc");
+    expect(read).toThrow(InvalidConfigValueError);
+    expect(read).toThrow(
+      "Invalid 'port' in nanoforge.config: expected an integer from 1 to 65535, got 'abc'.",
     );
+    expect(read).not.toThrow(InvalidCommandArgumentError);
+  });
+
+  it("does not check the config's port when --port is given", () => {
+    expect(getPortInputWithDefault(createInput([["port", "4600"]]), "abc")).toBe("4600");
   });
 });

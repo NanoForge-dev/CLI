@@ -90,8 +90,11 @@ export class Runner {
 
   private attachOutputHandlers(child: ChildProcess, listeners?: RunnerListeners): string[] {
     const output: string[] = [];
-    const defaultHandler = (data: Buffer) => output.push(data.toString());
+    const defaultHandler = (data: string) => output.push(data);
 
+    // A per-stream decoder keeps a multi-byte character split across two chunks whole.
+    child.stdout?.setEncoding("utf8");
+    child.stderr?.setEncoding("utf8");
     child.stdout?.on("data", listeners?.onStdout ?? defaultHandler);
     child.stderr?.on("data", listeners?.onStderr ?? defaultHandler);
 
