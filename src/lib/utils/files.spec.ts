@@ -1,11 +1,11 @@
 import fs from "fs";
 import { tmpdir } from "os";
 import { join } from "path";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { FileSystemError } from "@utils/errors";
 
-import { copyFiles, resetFolder } from "./files";
+import { copyFiles, getUnsafeOutDirReason, resetFolder } from "./files";
 
 describe("files", () => {
   let root: string;
@@ -77,6 +77,86 @@ describe("files", () => {
 
       expect(fs.existsSync(folder)).toBe(true);
       expect(fs.readdirSync(folder)).toEqual([]);
+    });
+  });
+
+  describe("resetFolder with kept children", () => {
+    it("should empty the folder but keep the named children and their content", () => {
+      const folder = join(root, "out");
+      fs.mkdirSync(join(folder, "server"), { recursive: true });
+      fs.writeFileSync(join(folder, "server", "main.js"), "server");
+      fs.writeFileSync(join(folder, "main.js"), "client");
+
+      resetFolder(folder, ["server"]);
+
+      expect(fs.readdirSync(folder)).toEqual(["server"]);
+      expect(fs.readFileSync(join(folder, "server", "main.js"), "utf8")).toBe("server");
+    });
+  });
+
+  describe("getUnsafeOutDirReason", () => {
+    const project = join(tmpdir(), "project");
+    const reason = (outDir: string, sources = ["src/main.ts", "assets"]) =>
+      getUnsafeOutDirReason(project, project, outDir, sources);
+
+    it("should refuse the project folder, a parent, an absolute path or a folder outside", () => {
+      expect(reason(".")).toMatch(/project folder or one of its parents/);
+      expect(reason("..")).toMatch(/project folder or one of its parents/);
+      expect(reason("../sibling")).toMatch(/outside the project folder/);
+      expect(reason(join(project, "dist"))).toMatch(/relative/);
+    });
+
+    it("should refuse a folder that holds the sources or sits in the assets", () => {
+      expect(reason("src")).toMatch(/overlaps the sources/);
+      expect(reason("assets")).toMatch(/overlaps the sources/);
+      expect(reason("assets/out")).toMatch(/overlaps the sources/);
+    });
+
+    it("should accept a folder inside the project apart from the sources", () => {
+      expect(reason("dist")).toBeUndefined();
+      expect(reason("src/dist")).toBeUndefined();
+      expect(reason("..dist")).toBeUndefined();
+    });
+
+    it("should refuse an output folder that reaches outside through a symlink", () => {
+      fs.mkdirSync(join(root, "project", "src"), { recursive: true });
+      fs.symlinkSync("..", join(root, "project", "a"), "dir");
+      const real = join(root, "project");
+
+      expect(getUnsafeOutDirReason(real, real, "a/dist", ["src/main.ts"])).toMatch(
+        /outside the project folder/,
+      );
+      expect(getUnsafeOutDirReason(real, real, "a/project", ["src/main.ts"])).toMatch(
+        /project folder or one of its parents/,
+      );
+    });
+
+    it.skipIf(process.platform === "win32")(
+      "should refuse a folder that is a source in another case on a case-insensitive file system",
+      () => {
+        const onDisk = new Set(["/", "/ws", "/ws/src", "/ws/src/main.ts", "/ws/assets"]);
+        const spy = vi.spyOn(fs.realpathSync, "native").mockImplementation(((path: string) => {
+          const lower = path.toLowerCase();
+          if (onDisk.has(lower)) return lower;
+          throw Object.assign(new Error("ENOENT"), { code: "ENOENT" });
+        }) as unknown as typeof fs.realpathSync.native);
+
+        try {
+          expect(getUnsafeOutDirReason("/ws", "/ws", "SRC", ["src/main.ts", "assets"])).toMatch(
+            /overlaps the sources/,
+          );
+          expect(getUnsafeOutDirReason("/ws", "/ws", "DIST", ["src/main.ts"])).toBeUndefined();
+        } finally {
+          spy.mockRestore();
+        }
+      },
+    );
+
+    it("should check a nested target against the root it is given", () => {
+      const server = join(project, "server");
+      expect(
+        getUnsafeOutDirReason(project, server, "../client/dist/server", ["src/main.ts"]),
+      ).toBeUndefined();
     });
   });
 });
