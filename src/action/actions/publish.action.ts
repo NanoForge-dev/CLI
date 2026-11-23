@@ -31,14 +31,16 @@ export class PublishAction extends AbstractAction {
     const manifest = loadManifest(directory);
     const subject = `${manifest.name}@${manifest.version}`;
     const root = getCwd(directory);
-    const { archive, files } = await packFolder(root, {
+    // The list is printed before zipping, so it is there when the archive is too large.
+    const { archive } = await packFolder(root, {
       ignore: await publishIgnore(root, manifest),
       maxBytes: MAX_PUBLISH_BYTES,
+      onFiles: (files) => {
+        for (const { path, size } of files) console.info(`  ${path} (${formatSize(size)})`);
+        const unpacked = files.reduce((total, { size }) => total + size, 0);
+        console.info(Messages.PUBLISH_FILES(subject, files.length, formatSize(unpacked)));
+      },
     });
-
-    for (const { path, size } of files) console.info(`  ${path} (${formatSize(size)})`);
-    const unpacked = files.reduce((total, { size }) => total + size, 0);
-    console.info(Messages.PUBLISH_FILES(subject, files.length, formatSize(unpacked)));
 
     if (getDryRunInput(options)) {
       this.successMessage = Messages.PUBLISH_DRY_RUN_SUCCESS;

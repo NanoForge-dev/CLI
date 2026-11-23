@@ -40,11 +40,15 @@ describe("PublishAction", () => {
     writeFileSync(join(dir, "assets/noise.bin"), randomBytes(21 * 1024 * 1024));
     const fetch = vi.fn();
     vi.stubGlobal("fetch", fetch);
-    vi.spyOn(console, "info").mockImplementation(() => undefined);
+    const info = vi.spyOn(console, "info").mockImplementation(() => undefined);
 
     await expect(new PublishAction().handle(new Map(), input({ directory: dir }))).rejects.toThrow(
       /too large: over 20 MiB packed, the most the registry takes\. Name fewer files/,
     );
     expect(fetch).not.toHaveBeenCalled();
+    // The list is still printed, to see what to leave out.
+    expect(info.mock.calls.map(([line]) => String(line))).toContain(
+      "  assets/noise.bin (21.0 MiB)",
+    );
   });
 });

@@ -127,6 +127,8 @@ export interface PackFolderOptions extends ZipFolderOptions {
    * soon as the archive passes it.
    */
   readonly maxBytes?: number;
+  /** Called with the files to pack once they are listed, before any of them is read. */
+  readonly onFiles?: (files: readonly PackedFile[]) => void;
 }
 
 /** A file of a packed folder: its path in the archive and its size, unpacked. */
@@ -189,7 +191,7 @@ const streamZip = async (
  */
 export const packFolder = async (
   folder: string,
-  { ignore, maxBytes }: PackFolderOptions = {},
+  { ignore, maxBytes, onFiles }: PackFolderOptions = {},
 ): Promise<{ archive: Uint8Array; files: PackedFile[] }> => {
   const found: (PackedFile & { file: string })[] = [];
   let unpacked = 0;
@@ -213,6 +215,7 @@ export const packFolder = async (
   };
   await walk(folder, "");
   const files = found.map(({ path, size }) => ({ path, size }));
+  onFiles?.(files);
   if (maxBytes !== undefined) return { archive: await streamZip(found, maxBytes), files };
   // Without a limit, zipSync keeps the bytes (and hashes) archives always had.
   const entries: Record<string, [Uint8Array, { mtime: Date }]> = {};
