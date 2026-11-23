@@ -16,7 +16,19 @@ interface NewOptions {
   editor?: boolean;
   git?: boolean;
   gitRemote?: string | false;
+  initFunctions?: boolean;
+  lint?: boolean;
 }
+
+// Kept hidden so scripts that still pass them don't break; they never had an effect.
+const DEPRECATED_FLAGS = ["--init-functions", "--no-init-functions", "--no-lint"];
+
+const warnDeprecated = (options: NewOptions) => {
+  if (options.initFunctions === undefined && options.lint !== false) return;
+  console.warn(
+    `Warning: ${DEPRECATED_FLAGS.join(", ")} are deprecated and have no effect. They will be removed in the next major version.`,
+  );
+};
 
 export class NewCommand extends AbstractCommand {
   public load(program: Command) {
@@ -58,7 +70,12 @@ export class NewCommand extends AbstractCommand {
         "setup git remote to git repository (required if --git is used)",
       )
       .option("--no-git-remote", "do not setup git remote to git repository")
+      .addOption(new Option("--init-functions").hideHelp())
+      .addOption(new Option("--no-init-functions").hideHelp())
+      .addOption(new Option("--no-lint").hideHelp())
       .action(async (rawOptions: NewOptions) => {
+        warnDeprecated(rawOptions);
+
         const options = AbstractCommand.mapToInput({
           directory: rawOptions.directory,
           name: rawOptions.name,

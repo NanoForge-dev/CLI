@@ -20,17 +20,30 @@ const setup = () => {
 
 describe("NewCommand", () => {
   it.each(["--init-functions", "--no-init-functions", "--no-lint"])(
-    "rejects the removed %s option",
+    "still accepts the deprecated %s option, warns and ignores it",
     async (flag) => {
+      const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
       const { run, parse } = setup();
-      await expect(parse("--name", "demo", flag)).rejects.toMatchObject({
-        code: "commander.unknownOption",
-      });
-      expect(run).not.toHaveBeenCalled();
+      await parse("--name", "demo", flag);
+
+      expect(run).toHaveBeenCalledOnce();
+      expect(warn).toHaveBeenCalledWith(expect.stringMatching(/^Warning: .*deprecated/));
+      const options = run.mock.calls[0]?.[1] as Input;
+      expect(options.has("lint")).toBe(false);
+      expect(options.has("initFunctions")).toBe(false);
+      warn.mockRestore();
     },
   );
 
-  it("does not list the removed options in the help", () => {
+  it("does not warn when no deprecated option is passed", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    await setup().parse("--name", "demo");
+
+    expect(warn).not.toHaveBeenCalled();
+    warn.mockRestore();
+  });
+
+  it("does not list the deprecated options in the help", () => {
     const help = setup().program.commands[0]?.helpInformation() ?? "";
     expect(help).not.toContain("--init-functions");
     expect(help).not.toContain("--no-lint");

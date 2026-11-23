@@ -40,7 +40,7 @@ The "Default" column is the answer that is preselected when `nf new` asks the qu
 | `--editor`                                     | boolean                        | `false`         | Add the `nf editor .` instructions to the generated README.                                   |
 | `--no-agents`                                  | boolean                        | none            | Don't add the `AGENTS.md` and `CLAUDE.md` files, which are added unless this flag is passed.  |
 
-`--init-functions`, `--no-init-functions` and `--no-lint` are gone: they had no effect, and `nf new` now stops with an `unknown option` error when it gets one of them.
+`--init-functions`, `--no-init-functions` and `--no-lint` are deprecated: they never had an effect, they are no longer listed in the help, and `nf new` prints a warning when it gets one of them. They will be removed in the next major version.
 
 ## What it generates
 
