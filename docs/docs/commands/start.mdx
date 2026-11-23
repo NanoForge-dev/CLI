@@ -16,7 +16,8 @@ It reads environment variables from the shell and from the `.env` file of the `-
 passes the `NANOFORGE_*` ones to the apps. See
 [environment variables](../configuration/environment-variables).
 
-`nf start` keeps running until you stop it with `Ctrl+C`. The [loader pages](/docs/loader/overview)
+`nf start` keeps running until you stop it with `Ctrl+C`. If the client or the server stops with an error, `nf start`
+stops the other one and exits with code 1. The [loader pages](/docs/loader/overview)
 describe what runs in the browser and on the server.
 
 ## Usage

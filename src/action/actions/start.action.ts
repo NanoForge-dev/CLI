@@ -23,7 +23,6 @@ import { Messages } from "@lib/ui";
 
 import { CLIError } from "@utils/errors";
 import { getCwd, getModulePath } from "@utils/path";
-import { runSafe } from "@utils/run-safe";
 
 import { AbstractAction, type HandleResult } from "../abstract.action";
 
@@ -88,9 +87,7 @@ export class StartAction extends AbstractAction {
     }
     const packageManager = await PackageManagerFactory.find(directory);
     const tasks = this.buildStartTasks(packageManager, serverTargets, clientTargets, watch, env);
-    await Promise.all(tasks);
-
-    return { keepAlive: true };
+    return this.waitForChildren(tasks);
   }
 
   private assertBuilds(targets: StartTarget[]): void {
@@ -175,8 +172,8 @@ export class StartAction extends AbstractAction {
     clientTargets: ClientStartTarget[],
     watch: boolean,
     env: FullEnv,
-  ): Promise<void>[] {
-    const tasks: Promise<void>[] = [];
+  ): Promise<boolean>[] {
+    const tasks: Promise<boolean>[] = [];
 
     for (const target of serverTargets) {
       tasks.push(this.startServer(packageManager, target, watch, env));
@@ -194,11 +191,11 @@ export class StartAction extends AbstractAction {
     target: ClientStartTarget,
     options: { watch: boolean; serverTargets: ServerStartTarget[] },
     env: FullEnv,
-  ): Promise<void> {
+  ): Promise<boolean> {
     const loaderPath = getModulePath("@nanoforge-dev/loader-client/package.json", true);
 
     const params = this.buildClientParams(target, options);
-    await this.runLoader(packageManager, "Client", loaderPath, params, env.client);
+    return this.runLoader(packageManager, "Client", loaderPath, params, env.client);
   }
 
   private async startServer(
@@ -206,11 +203,11 @@ export class StartAction extends AbstractAction {
     target: ServerStartTarget,
     watch: boolean,
     env: FullEnv,
-  ): Promise<void> {
+  ): Promise<boolean> {
     const loaderPath = getModulePath("@nanoforge-dev/loader-server/package.json", true);
 
     const params = this.buildServerParams(target, watch);
-    await this.runLoader(packageManager, "Server", loaderPath, params, env.server);
+    return this.runLoader(packageManager, "Server", loaderPath, params, env.server);
   }
 
   private buildClientParams(
@@ -284,15 +281,13 @@ export class StartAction extends AbstractAction {
     };
   }
 
-  private async runLoader(
+  private runLoader(
     packageManager: PackageManager,
     name: string,
     directory: string,
     params: string[],
     env: Record<string, string>,
-  ): Promise<void> {
-    await runSafe(async () => {
-      await packageManager.run(name, directory, "start", params, env, [], true);
-    });
+  ): Promise<boolean> {
+    return packageManager.run(name, directory, "start", params, env, [], true);
   }
 }

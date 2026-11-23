@@ -2,13 +2,25 @@ import { type ClientConfig } from "@nanoforge-dev/config";
 import fs from "fs";
 import { tmpdir } from "os";
 import { join } from "path";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { parseWorkspaceConfig, resolveProjects } from "@lib/config";
 import { type Input } from "@lib/input";
+import { PackageManagerFactory } from "@lib/package-manager";
 
 import { CLIError } from "@utils/errors";
 
 import { StartAction } from "./start.action";
+
+vi.mock("@lib/config", async (importOriginal) => ({
+  ...(await importOriginal<object>()),
+  parseWorkspaceConfig: vi.fn(),
+  resolveProjects: vi.fn(),
+}));
+
+vi.mock("@lib/package-manager", () => ({
+  PackageManagerFactory: { find: vi.fn() },
+}));
 
 interface FullEnvShape {
   client: Record<string, string>;
@@ -167,5 +179,41 @@ describe("StartAction.resolveTLS", () => {
 
     expect(() => internals().resolveTLS(new Map(), config)).toThrow(CLIError);
     expect(() => internals().resolveTLS(new Map(), config)).toThrow("No key found for TLS.");
+  });
+});
+
+describe("StartAction.handle", () => {
+  const run = vi.fn();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(parseWorkspaceConfig).mockResolvedValue({ type: "workspace", config: {} } as any);
+    vi.mocked(resolveProjects).mockReturnValue([
+      { directory: "client", config: { type: "client" } },
+      { directory: "server", config: { type: "server" } },
+    ] as any);
+    vi.mocked(PackageManagerFactory.find).mockResolvedValue({ run } as any);
+    vi.spyOn(process, "once").mockImplementation((() => process) as never);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  const start = () =>
+    new StartAction().handle(new Map(), new Map([["watch", { value: true }]]) as Input);
+
+  it("fails as soon as one loader fails, without waiting for the other", async () => {
+    run.mockImplementation((name: string) =>
+      name === "Client" ? Promise.resolve(false) : new Promise(() => undefined),
+    );
+
+    await expect(start()).resolves.toMatchObject({ keepAlive: true, success: false });
+  });
+
+  it("keeps running while the loaders run, and ends cleanly when they all end", async () => {
+    run.mockResolvedValue(true);
+
+    await expect(start()).resolves.toEqual({ keepAlive: true });
   });
 });

@@ -1,5 +1,5 @@
 import { resolve } from "path";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { type Input } from "@lib/input";
 import { RunnerFactory } from "@lib/runner";
@@ -16,11 +16,29 @@ const createInput = (entries: [string, any][]): Input =>
   new Map(entries.map(([key, value]) => [key, { value }]));
 
 describe("DevAction", () => {
-  const run = vi.fn().mockResolvedValue(null);
+  const run = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
+    run.mockResolvedValue(null);
     vi.mocked(RunnerFactory.create).mockReturnValue({ run } as any);
+    vi.spyOn(process, "once").mockImplementation((() => process) as never);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("fails as soon as build or start fails, without waiting for the other", async () => {
+    run.mockImplementation(([command]: string[]) =>
+      command === "start"
+        ? Promise.reject(new Error("exited with code 1"))
+        : new Promise(() => undefined),
+    );
+
+    await expect(
+      new DevAction().handle(new Map(), createInput([["directory", GAME]])),
+    ).resolves.toMatchObject({ keepAlive: true, success: false });
   });
 
   it("runs the running CLI itself, never `<pm> exec nf`", async () => {

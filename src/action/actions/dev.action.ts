@@ -3,7 +3,6 @@ import { RunnerFactory } from "@lib/runner";
 import { Messages } from "@lib/ui";
 
 import { getCwd } from "@utils/path";
-import { runSafe } from "@utils/run-safe";
 
 import { AbstractAction, type HandleResult } from "../abstract.action";
 
@@ -17,13 +16,11 @@ export class DevAction extends AbstractAction {
 
     const editor = getEditorInput(options);
     const tasks = this.buildTaskList(directory, editor);
-    await Promise.all(tasks);
-
-    return { keepAlive: true };
+    return this.waitForChildren(tasks);
   }
 
-  private buildTaskList(directory: string, editor: boolean): Promise<void>[] {
-    const tasks: Promise<void>[] = [];
+  private buildTaskList(directory: string, editor: boolean): Promise<boolean>[] {
+    const tasks: Promise<boolean>[] = [];
     const extraFlags = editor ? ["--editor"] : [];
 
     tasks.push(this.runSubCommand("build", directory, extraFlags));
@@ -36,15 +33,14 @@ export class DevAction extends AbstractAction {
     command: string,
     directory: string,
     extraFlags: string[] = [],
-  ): Promise<void> {
-    await runSafe(async () => {
-      // This same CLI, never `<pm> exec nf`: npm can fetch the unrelated public `nf` package (#287).
-      // In the project folder, nf.ts picks the project's local CLI as it did for this process.
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- argv[1] is the script node runs
-      const self = RunnerFactory.create(process.execPath, [process.argv[1]!]);
-      // Not collected: `build --watch` never exits, so collected output (errors included)
-      // would never show.
-      await self.run([command, "--watch", ...extraFlags], { cwd: getCwd(directory) });
-    });
+  ): Promise<boolean> {
+    // This same CLI, never `<pm> exec nf`: npm can fetch the unrelated public `nf` package (#287).
+    // In the project folder, nf.ts picks the project's local CLI as it did for this process.
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- argv[1] is the script node runs
+    const self = RunnerFactory.create(process.execPath, [process.argv[1]!]);
+    // Not collected: `build --watch` never exits, so collected output (errors included)
+    // would never show.
+    await self.run([command, "--watch", ...extraFlags], { cwd: getCwd(directory) });
+    return true;
   }
 }
