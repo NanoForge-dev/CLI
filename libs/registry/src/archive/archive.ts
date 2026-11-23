@@ -1,7 +1,7 @@
-import { strFromU8, unzipSync, zipSync } from "fflate";
+import { Zip, ZipDeflate, strFromU8, unzipSync, zipSync } from "fflate";
 import { createHash, randomBytes } from "node:crypto";
 import { existsSync } from "node:fs";
-import { mkdir, readFile, readdir, rename, rm, writeFile } from "node:fs/promises";
+import { mkdir, readFile, readdir, rename, rm, stat, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
 import { ItemManifest, MANIFEST_FILE } from "../item/item.schema";
@@ -12,6 +12,8 @@ export const sha256 = (bytes: Uint8Array): string =>
 
 /** Size of an archive, packed: a download past it is stopped. */
 export const MAX_ARCHIVE_BYTES = 64 * 1024 * 1024;
+/** Size of an archive, packed, the registry takes at publication (the API's `ARCHIVE_MAX_BYTES`). */
+export const MAX_PUBLISH_BYTES = 20 * 1024 * 1024;
 /** What an archive may unpack to, in all and in files. */
 const MAX_UNPACKED_BYTES = 256 * 1024 * 1024;
 const MAX_FILES = 20_000;
@@ -119,25 +121,108 @@ export interface ZipFolderOptions {
   readonly ignore?: (path: string, isDirectory: boolean) => boolean;
 }
 
+export interface PackFolderOptions extends ZipFolderOptions {
+  /**
+   * Size the archive may reach, packed: files are then zipped one at a time, and packing stops as
+   * soon as the archive passes it.
+   */
+  readonly maxBytes?: number;
+  /** Called with the files to pack once they are listed, before any of them is read. */
+  readonly onFiles?: (files: readonly PackedFile[]) => void;
+}
+
+/** A file of a packed folder: its path in the archive and its size, unpacked. */
+export interface PackedFile {
+  readonly path: string;
+  readonly size: number;
+}
+
+/** No dates in archives, so their hash only follows their content (1980-01-01, zip's first day). */
+const ZIP_MTIME = new Date(315532800000);
+
+const TRIM_HINT = "Name fewer files in the manifest's contents, or make large assets smaller.";
+
 /**
- * Zips a folder with stable bytes (sorted paths, no dates), so its hash only follows its content.
- * Symbolic links are left out.
+ * Zips the files one at a time, and stops as soon as the archive passes `maxBytes`. Its entries
+ * have data descriptors, so its bytes differ from `zipSync`'s for the same files.
  */
-export const zipFolder = async (
-  folder: string,
-  { ignore }: ZipFolderOptions = {},
+const streamZip = async (
+  found: readonly { path: string; file: string }[],
+  maxBytes: number,
 ): Promise<Uint8Array> => {
-  const files: Record<string, [Uint8Array, { mtime: Date }]> = {};
+  const chunks: Uint8Array[] = [];
+  let packed = 0;
+  let failure: Error | undefined;
+  const zip = new Zip((error, chunk) => {
+    if (error) failure = error;
+    else {
+      chunks.push(chunk);
+      packed += chunk.length;
+    }
+  });
+  const check = () => {
+    if (failure) throw failure;
+    if (packed > maxBytes)
+      throw new RegistryError(
+        "INVALID",
+        `The archive is too large: over ${maxBytes / 1024 / 1024} MiB packed, the most the registry takes. ${TRIM_HINT}`,
+      );
+  };
+  for (const { path, file } of found) {
+    const entry = new ZipDeflate(path, { level: 6 });
+    entry.mtime = ZIP_MTIME;
+    zip.add(entry);
+    entry.push(await readFile(file), true);
+    check();
+  }
+  zip.end();
+  check();
+  const archive = new Uint8Array(packed);
+  let offset = 0;
+  for (const chunk of chunks) archive.set(chunk, (offset += chunk.length) - chunk.length);
+  return archive;
+};
+
+/**
+ * Zips a folder with stable bytes (sorted paths, no dates), so its hash only follows its content,
+ * and lists the files it packed. Symbolic links are left out. Sizes are added up while walking,
+ * before any file is read: past 256 MiB or 20,000 files, which `readArchive` would refuse, it
+ * stops. With `maxBytes`, it also stops as soon as the archive passes that size, packed.
+ */
+export const packFolder = async (
+  folder: string,
+  { ignore, maxBytes, onFiles }: PackFolderOptions = {},
+): Promise<{ archive: Uint8Array; files: PackedFile[] }> => {
+  const found: (PackedFile & { file: string })[] = [];
+  let unpacked = 0;
   const walk = async (dir: string, prefix: string) => {
     const entries = await readdir(dir, { withFileTypes: true });
     for (const entry of entries.sort((a, b) => a.name.localeCompare(b.name))) {
       const path = prefix ? `${prefix}/${entry.name}` : entry.name;
       if (ignore?.(path, entry.isDirectory())) continue;
-      if (entry.isDirectory()) await walk(join(dir, entry.name), path);
-      else if (entry.isFile())
-        files[path] = [await readFile(join(dir, entry.name)), { mtime: new Date(315532800000) }];
+      const file = join(dir, entry.name);
+      if (entry.isDirectory()) await walk(file, path);
+      else if (entry.isFile()) {
+        const { size } = await stat(file);
+        unpacked += size;
+        if (found.push({ path, size, file }) > MAX_FILES || unpacked > MAX_UNPACKED_BYTES)
+          throw new RegistryError(
+            "INVALID",
+            `The folder is too large to pack: over 256 MiB or 20,000 files. ${TRIM_HINT}`,
+          );
+      }
     }
   };
   await walk(folder, "");
-  return zipSync(files, { level: 6 });
+  const files = found.map(({ path, size }) => ({ path, size }));
+  onFiles?.(files);
+  if (maxBytes !== undefined) return { archive: await streamZip(found, maxBytes), files };
+  // Without a limit, zipSync keeps the bytes (and hashes) archives always had.
+  const entries: Record<string, [Uint8Array, { mtime: Date }]> = {};
+  for (const { path, file } of found) entries[path] = [await readFile(file), { mtime: ZIP_MTIME }];
+  return { archive: zipSync(entries, { level: 6 }), files };
 };
+
+/** The archive of `packFolder`, alone. */
+export const zipFolder = async (folder: string, options?: ZipFolderOptions): Promise<Uint8Array> =>
+  (await packFolder(folder, options)).archive;
