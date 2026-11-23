@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://nanoforge-dev.github.io/docs/cli/client-config.schema.json",
-  "title": "Nanoforge CLI client config",
+  "title": "NanoForge CLI client config",
   "type": "object",
   "properties": {
     "port": {

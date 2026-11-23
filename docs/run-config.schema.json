@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://nanoforge-dev.github.io/docs/cli/run-config.schema.json",
-  "title": "Nanoforge CLI run config",
+  "title": "NanoForge CLI run config",
   "type": "object",
   "properties": {
     "dir": {
