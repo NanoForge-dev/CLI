@@ -43,7 +43,7 @@ describe("PublishAction", () => {
     vi.spyOn(console, "info").mockImplementation(() => undefined);
 
     await expect(new PublishAction().handle(new Map(), input({ directory: dir }))).rejects.toThrow(
-      /too large: 21\.0 MiB packed, the registry takes 20\.0 MiB at most/,
+      /too large: over 20 MiB packed, the most the registry takes\. Name fewer files/,
     );
     expect(fetch).not.toHaveBeenCalled();
   });

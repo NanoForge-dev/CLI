@@ -1,4 +1,4 @@
-import { MAX_PUBLISH_BYTES, RegistryError, packFolder } from "@nanoforge-dev/registry";
+import { MAX_PUBLISH_BYTES, packFolder } from "@nanoforge-dev/registry";
 
 import { type Input, getDirectoryInput, getDryRunInput } from "@lib/input";
 import { loadManifest } from "@lib/manifest";
@@ -33,16 +33,12 @@ export class PublishAction extends AbstractAction {
     const root = getCwd(directory);
     const { archive, files } = await packFolder(root, {
       ignore: await publishIgnore(root, manifest),
+      maxBytes: MAX_PUBLISH_BYTES,
     });
 
     for (const { path, size } of files) console.info(`  ${path} (${formatSize(size)})`);
     const unpacked = files.reduce((total, { size }) => total + size, 0);
     console.info(Messages.PUBLISH_FILES(subject, files.length, formatSize(unpacked)));
-    if (archive.length > MAX_PUBLISH_BYTES)
-      throw new RegistryError(
-        "INVALID",
-        `The archive is too large: ${formatSize(archive.length)} packed, the registry takes ${formatSize(MAX_PUBLISH_BYTES)} at most`,
-      );
 
     if (getDryRunInput(options)) {
       this.successMessage = Messages.PUBLISH_DRY_RUN_SUCCESS;
