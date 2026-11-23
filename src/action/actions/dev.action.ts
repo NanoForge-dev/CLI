@@ -1,7 +1,8 @@
 import { type Input, getDirectoryInput, getEditorInput } from "@lib/input";
-import { PackageManagerFactory } from "@lib/package-manager";
+import { RunnerFactory } from "@lib/runner";
 import { Messages } from "@lib/ui";
 
+import { getCwd } from "@utils/path";
 import { runSafe } from "@utils/run-safe";
 
 import { AbstractAction, type HandleResult } from "../abstract.action";
@@ -37,11 +38,13 @@ export class DevAction extends AbstractAction {
     extraFlags: string[] = [],
   ): Promise<void> {
     await runSafe(async () => {
-      const packageManager = await PackageManagerFactory.find(directory);
-      const args = [command, "--watch", ...extraFlags];
+      // This same CLI, never `<pm> exec nf`: npm can fetch the unrelated public `nf` package (#287).
+      // In the project folder, nf.ts picks the project's local CLI as it did for this process.
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- argv[1] is the script node runs
+      const self = RunnerFactory.create(process.execPath, [process.argv[1]!]);
       // Not collected: `build --watch` never exits, so collected output (errors included)
       // would never show.
-      await packageManager.runDev(directory, "nf", {}, args, false);
+      await self.run([command, "--watch", ...extraFlags], { cwd: getCwd(directory) });
     });
   }
 }
