@@ -202,6 +202,15 @@ describe("BuildAction.resolveTargets output guard", () => {
     expect(() => resolveTargets(workspace, "/ws")).toThrow(/overlaps the sources/);
   });
 
+  it("should keep the default of a dir folder set to undefined in the config", () => {
+    const workspace = {
+      type: "project",
+      config: { type: "client", dir: { components: undefined }, out: { dir: "src/components" } },
+    } as unknown as WorkspaceConfig;
+
+    expect(() => resolveTargets(workspace, "/ws")).toThrow(/overlaps the sources/);
+  });
+
   it("should accept the p2p browser server output inside the client output", () => {
     expect(() => resolveTargets(p2pWorkspace(), "/ws")).not.toThrow();
   });

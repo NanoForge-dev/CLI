@@ -162,7 +162,7 @@ export class BuildAction extends AbstractAction {
     const name = disambiguate && relativePath !== "" ? `${label} (${relativePath})` : label;
     const defaults = isClient ? defaultClientConfig : defaultServerConfig;
 
-    const dir = { ...defaults.dir, ...project.config.dir };
+    const dir = project.config.dir;
 
     const defaultEntry = isEditor
       ? (project.config.editor?.entryFile ?? defaults.editor.entryFile)
@@ -186,7 +186,13 @@ export class BuildAction extends AbstractAction {
         isClient ? "clientOutDir" : "serverOutDir",
         project.config.out?.dir ?? defaults.out.dir,
       ),
-      sources: [dir.components, dir.systems, dir.scenes, dir.packages],
+      // `??` per field: a key set to undefined in the config must not hide the default.
+      sources: [
+        dir?.components ?? defaults.dir.components,
+        dir?.systems ?? defaults.dir.systems,
+        dir?.scenes ?? defaults.dir.scenes,
+        dir?.packages ?? defaults.dir.packages,
+      ],
       platform: isClient ? "browser" : "node",
       sourcemap: isEditor,
     };
