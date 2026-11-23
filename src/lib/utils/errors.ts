@@ -39,6 +39,15 @@ export class InvalidCommandArgumentError extends CLIError {
   }
 }
 
+export class InvalidConfigValueError extends CLIError {
+  constructor(key: string, expected: string) {
+    super(
+      `Invalid '${key}' in nanoforge.config: expected ${expected}.`,
+      `Fix '${key}' in your nanoforge.config.ts (or .js) file.`,
+    );
+  }
+}
+
 export class RegistryAuthenticationError extends CLIError {
   constructor() {
     super("You must be logged in to perform this action.", "Run 'nf login' to authenticate.");

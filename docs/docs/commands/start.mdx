@@ -102,7 +102,10 @@ nf start --client-dir build/client --server-dir build/server
   is no `main.js` in the build folder: run `nf build` first, and check that the entry file is
   named `main.ts`.
 - **The port is already used.** Pass another `--port`, or stop the other process.
-- **`Invalid argument 'port'. Expected: an integer from 1 to 65535`.** `--port` (or `port` in the
-  client config) is not a port number: nothing was started.
+- **`Invalid argument 'port'. Expected: an integer from 1 to 65535`.** `--port` is not a port
+  number: nothing was started.
+- **`Invalid 'port' in nanoforge.config: expected an integer from 1 to 65535`.** No `--port` was
+  given and `port` in the client config is not a port number: fix it in the config. Nothing was
+  started.
 
 More browser-side problems are in the [loader troubleshooting](/docs/loader/overview#troubleshooting).

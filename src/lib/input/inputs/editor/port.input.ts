@@ -1,16 +1,23 @@
-import { InvalidCommandArgumentError } from "@utils/errors";
+import { InvalidCommandArgumentError, InvalidConfigValueError } from "@utils/errors";
 
-import { getStringInput, getStringInputWithDefault } from "../../base-inputs";
+import { getStringInput } from "../../base-inputs";
 import { type Input } from "../../input.type";
 
 /** Default port of `nf editor` (the loaders use 3000). */
 export const DEFAULT_EDITOR_PORT = 5173;
 
+const PORT_RANGE = "an integer from 1 to 65535";
+
+const toPort = (raw: string): number | undefined => {
+  const port = Number(raw);
+  return /^\d+$/.test(raw) && port >= 1 && port <= 65535 ? port : undefined;
+};
+
 /** A TCP port, from 1 to 65535. */
 export const parsePort = (raw: string): number => {
-  const port = Number(raw);
-  if (!/^\d+$/.test(raw) || port < 1 || port > 65535) {
-    throw new InvalidCommandArgumentError("port", `an integer from 1 to 65535, got '${raw}'`);
+  const port = toPort(raw);
+  if (port === undefined) {
+    throw new InvalidCommandArgumentError("port", `${PORT_RANGE}, got '${raw}'`);
   }
   return port;
 };
@@ -20,6 +27,16 @@ export const getEditorPortInput = (inputs: Input): number => {
   return raw === undefined ? DEFAULT_EDITOR_PORT : parsePort(raw);
 };
 
-/** `--port` of `nf start`, or the config's port, checked before anything starts. */
-export const getPortInputWithDefault = (inputs: Input, defaultPort: string): string =>
-  String(parsePort(getStringInputWithDefault(inputs, "port", defaultPort)));
+/**
+ * `--port` of `nf start`, or the config's port, checked before anything starts. A bad config
+ * port names the config file: there is no argument to fix.
+ */
+export const getPortInputWithDefault = (inputs: Input, configPort: string): string => {
+  const raw = getStringInput(inputs, "port");
+  if (raw !== undefined) return String(parsePort(raw));
+  const port = toPort(configPort);
+  if (port === undefined) {
+    throw new InvalidConfigValueError("port", `${PORT_RANGE}, got '${configPort}'`);
+  }
+  return String(port);
+};
