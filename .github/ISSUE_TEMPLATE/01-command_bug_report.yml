@@ -1,5 +1,5 @@
 name: Bug report
-description: Report an issue with Nanoforge CLI.
+description: Report an issue with NanoForge CLI.
 labels: [bug]
 body:
   - type: markdown
@@ -7,7 +7,7 @@ body:
       value: |
         Thank you for filing an issue! If you are here to ask a question, don't hesitate to open a discussion instead: https://github.com/NanoForge-dev/CLI/discussions.
 
-        This issue form is for the Nanoforge CLI and its libraries (`@nanoforge-dev/config`, `@nanoforge-dev/registry`, `@nanoforge-dev/schematics`). If the issue is not related to a CLI command, pick `other` as the command.
+        This issue form is for the NanoForge CLI and its libraries (`@nanoforge-dev/config`, `@nanoforge-dev/registry`, `@nanoforge-dev/schematics`). If the issue is not related to a CLI command, pick `other` as the command.
   - type: dropdown
     id: package
     attributes:
