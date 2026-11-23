@@ -352,6 +352,20 @@ describe("project schematic", () => {
       expect(tree.files).toContain("/js-apps/client/jsconfig.json");
       expect(tree.files).not.toContain("/js-apps/client/tsconfig.json");
     });
+
+    it("should enable esModuleInterop in a standalone jsconfig.json, like the tsconfig.json", async () => {
+      const standalone = await runner.runSchematic("project", {
+        part: "client",
+        workspaceName: "js-standalone-workspace",
+        directory: "js-standalone-apps/client",
+        language: "js",
+        workspace: false,
+      });
+      const jsconfig = JSON.parse(
+        standalone.readContent("/js-standalone-apps/client/jsconfig.json"),
+      );
+      expect(jsconfig.compilerOptions.esModuleInterop).toBe(true);
+    });
   });
 
   describe("@nanoforge-dev/ecs and @nanoforge-dev/network version resolution", () => {

@@ -111,6 +111,11 @@ describe("workspace schematic", () => {
       expect(tree.files).not.toContain("/js-workspace/nanoforge.config.ts");
     });
 
+    it("should enable esModuleInterop in jsconfig.json, like the tsconfig.json", () => {
+      const jsconfig = JSON.parse(tree.readContent("/js-workspace/jsconfig.json"));
+      expect(jsconfig.compilerOptions.esModuleInterop).toBe(true);
+    });
+
     it("has the same package.json shape as the TypeScript workspace, minus typescript itself", () => {
       const packageJson = JSON.parse(tree.readContent("/js-workspace/package.json"));
       expect(packageJson.devDependencies["typescript"]).toBeUndefined();
