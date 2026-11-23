@@ -111,7 +111,9 @@ nf publish [options]
 | `--dry-run`                   | boolean | `false` | List the files to publish, and publish nothing. |
 
 Before uploading, `nf publish` prints every file it packed, with its size, then their count and
-total size. With `--dry-run` it stops there: check the list before your first publish.
+total size. With `--dry-run` it stops there: check the list before your first publish. The size
+limits below are checked while packing, so a package over them fails before anything is uploaded,
+`--dry-run` included.
 
 The archive holds only what the manifest names, with the manifest at its root:
 
@@ -138,7 +140,8 @@ Inside those, secrets and installed folders stay out, in any subfolder and whate
 A file the manifest doesn't name, such as `notes.txt` next to it, is not sent: list your code and
 assets in `contents`. `.gitignore` is not read. For an editor plugin, publish its build:
 `nf publish -d dist`, the folder with the built manifest and its entry files. The registry refuses
-archives over 20 MiB, or that unpack to more than 256 MiB or 20,000 files.
+archives over 20 MiB, or that unpack to more than 256 MiB or 20,000 files: `nf publish` stops at
+these limits before uploading.
 
 ```bash
 nf publish --dry-run
