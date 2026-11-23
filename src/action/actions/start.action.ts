@@ -102,7 +102,12 @@ export class StartAction extends AbstractAction {
     }
   }
 
-  private resolveTLS(options: Input, config: ClientConfig): TLSOptions | undefined {
+  /** Flags are relative to the working directory, config paths to the project folder. */
+  private resolveTLS(
+    options: Input,
+    config: ClientConfig,
+    directory: string,
+  ): TLSOptions | undefined {
     const cliCert = getStringInput(options, "cert");
     const cliKey = getStringInput(options, "key");
     const tls = config.tls;
@@ -111,8 +116,10 @@ export class StartAction extends AbstractAction {
 
     if (!isTlsRequested) return undefined;
 
-    const cert = cliCert ?? configTls?.cert;
-    const key = cliKey ?? configTls?.key;
+    const toPath = (flag?: string, configPath?: string) =>
+      flag ? resolve(flag) : configPath && resolve(directory, configPath);
+    const cert = toPath(cliCert, configTls?.cert);
+    const key = toPath(cliKey, configTls?.key);
 
     if (!cert) {
       throw new CLIError(
@@ -126,6 +133,16 @@ export class StartAction extends AbstractAction {
         "No key found for TLS.",
         "Please provide a key path with --key or configure 'tls.key' in your nanoforge.config.ts",
       );
+    }
+
+    // The loader runs in its own folder and only reports a failed start: check the files here.
+    for (const path of [cert, key]) {
+      if (!existsSync(path)) {
+        throw new CLIError(
+          `TLS file not found: ${path}.`,
+          "Check the --cert and --key paths (relative to the current folder) or 'tls' in your nanoforge.config.ts (relative to the project).",
+        );
+      }
     }
 
     return { cert, key };
@@ -162,7 +179,7 @@ export class StartAction extends AbstractAction {
       ),
       platform: "client",
       port: getPortInputWithDefault(options, project.config.port ?? defaultClientConfig.port),
-      tls: this.resolveTLS(options, project.config),
+      tls: this.resolveTLS(options, project.config, project.directory),
     };
   }
 

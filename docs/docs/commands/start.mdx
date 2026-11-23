@@ -58,8 +58,9 @@ export default defineConfig({
 });
 ```
 
-Give **absolute paths**. The client loader runs from its own package folder, so a relative path
-is not resolved from your project. `--cert` and `--key` win over the configuration. You can also put the game behind a reverse proxy
+Relative paths work: `--cert` and `--key` are resolved from the current folder, `tls.cert` and
+`tls.key` from the client app's folder. `nf start` checks that both files exist before it starts.
+`--cert` and `--key` win over the configuration. You can also put the game behind a reverse proxy
 that serves HTTPS.
 
 ## Peer-to-peer
@@ -79,7 +80,7 @@ nf start --port 8080
 Serve over HTTPS:
 
 ```bash
-nf start --cert "$PWD/certs/cert.pem" --key "$PWD/certs/key.pem"
+nf start --cert certs/cert.pem --key certs/key.pem
 ```
 
 Serve builds made in other folders:
@@ -94,7 +95,8 @@ nf start --client-dir build/client --server-dir build/server
   a workspace whose `packages` match no app. Check the patterns.
 - **`No certificate found for TLS.` / `No key found for TLS.`** You gave one of `--cert` and
   `--key` (or `tls.enable: true` without both paths). Give both.
-- **The client fails to start with `--cert` and `--key`.** Check that both paths are absolute.
+- **`TLS file not found: <path>.`** The certificate or the key is not at that path. A flag is
+  relative to the current folder, a `tls` path to the client app's folder.
 - **The page shows `Storage issue: The game must be hosted with SSL (HTTPS)...`.** You opened the
   game on an address that isn't `localhost` over HTTP. Use HTTPS (see above).
 - **`No build found at <folder>`.** The build folder doesn't exist, and `nf start` stops: run
