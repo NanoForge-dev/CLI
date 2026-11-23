@@ -55,9 +55,9 @@ afterAll(() => {
 
 describe("nf publish --help", () => {
   it("should display publish command help", async () => {
-    const { stdout, exitCode } = await runCli(["publish", "--help"]);
+    const { stdout, exitCode, output } = await runCli(["publish", "--help"]);
 
-    expect(exitCode).toBe(0);
+    expect(exitCode, output).toBe(0);
     expect(stdout).toContain("publish a package to the NanoForge registry");
     expect(stdout).toContain("--directory");
     expect(stdout).toContain("--dry-run");
@@ -93,11 +93,11 @@ describe("nf publish", () => {
     writeFileSync(resolve(dir, "notes.txt"), "not named by the manifest");
     rmSync(LOG_PATH, { force: true });
 
-    const { stdout, exitCode } = await runCli(["publish", "-d", dir], {
+    const { stdout, exitCode, output } = await runCli(["publish", "-d", dir], {
       env: withMockedFetch(),
     });
 
-    expect(exitCode).toBe(0);
+    expect(exitCode, output).toBe(0);
     expect(stdout).toContain("NanoForge Publish");
     expect(stdout).toContain("Publish completed!");
     expect(stdout).not.toContain("test-api-key");
@@ -108,7 +108,7 @@ describe("nf publish", () => {
       authorization: "Bearer test-api-key",
     });
     // `.nanoforgerc` (written by `nf login --local` above) holds the key: never packed.
-    expect(put!.files!.sort()).toEqual(["index.ts", "nanoforge.manifest.json", "src/player.ts"]);
+    expect(put?.files?.sort()).toEqual(["index.ts", "nanoforge.manifest.json", "src/player.ts"]);
   });
 
   it("should list the files and publish nothing with --dry-run", async () => {
@@ -117,11 +117,11 @@ describe("nf publish", () => {
     writeFileSync(resolve(dir, ".npmrc"), "//registry.npmjs.org/:_authToken=x");
     rmSync(LOG_PATH, { force: true });
 
-    const { stdout, exitCode } = await runCli(["publish", "--dry-run", "-d", dir], {
+    const { stdout, exitCode, output } = await runCli(["publish", "--dry-run", "-d", dir], {
       env: withMockedFetch(),
     });
 
-    expect(exitCode).toBe(0);
+    expect(exitCode, output).toBe(0);
     expect(stdout).toContain("index.ts");
     expect(stdout).toContain("@test-org/test-package@1.0.0: 2 files");
     expect(stdout).not.toContain(".npmrc");
@@ -132,31 +132,31 @@ describe("nf publish", () => {
   it("should fail when the manifest is in the old format", async () => {
     writeManifest(dir, { name: "test-org/test-package", type: "component" });
 
-    const { exitCode } = await runCli(["publish", "-d", dir], {
+    const { exitCode, output } = await runCli(["publish", "-d", dir], {
       env: withMockedFetch(),
     });
 
-    expect(exitCode).not.toBe(0);
+    expect(exitCode, output).not.toBe(0);
   });
 
   it("should fail when the manifest file is missing", async () => {
     writePackageFile(dir);
 
-    const { exitCode } = await runCli(["publish", "-d", dir], {
+    const { exitCode, output } = await runCli(["publish", "-d", dir], {
       env: withMockedFetch(),
     });
 
-    expect(exitCode).not.toBe(0);
+    expect(exitCode, output).not.toBe(0);
   });
 
   it("should fail when the registry rejects the request", async () => {
     writeManifest(dir);
     writePackageFile(dir);
 
-    const { exitCode } = await runCli(["publish", "-d", dir], {
+    const { exitCode, output } = await runCli(["publish", "-d", dir], {
       env: withMockedFetch(401),
     });
 
-    expect(exitCode).not.toBe(0);
+    expect(exitCode, output).not.toBe(0);
   });
 });

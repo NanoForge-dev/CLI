@@ -34,9 +34,9 @@ afterAll(() => {
 
 describe("nf logout --help", () => {
   it("should display logout command help", async () => {
-    const { stdout, exitCode } = await runCli(["logout", "--help"]);
+    const { stdout, exitCode, output } = await runCli(["logout", "--help"]);
 
-    expect(exitCode).toBe(0);
+    expect(exitCode, output).toBe(0);
     expect(stdout).toContain("logout from the NanoForge registry");
     expect(stdout).toContain("--directory");
     expect(stdout).toContain("--local");
@@ -60,9 +60,9 @@ describe("nf logout (local mode)", () => {
     await runCli(["login", "--local", "-d", dir, "-k", fakeApiKey], { env: withMockedFetch() });
     expect(readLocalRc(dir)).toContain(fakeApiKey);
 
-    const { stdout, exitCode } = await runCli(["logout", "--local", "-d", dir]);
+    const { stdout, exitCode, output } = await runCli(["logout", "--local", "-d", dir]);
 
-    expect(exitCode).toBe(0);
+    expect(exitCode, output).toBe(0);
     expect(stdout).toContain("NanoForge Logout");
     expect(stdout).toContain("Logout completed!");
 
@@ -70,9 +70,9 @@ describe("nf logout (local mode)", () => {
   });
 
   it("should succeed even when no prior login exists", async () => {
-    const { exitCode } = await runCli(["logout", "--local", "-d", dir]);
+    const { exitCode, output } = await runCli(["logout", "--local", "-d", dir]);
 
-    expect(exitCode).toBe(0);
+    expect(exitCode, output).toBe(0);
   });
 });
 
@@ -93,11 +93,11 @@ describe("nf login then logout (full flow, local mode)", () => {
     const loginResult = await runCli(["login", "--local", "-d", dir, "-k", fakeApiKey], {
       env: withMockedFetch(),
     });
-    expect(loginResult.exitCode).toBe(0);
+    expect(loginResult.exitCode, loginResult.output).toBe(0);
     expect(readLocalRc(dir)).toContain(fakeApiKey);
 
     const logoutResult = await runCli(["logout", "--local", "-d", dir]);
-    expect(logoutResult.exitCode).toBe(0);
+    expect(logoutResult.exitCode, logoutResult.output).toBe(0);
     expect(readLocalRc(dir)).not.toContain(fakeApiKey);
   });
 });

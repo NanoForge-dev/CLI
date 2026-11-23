@@ -6,6 +6,8 @@ const CLI_PATH = resolve(__dirname, "../../dist/nf.js");
 interface CliResult {
   stdout: string;
   stderr: string;
+  /** stdout and stderr, labelled: the message of an exit code assertion (`expect(exitCode, output)`). */
+  output: string;
   exitCode: number | null;
   killed: boolean;
 }
@@ -47,9 +49,12 @@ export const runCli = (args: string[], options?: RunCliOptions): Promise<CliResu
 
     child.on("close", (code) => {
       if (timer) clearTimeout(timer);
+      const out = stdout.join("");
+      const err = stderr.join("");
       resolve({
-        stdout: stdout.join(""),
-        stderr: stderr.join(""),
+        stdout: out,
+        stderr: err,
+        output: `stdout:\n${out}\nstderr:\n${err}`,
         exitCode: code,
         killed,
       });

@@ -35,9 +35,9 @@ afterAll(() => {
 
 describe("nf login --help", () => {
   it("should display login command help", async () => {
-    const { stdout, exitCode } = await runCli(["login", "--help"]);
+    const { stdout, exitCode, output } = await runCli(["login", "--help"]);
 
-    expect(exitCode).toBe(0);
+    expect(exitCode, output).toBe(0);
     expect(stdout).toContain("login to the NanoForge registry");
     expect(stdout).toContain("--directory");
     expect(stdout).toContain("--local");
@@ -58,11 +58,14 @@ describe("nf login (local mode)", () => {
 
   it("should write apiKey to local .nanoforgerc", async () => {
     const fakeApiKey = "test-api-key-abc123";
-    const { stdout, exitCode } = await runCli(["login", "--local", "-d", dir, "-k", fakeApiKey], {
-      env: withMockedFetch(),
-    });
+    const { stdout, exitCode, output } = await runCli(
+      ["login", "--local", "-d", dir, "-k", fakeApiKey],
+      {
+        env: withMockedFetch(),
+      },
+    );
 
-    expect(exitCode).toBe(0);
+    expect(exitCode, output).toBe(0);
     expect(stdout).toContain("NanoForge Login");
     expect(stdout).toContain("Login completed!");
 
@@ -92,11 +95,14 @@ describe("nf login (local mode)", () => {
   });
 
   it("should fail when the registry rejects the api key", async () => {
-    const { exitCode } = await runCli(["login", "--local", "-d", dir, "-k", "invalid-key"], {
-      env: withMockedFetch(401),
-    });
+    const { exitCode, output } = await runCli(
+      ["login", "--local", "-d", dir, "-k", "invalid-key"],
+      {
+        env: withMockedFetch(401),
+      },
+    );
 
-    expect(exitCode).not.toBe(0);
+    expect(exitCode, output).not.toBe(0);
     expect(existsSync(resolve(dir, RC_FILE))).toBe(false);
   });
 });

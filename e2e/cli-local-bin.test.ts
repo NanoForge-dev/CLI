@@ -28,10 +28,10 @@ describe("nf inside a project with a local CLI", () => {
   });
 
   it("should load the commands of the local CLI", async () => {
-    const { stdout, stderr, exitCode } = await runCli(["--help"], { cwd: project });
+    const { stdout, stderr, exitCode, output } = await runCli(["--help"], { cwd: project });
 
     expect(stderr).toBe("");
-    expect(exitCode).toBe(0);
+    expect(exitCode, output).toBe(0);
     expect(stdout).toContain("local-marker");
   });
 });

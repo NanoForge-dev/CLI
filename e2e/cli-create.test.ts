@@ -42,7 +42,7 @@ describe("nf create (TypeScript, client project)", () => {
   });
 
   it("should create a component successfully", async () => {
-    const { stdout, exitCode } = await runCli([
+    const { stdout, exitCode, output } = await runCli([
       "create",
       "component",
       "--name",
@@ -51,7 +51,7 @@ describe("nf create (TypeScript, client project)", () => {
       appDir,
     ]);
 
-    expect(exitCode).toBe(0);
+    expect(exitCode, output).toBe(0);
     expect(stdout).toContain("NanoForge Component/System Creation");
     expect(stdout).toContain("Element successfully created");
   });
@@ -61,7 +61,7 @@ describe("nf create (TypeScript, client project)", () => {
   });
 
   it("should create a system successfully", async () => {
-    const { stdout, exitCode } = await runCli([
+    const { stdout, exitCode, output } = await runCli([
       "create",
       "system",
       "--name",
@@ -70,7 +70,7 @@ describe("nf create (TypeScript, client project)", () => {
       appDir,
     ]);
 
-    expect(exitCode).toBe(0);
+    expect(exitCode, output).toBe(0);
     expect(stdout).toContain("Element successfully created");
   });
 
@@ -79,7 +79,7 @@ describe("nf create (TypeScript, client project)", () => {
   });
 
   it("should create a component with a custom path via --path", async () => {
-    const { exitCode } = await runCli([
+    const { exitCode, output } = await runCli([
       "create",
       "component",
       "--name",
@@ -90,7 +90,7 @@ describe("nf create (TypeScript, client project)", () => {
       appDir,
     ]);
 
-    expect(exitCode).toBe(0);
+    expect(exitCode, output).toBe(0);
     expect(existsSync(resolve(appDir, "src/custom-components/custom.component.ts"))).toBe(true);
   });
 });
@@ -106,7 +106,7 @@ describe("nf create (TypeScript, server project in a workspace)", () => {
   });
 
   it("should create a server component successfully", async () => {
-    const { exitCode } = await runCli([
+    const { exitCode, output } = await runCli([
       "create",
       "component",
       "--name",
@@ -115,19 +115,26 @@ describe("nf create (TypeScript, server project in a workspace)", () => {
       serverDir,
     ]);
 
-    expect(exitCode).toBe(0);
+    expect(exitCode, output).toBe(0);
     expect(existsSync(resolve(serverDir, "src/components/network.component.ts"))).toBe(true);
   });
 
   it("should create a server system successfully", async () => {
-    const { exitCode } = await runCli(["create", "system", "--name", "sync", "-d", serverDir]);
+    const { exitCode, output } = await runCli([
+      "create",
+      "system",
+      "--name",
+      "sync",
+      "-d",
+      serverDir,
+    ]);
 
-    expect(exitCode).toBe(0);
+    expect(exitCode, output).toBe(0);
     expect(existsSync(resolve(serverDir, "src/systems/sync.system.ts"))).toBe(true);
   });
 
   it("should fail when run at the workspace root", async () => {
-    const { exitCode } = await runCli([
+    const { exitCode, output } = await runCli([
       "create",
       "component",
       "--name",
@@ -136,7 +143,7 @@ describe("nf create (TypeScript, server project in a workspace)", () => {
       workspaceDir,
     ]);
 
-    expect(exitCode).not.toBe(0);
+    expect(exitCode, output).not.toBe(0);
     expect(existsSync(resolve(workspaceDir, "src/components/root.component.ts"))).toBe(false);
   });
 });
@@ -151,8 +158,15 @@ describe("nf create (JavaScript)", () => {
   });
 
   it("should create a JavaScript component successfully", async () => {
-    const { exitCode } = await runCli(["create", "component", "--name", "sprite", "-d", appDir]);
-    expect(exitCode).toBe(0);
+    const { exitCode, output } = await runCli([
+      "create",
+      "component",
+      "--name",
+      "sprite",
+      "-d",
+      appDir,
+    ]);
+    expect(exitCode, output).toBe(0);
   });
 
   it("should generate a .js component file", () => {
@@ -160,8 +174,15 @@ describe("nf create (JavaScript)", () => {
   });
 
   it("should create a JavaScript system successfully", async () => {
-    const { exitCode } = await runCli(["create", "system", "--name", "render", "-d", appDir]);
-    expect(exitCode).toBe(0);
+    const { exitCode, output } = await runCli([
+      "create",
+      "system",
+      "--name",
+      "render",
+      "-d",
+      appDir,
+    ]);
+    expect(exitCode, output).toBe(0);
   });
 
   it("should generate a .js system file", () => {
@@ -171,7 +192,7 @@ describe("nf create (JavaScript)", () => {
 
 describe("nf create (error cases)", () => {
   it("should fail when directory does not exist", async () => {
-    const { exitCode } = await runCli([
+    const { exitCode, output } = await runCli([
       "create",
       "component",
       "--name",
@@ -179,29 +200,39 @@ describe("nf create (error cases)", () => {
       "-d",
       resolve(tmpDir, "nonexistent"),
     ]);
-    expect(exitCode).not.toBe(0);
+    expect(exitCode, output).not.toBe(0);
   });
 
   it("should fail with an invalid type", async () => {
     const appDir = resolve(tmpDir, "create-ts-client/create-app");
-    const { exitCode } = await runCli(["create", "invalid-type", "--name", "test", "-d", appDir]);
-    expect(exitCode).not.toBe(0);
+    const { exitCode, output } = await runCli([
+      "create",
+      "invalid-type",
+      "--name",
+      "test",
+      "-d",
+      appDir,
+    ]);
+    expect(exitCode, output).not.toBe(0);
   });
 
   it("should name the missing --name instead of prompting without a terminal", async () => {
     const appDir = resolve(tmpDir, "create-js/create-js-app");
-    const { exitCode, stdout, stderr } = await runCli(["create", "component", "-d", appDir], {
-      stdinData: "",
-    });
+    const { exitCode, output, stdout, stderr } = await runCli(
+      ["create", "component", "-d", appDir],
+      {
+        stdinData: "",
+      },
+    );
 
-    expect(exitCode).toBe(1);
+    expect(exitCode, output).toBe(1);
     expect(stderr).toContain("--name is required when not running in a terminal.");
     expect(stdout).not.toContain("What is the name");
   });
 
   it("should reject a name that gives no valid identifier", async () => {
     const appDir = resolve(tmpDir, "create-js/create-js-app");
-    const { exitCode, stderr } = await runCli([
+    const { exitCode, output, stderr } = await runCli([
       "create",
       "component",
       "--name",
@@ -210,7 +241,7 @@ describe("nf create (error cases)", () => {
       appDir,
     ]);
 
-    expect(exitCode).toBe(1);
+    expect(exitCode, output).toBe(1);
     expect(stderr).toContain("Invalid argument 'name'");
     expect(existsSync(resolve(appDir, "src/components/2d-sprite.component.js"))).toBe(false);
   });
@@ -224,7 +255,7 @@ describe("nf create plugin", () => {
   });
 
   it("should scaffold an editor plugin outside of any project", async () => {
-    const { stdout, exitCode } = await runCli([
+    const { stdout, exitCode, output } = await runCli([
       "create",
       "plugin",
       "--name",
@@ -233,7 +264,7 @@ describe("nf create plugin", () => {
       pluginsDir,
     ]);
 
-    expect(exitCode).toBe(0);
+    expect(exitCode, output).toBe(0);
     expect(stdout).toContain("Plugin created in");
     const dir = resolve(pluginsDir, "score-board");
     for (const file of [
@@ -246,7 +277,7 @@ describe("nf create plugin", () => {
   });
 
   it("should scaffold a theme with no code, and refuse an unknown template", async () => {
-    const { stdout, exitCode } = await runCli([
+    const { stdout, exitCode, output } = await runCli([
       "create",
       "plugin",
       "--name",
@@ -256,7 +287,7 @@ describe("nf create plugin", () => {
       "-d",
       pluginsDir,
     ]);
-    expect(exitCode).toBe(0);
+    expect(exitCode, output).toBe(0);
     expect(stdout).toContain("Theme created in");
     const dir = resolve(pluginsDir, "forest");
     for (const file of ["nanoforge.manifest.json", "build.mjs", "icons/leaf.svg"])
@@ -273,7 +304,7 @@ describe("nf create plugin", () => {
       "-d",
       pluginsDir,
     ]);
-    expect(unknown.exitCode).not.toBe(0);
+    expect(unknown.exitCode, unknown.output).not.toBe(0);
     expect(existsSync(resolve(pluginsDir, "other"))).toBe(false);
   });
 
@@ -286,10 +317,10 @@ describe("nf create plugin", () => {
       "-d",
       pluginsDir,
     ]);
-    expect(again.exitCode).not.toBe(0);
+    expect(again.exitCode, again.output).not.toBe(0);
 
     const bad = await runCli(["create", "plugin", "--name", "scoreboard", "-d", pluginsDir]);
-    expect(bad.exitCode).not.toBe(0);
+    expect(bad.exitCode, bad.output).not.toBe(0);
     expect(existsSync(resolve(pluginsDir, "scoreboard"))).toBe(false);
   });
 });

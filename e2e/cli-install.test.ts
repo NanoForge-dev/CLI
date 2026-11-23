@@ -32,7 +32,7 @@ describe("nf install (with existing project)", () => {
   });
 
   it("should run the install command with a library name", async () => {
-    const { exitCode, stdout, stderr } = await runCli([
+    const { exitCode, output } = await runCli([
       "install",
       "-l",
       "@nanoforge-dev/network-client",
@@ -40,7 +40,7 @@ describe("nf install (with existing project)", () => {
       appDir,
     ]);
 
-    expect(exitCode, `${stdout}\n${stderr}`).toBe(0);
+    expect(exitCode, output).toBe(0);
 
     const pkgJson = JSON.parse(readFileSync(resolve(appDir, "package.json"), "utf-8"));
     expect(pkgJson.devDependencies).toHaveProperty("@nanoforge-dev/network-client");
@@ -50,7 +50,7 @@ describe("nf install (with existing project)", () => {
   });
 
   it("should run the install command with multiple library names", async () => {
-    const { exitCode, stdout, stderr } = await runCli([
+    const { exitCode, output } = await runCli([
       "install",
       "-l",
       "@nanoforge-dev/network-client",
@@ -59,7 +59,7 @@ describe("nf install (with existing project)", () => {
       appDir,
     ]);
 
-    expect(exitCode, `${stdout}\n${stderr}`).toBe(0);
+    expect(exitCode, output).toBe(0);
 
     const pkgJson = JSON.parse(readFileSync(resolve(appDir, "package.json"), "utf-8"));
     expect(pkgJson.devDependencies).toHaveProperty("@nanoforge-dev/network-client");
@@ -73,7 +73,7 @@ describe("nf install (with existing project)", () => {
   });
 
   it("should work with the add alias", async () => {
-    const { exitCode, stdout, stderr } = await runCli([
+    const { exitCode, output } = await runCli([
       "add",
       "-l",
       "@nanoforge-dev/network-client",
@@ -81,7 +81,7 @@ describe("nf install (with existing project)", () => {
       appDir,
     ]);
 
-    expect(exitCode, `${stdout}\n${stderr}`).toBe(0);
+    expect(exitCode, output).toBe(0);
 
     const pkgJson = JSON.parse(readFileSync(resolve(appDir, "package.json"), "utf-8"));
     expect(pkgJson.devDependencies).toHaveProperty("@nanoforge-dev/network-client");
@@ -93,14 +93,14 @@ describe("nf install (with existing project)", () => {
 
 describe("nf install (with invalid directory)", () => {
   it("should fail when directory does not exist", async () => {
-    const { exitCode } = await runCli([
+    const { exitCode, output } = await runCli([
       "install",
       "some-lib",
       "-d",
       resolve(tmpDir, "nonexistent"),
     ]);
 
-    expect(exitCode).not.toBe(0);
+    expect(exitCode, output).not.toBe(0);
   });
 });
 
@@ -130,9 +130,9 @@ describe("nf install (registry packages)", () => {
   });
 
   it("installs a package and its dependencies into nf_modules", async () => {
-    const { exitCode } = await runCli(["install", "@test-org/kit", "-d", appDir], { env });
+    const { exitCode, output } = await runCli(["install", "@test-org/kit", "-d", appDir], { env });
 
-    expect(exitCode).toBe(0);
+    expect(exitCode, output).toBe(0);
     expect(
       readFileSync(resolve(appDir, "nf_modules/@test-org/shapes/index.ts"), "utf-8"),
     ).toContain("1.0.0");
@@ -148,9 +148,11 @@ describe("nf install (registry packages)", () => {
   });
 
   it("refuses a range no version fits, and leaves the project as it was", async () => {
-    const { exitCode } = await runCli(["install", "@test-org/kit@^3.0.0", "-d", appDir], { env });
+    const { exitCode, output } = await runCli(["install", "@test-org/kit@^3.0.0", "-d", appDir], {
+      env,
+    });
 
-    expect(exitCode).not.toBe(0);
+    expect(exitCode, output).not.toBe(0);
     const list = JSON.parse(readFileSync(resolve(appDir, "nanoforge.packages.json"), "utf-8"));
     expect(list.packages).toEqual({ "@test-org/kit": "^1.0.0" });
   });
@@ -158,9 +160,9 @@ describe("nf install (registry packages)", () => {
   it("restores the locked packages when given no name", async () => {
     rmSync(resolve(appDir, "nf_modules"), { recursive: true, force: true });
 
-    const { exitCode } = await runCli(["install", "-d", appDir], { env });
+    const { exitCode, output } = await runCli(["install", "-d", appDir], { env });
 
-    expect(exitCode).toBe(0);
+    expect(exitCode, output).toBe(0);
     expect(existsSync(resolve(appDir, "nf_modules/@test-org/kit/index.ts"))).toBe(true);
     expect(existsSync(resolve(appDir, "nf_modules/@test-org/shapes/index.ts"))).toBe(true);
   });
@@ -192,10 +194,12 @@ describe("nf install (without package name)", () => {
   });
 
   it("succeeds with nothing locked, without asking", async () => {
-    const { exitCode, killed } = await runCli(["install", "-d", appDir], { timeout: 10_000 });
+    const { exitCode, output, killed } = await runCli(["install", "-d", appDir], {
+      timeout: 10_000,
+    });
 
     expect(killed).toBe(false);
-    expect(exitCode).toBe(0);
+    expect(exitCode, output).toBe(0);
     expect(existsSync(resolve(appDir, "nf_modules"))).toBe(false);
   });
 });

@@ -75,7 +75,7 @@
     "test:unit": "vitest run --config vitest.config.ts",
     "test:contract": "vitest run --config vitest.config.ts test/contract",
     "prepack": "pnpm run build && pnpm run lint",
-    "changelog": "git cliff --prepend ./CHANGELOG.md -u -c ./cliff.toml -r ../../ --include-path 'libs/registry/*'",
+    "changelog": "git cliff --prepend ./CHANGELOG.md -u -c ./cliff.toml -r ../../ --include-path \"libs/registry/*\"",
     "release": "cliff-jumper"
   },
   "dependencies": {
