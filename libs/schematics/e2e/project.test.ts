@@ -1,7 +1,7 @@
 import { SchematicTestRunner, type UnitTestTree } from "@angular-devkit/schematics/testing";
 import { EOL } from "node:os";
 import { resolve } from "node:path";
-import { beforeAll, describe, expect, it } from "vitest";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 const collectionPath = resolve(__dirname, "../dist/collection.json");
 
@@ -9,7 +9,7 @@ const collectionPath = resolve(__dirname, "../dist/collection.json");
 // window) for standalone projects, so we can't assert an exact pinned
 // number here — only that a registry-resolved value or a workspace-linking
 // protocol came back.
-// Includes semver-range fallbacks (e.g. "^2") so this still passes when the
+// Includes semver-range fallbacks (e.g. "^3") so this still passes when the
 // registry is unreachable and the fetcher falls back to its default.
 const RESOLVED_VERSION = /^(\d+\.\d+\.\d+|workspace:\*|\*|latest|\^\d+(\.\d+){0,2})$/;
 
@@ -398,6 +398,35 @@ describe("project schematic", () => {
       expect(serverPackageJson.devDependencies["@nanoforge-dev/ecs"]).toMatch(RESOLVED_VERSION);
       expect(serverPackageJson.dependencies["@nanoforge-dev/network"]).toMatch(RESOLVED_VERSION);
     });
+  });
+
+  describe("when the registry lookup fails", () => {
+    afterEach(() => {
+      vi.unstubAllGlobals();
+    });
+
+    it.each(["client", "server"] as const)(
+      "falls back to the engine 3 range for every %s engine package",
+      async (part) => {
+        vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("network down")));
+        const tree = await runner.runSchematic("project", {
+          part,
+          workspaceName: `offline-${part}-workspace`,
+          directory: `offline-${part}-apps/${part}`,
+          workspace: false,
+          hasServer: true,
+        });
+        const packageJson = JSON.parse(
+          tree.readContent(`/offline-${part}-apps/${part}/package.json`),
+        );
+        const engineDeps = Object.entries({
+          ...packageJson.dependencies,
+          ...packageJson.devDependencies,
+        }).filter(([name]) => name.startsWith("@nanoforge-dev/") && name !== "@nanoforge-dev/cli");
+        expect(engineDeps.length).toBeGreaterThan(0);
+        for (const [, version] of engineDeps) expect(version).toBe("^3");
+      },
+    );
   });
 
   describe("packageManager (Corepack) field", () => {
