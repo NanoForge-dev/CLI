@@ -44,6 +44,15 @@ describe("system schematic", () => {
       expect(content).toContain("export const EDITOR_SYSTEM_MANIFEST");
       expect(content).toContain('name: "mySystem"');
     });
+
+    it("should only use a component and an AppContext method that exist in a new project", () => {
+      const content = tree.readContent("/my-app/my-system.system.ts");
+      expect(content).toContain('from "../components/position-2d.component"');
+      expect(content).toContain('dependencies: ["Position2D"]');
+      expect(content).toContain("ctx.app.requestStop()");
+      expect(content).not.toContain("ExampleComponent");
+      expect(content).not.toContain("setIsRunning");
+    });
   });
 
   describe("TypeScript system for server part", () => {
@@ -100,6 +109,15 @@ describe("system schematic", () => {
       const content = tree.readContent("/my-app/my-system.system.js");
       expect(content).toContain("export const EDITOR_SYSTEM_MANIFEST");
       expect(content).toContain('name: "mySystem"');
+    });
+
+    it("should only use a component and an AppContext method that exist in a new project", () => {
+      const content = tree.readContent("/my-app/my-system.system.js");
+      expect(content).toContain('from "../components/position-2d.component"');
+      expect(content).toContain('dependencies: ["Position2D"]');
+      expect(content).toContain("ctx.app.requestStop()");
+      expect(content).not.toContain("ExampleComponent");
+      expect(content).not.toContain("setIsRunning");
     });
   });
 
