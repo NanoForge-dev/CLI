@@ -94,4 +94,14 @@ describe("AbstractAction with child processes", () => {
     expect(exit).not.toHaveBeenCalled();
     expect(error).not.toHaveBeenCalledWith(expect.stringContaining("Children failed!"));
   });
+
+  it("prints no header when the child's own failure line already says it", async () => {
+    const action = new ChildrenAction(() => [Promise.resolve(false)]);
+    Object.assign(action, { childFailureMessage: "" });
+
+    await action.run();
+
+    expect(error).not.toHaveBeenCalledWith(expect.stringContaining("Children failed!"));
+    expect(exit).toHaveBeenCalledWith(1);
+  });
 });

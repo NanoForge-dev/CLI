@@ -18,7 +18,10 @@ answers:
 - **Without a path**, the editor shows its project list, and no browser opens unless you pass
   `--open`.
 
-If the editor stops with an error, `nf editor` prints `Editor failed!` and exits with code 1.
+If the editor stops with an error, `nf editor` prints `Editor failed!` and exits with code 1. If it
+has not answered after 30 seconds, `nf editor` prints a warning with the URL and keeps running. If
+a NanoForge editor already answers on the port, `nf editor` stops: open that one, or pass another
+`--port`.
 
 The editor can open projects only inside its root folder. The root is the `-d` folder, or the
 parent folder of `[path]` when the project is outside of `-d`.

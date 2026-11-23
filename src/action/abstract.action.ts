@@ -18,6 +18,8 @@ export abstract class AbstractAction {
   protected abstract startMessage: string;
   protected abstract successMessage: string;
   protected abstract failureMessage: string;
+  /** Printed when a child fails; empty when the child's own failure line says the same. */
+  protected childFailureMessage?: string;
 
   private stopping = false;
 
@@ -82,7 +84,8 @@ export abstract class AbstractAction {
 
     // Printed first: on Windows, taskkill /T /F ends this process too.
     console.error();
-    console.error(red(this.failureMessage));
+    const header = this.childFailureMessage ?? this.failureMessage;
+    if (header) console.error(red(header));
     const message = getErrorMessage(error);
     if (message) console.error(message);
 

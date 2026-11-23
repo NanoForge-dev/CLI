@@ -1,3 +1,4 @@
+import { type AddressInfo, createServer } from "node:net";
 import open from "open";
 import { resolve } from "path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -18,6 +19,9 @@ vi.mock("@utils/path", async (importOriginal) => ({
   ...(await importOriginal<object>()),
   getModulePath: vi.fn(() => resolve("editor")),
 }));
+
+/** What the editor's /healthz answers. */
+const healthz = () => ({ ok: true, json: () => Promise.resolve({ ok: true, version: "1.1.0" }) });
 
 const options = (entries: [string, unknown][]): Input =>
   new Map(entries.map(([key, value]) => [key, { value }]));
@@ -59,7 +63,7 @@ describe("EditorAction.handle", () => {
     run.mockReturnValue(new Promise<boolean>((resolve) => (stop = resolve)));
     fetch.mockRejectedValueOnce(new Error("ECONNREFUSED")).mockImplementation(() => {
       expect(editorRunning()).toBe(false);
-      return Promise.resolve({ ok: true });
+      return Promise.resolve(healthz());
     });
 
     const handled = new EditorAction().handle(
@@ -74,12 +78,50 @@ describe("EditorAction.handle", () => {
   });
 
   it("refuses to start when an editor already answers on the port", async () => {
-    fetch.mockResolvedValue({ ok: true });
+    fetch.mockResolvedValue(healthz());
 
     await expect(new EditorAction().handle(new Map(), options([["port", "5199"]]))).rejects.toThrow(
-      "Port 5199 is already used by a running editor.",
+      "Port 5199 is already used by a NanoForge editor.",
     );
     expect(run).not.toHaveBeenCalled();
     expect(editorRunning()).toBe(false);
   });
+
+  it("starts when the port answers 200 but is not an editor (a dev server's page)", async () => {
+    run.mockResolvedValue(true);
+    fetch.mockResolvedValue({ ok: true, json: () => Promise.reject(new SyntaxError("<html>")) });
+
+    await new EditorAction().handle(new Map(), options([["port", "5199"]]));
+
+    expect(run).toHaveBeenCalled();
+  });
+
+  it("warns with the URL, instead of hanging, when the port never replies", async () => {
+    vi.unstubAllGlobals(); // a real fetch against a server that accepts and never answers
+    const silent = createServer(() => undefined);
+    await new Promise<void>((resolve) => silent.listen(0, "127.0.0.1", resolve));
+    const { port } = silent.address() as AddressInfo;
+    let stop: (ok: boolean) => void = () => undefined;
+    run.mockReturnValue(new Promise<boolean>((resolve) => (stop = resolve)));
+
+    const action = new EditorAction();
+    Object.assign(action, { readyTimeoutMs: 1500 });
+    const handled = action.handle(new Map(), options([["port", String(port)]]));
+
+    try {
+      await vi.waitFor(
+        () =>
+          expect(log).toHaveBeenCalledWith(
+            expect.stringMatching(new RegExp(`Warning.*http://localhost:${port}`)),
+          ),
+        { timeout: 8000 },
+      );
+      expect(editorRunning()).toBe(false);
+      expect(open).not.toHaveBeenCalled();
+      stop(true);
+      await handled;
+    } finally {
+      silent.close();
+    }
+  }, 15_000);
 });
