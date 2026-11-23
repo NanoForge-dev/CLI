@@ -108,7 +108,7 @@ describe("nf publish", () => {
       authorization: "Bearer test-api-key",
     });
     // `.nanoforgerc` (written by `nf login --local` above) holds the key: never packed.
-    expect(put!.files!.sort()).toEqual(["index.ts", "nanoforge.manifest.json", "src/player.ts"]);
+    expect(put?.files?.sort()).toEqual(["index.ts", "nanoforge.manifest.json", "src/player.ts"]);
   });
 
   it("should list the files and publish nothing with --dry-run", async () => {
