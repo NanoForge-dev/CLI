@@ -17,6 +17,7 @@ interface BuildTargetShape {
   directory: string;
   entry: string;
   static?: string;
+  sources?: string[];
   output: string;
   platform: "browser" | "node";
   sourcemap: boolean;
@@ -183,6 +184,22 @@ describe("BuildAction.resolveTargets output guard", () => {
     } as unknown as WorkspaceConfig;
 
     expect(() => resolveTargets(workspace, "/ws")).toThrow(/refusing to build Server/);
+  });
+
+  it.each(["src/components", "src/systems", "src/scenes", "nf_modules"])(
+    "should refuse the source folder %j",
+    (outDir) => {
+      expect(() => resolveTargets(project, "/ws", withOutDir(outDir))).toThrow(CLIError);
+    },
+  );
+
+  it("should refuse the configured dir.components folder", () => {
+    const workspace = {
+      type: "project",
+      config: { type: "client", dir: { components: "game/components" }, out: { dir: "game" } },
+    } as unknown as WorkspaceConfig;
+
+    expect(() => resolveTargets(workspace, "/ws")).toThrow(/overlaps the sources/);
   });
 
   it("should accept the p2p browser server output inside the client output", () => {

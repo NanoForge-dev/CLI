@@ -31,6 +31,8 @@ interface BuildTarget {
   directory: string;
   entry: string;
   static?: string;
+  /** Source folders (`dir.components`, …) that an output folder must not overlap. */
+  sources?: string[];
   output: string;
   platform: "browser" | "node";
   sourcemap: boolean;
@@ -129,7 +131,11 @@ export class BuildAction extends AbstractAction {
 
   /** Refuses, before anything is deleted, an output folder whose reset would destroy sources. */
   private assertSafeOutput(target: BuildTarget, root: string): void {
-    const sources = target.static ? [target.entry, target.static] : [target.entry];
+    const sources = [
+      target.entry,
+      ...(target.static ? [target.static] : []),
+      ...(target.sources ?? []),
+    ];
     const reason = getUnsafeOutDirReason(
       getCwd(root),
       getCwd(target.directory),
@@ -156,6 +162,8 @@ export class BuildAction extends AbstractAction {
     const name = disambiguate && relativePath !== "" ? `${label} (${relativePath})` : label;
     const defaults = isClient ? defaultClientConfig : defaultServerConfig;
 
+    const dir = { ...defaults.dir, ...project.config.dir };
+
     const defaultEntry = isEditor
       ? (project.config.editor?.entryFile ?? defaults.editor.entryFile)
       : (project.config.entryFile ?? defaults.entryFile);
@@ -178,6 +186,7 @@ export class BuildAction extends AbstractAction {
         isClient ? "clientOutDir" : "serverOutDir",
         project.config.out?.dir ?? defaults.out.dir,
       ),
+      sources: [dir.components, dir.systems, dir.scenes, dir.packages],
       platform: isClient ? "browser" : "node",
       sourcemap: isEditor,
     };

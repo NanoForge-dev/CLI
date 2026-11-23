@@ -1,5 +1,5 @@
 import fs from "fs";
-import { dirname, isAbsolute, join, relative, resolve, sep } from "path";
+import { basename, dirname, isAbsolute, join, relative, resolve, sep } from "path";
 
 import { FileSystemError } from "@utils/errors";
 
@@ -36,9 +36,22 @@ export const isWithin = (parent: string, child: string): boolean => {
 };
 
 /**
+ * The real path of `path`: links followed and, on a case-insensitive file system, the case
+ * on disk. The part that does not exist yet is kept as written.
+ */
+const realPath = (path: string): string => {
+  try {
+    return fs.realpathSync.native(path);
+  } catch {
+    const parent = dirname(path);
+    return parent === path ? path : join(realPath(parent), basename(path));
+  }
+};
+
+/**
  * Why emptying `outDir` (relative to `directory`) would destroy sources, or `undefined` when
  * it is safe: it must be relative, strictly inside `root`, and neither contain nor sit
- * inside one of `sources` (paths relative to `directory`).
+ * inside one of `sources` (paths relative to `directory`). Real paths are compared.
  */
 export const getUnsafeOutDirReason = (
   root: string,
@@ -47,11 +60,12 @@ export const getUnsafeOutDirReason = (
   sources: string[],
 ): string | undefined => {
   if (isAbsolute(outDir)) return "it must be a path relative to the project folder";
-  const out = resolve(directory, outDir);
+  const out = realPath(resolve(directory, outDir));
+  root = realPath(root);
   if (isWithin(out, root)) return `it is the project folder or one of its parents (${root})`;
   if (!isWithin(root, out)) return `it is outside the project folder (${root})`;
   const source = sources
-    .map((path) => resolve(directory, path))
+    .map((path) => realPath(resolve(directory, path)))
     .find((path) => isWithin(out, path) || isWithin(path, out));
   return source ? `it overlaps the sources at ${source}` : undefined;
 };

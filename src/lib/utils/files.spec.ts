@@ -1,7 +1,7 @@
 import fs from "fs";
 import { tmpdir } from "os";
 import { join } from "path";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { FileSystemError } from "@utils/errors";
 
@@ -117,6 +117,40 @@ describe("files", () => {
       expect(reason("src/dist")).toBeUndefined();
       expect(reason("..dist")).toBeUndefined();
     });
+
+    it("should refuse an output folder that reaches outside through a symlink", () => {
+      fs.mkdirSync(join(root, "project", "src"), { recursive: true });
+      fs.symlinkSync("..", join(root, "project", "a"), "dir");
+      const real = join(root, "project");
+
+      expect(getUnsafeOutDirReason(real, real, "a/dist", ["src/main.ts"])).toMatch(
+        /outside the project folder/,
+      );
+      expect(getUnsafeOutDirReason(real, real, "a/project", ["src/main.ts"])).toMatch(
+        /project folder or one of its parents/,
+      );
+    });
+
+    it.skipIf(process.platform === "win32")(
+      "should refuse a folder that is a source in another case on a case-insensitive file system",
+      () => {
+        const onDisk = new Set(["/", "/ws", "/ws/src", "/ws/src/main.ts", "/ws/assets"]);
+        const spy = vi.spyOn(fs.realpathSync, "native").mockImplementation(((path: string) => {
+          const lower = path.toLowerCase();
+          if (onDisk.has(lower)) return lower;
+          throw Object.assign(new Error("ENOENT"), { code: "ENOENT" });
+        }) as unknown as typeof fs.realpathSync.native);
+
+        try {
+          expect(getUnsafeOutDirReason("/ws", "/ws", "SRC", ["src/main.ts", "assets"])).toMatch(
+            /overlaps the sources/,
+          );
+          expect(getUnsafeOutDirReason("/ws", "/ws", "DIST", ["src/main.ts"])).toBeUndefined();
+        } finally {
+          spy.mockRestore();
+        }
+      },
+    );
 
     it("should check a nested target against the root it is given", () => {
       const server = join(project, "server");
