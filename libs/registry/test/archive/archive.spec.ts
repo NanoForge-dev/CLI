@@ -1,10 +1,10 @@
 import { strToU8, zipSync } from "fflate";
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, rmSync, truncateSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
-import { readArchive, zipFolder } from "../../src/archive/archive";
+import { packFolder, readArchive, zipFolder } from "../../src/archive/archive";
 
 const CENTRAL_ENTRY = 0x02014b50;
 
@@ -61,6 +61,39 @@ describe("zipFolder", () => {
       expect([...some.keys()].sort()).toEqual(["a.txt", "src/b.ts"]);
       expect(seen).toContainEqual(["src/node_modules", true]);
       expect(seen).not.toContainEqual(["src/node_modules/x", true]);
+    } finally {
+      rmSync(folder, { recursive: true, force: true });
+    }
+  });
+});
+
+describe("packFolder", () => {
+  it("lists the files it packed, with their sizes", async () => {
+    const folder = mkdtempSync(join(tmpdir(), "nf-zip-"));
+    try {
+      mkdirSync(join(folder, "src"));
+      writeFileSync(join(folder, "a.txt"), "hello");
+      writeFileSync(join(folder, "src/b.ts"), "b");
+
+      const { archive, files } = await packFolder(folder);
+      expect(files).toEqual([
+        { path: "a.txt", size: 5 },
+        { path: "src/b.ts", size: 1 },
+      ]);
+      expect([...readArchive(archive).keys()]).toEqual(["a.txt", "src/b.ts"]);
+    } finally {
+      rmSync(folder, { recursive: true, force: true });
+    }
+  });
+
+  it("stops before reading a folder past 256 MiB, naming the limit", async () => {
+    const folder = mkdtempSync(join(tmpdir(), "nf-zip-"));
+    try {
+      // A sparse file: 257 MiB on paper, nothing on disk.
+      writeFileSync(join(folder, "big.bin"), "");
+      truncateSync(join(folder, "big.bin"), 257 * 1024 * 1024);
+
+      await expect(zipFolder(folder)).rejects.toThrow(/too large \(256 MiB/);
     } finally {
       rmSync(folder, { recursive: true, force: true });
     }

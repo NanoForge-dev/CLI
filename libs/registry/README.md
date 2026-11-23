@@ -56,6 +56,7 @@ await registry.publish("@acme/kit", await zipFolder("kit", { ignore: (path) => p
 await registry.unpublish("@acme/kit", "1.2.0");
 ```
 
+- `zipFolder` stops before reading a folder past 256 MiB or 20,000 files (what an install accepts). `packFolder` does the same and also returns the packed files with their sizes; check the archive against `MAX_PUBLISH_BYTES` (20 MiB, the registry's limit) before uploading it.
 - `RegistryClient` only talks to the origin of `baseUrl`, redirects included: a `dist.tarball` or a redirect elsewhere is refused (`INVALID`). A registry that keeps its archives on another host lists it in `archiveOrigins`. Give `baseUrl` the exact origin the API writes its archive addresses with (its `API_BASE_URL`): `http://localhost:3000` and `http://127.0.0.1:3000` are two origins.
 - `@nanoforge-dev/registry/types` holds the schemas and types only (no Node code), for browser code.
 - `@nanoforge-dev/registry/tsconfig-paths` edits the `paths` of a `tsconfig.json`.
