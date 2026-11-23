@@ -1,6 +1,6 @@
 import { defaultClientConfig, defaultServerConfig } from "@nanoforge-dev/config";
 import { watch } from "chokidar";
-import { dirname, join, relative } from "node:path";
+import { dirname, join, relative, resolve } from "node:path";
 
 import {
   type ResolvedProject,
@@ -20,7 +20,7 @@ import { PackageManagerFactory, PackageManagerName } from "@lib/package-manager"
 import { Messages } from "@lib/ui";
 
 import { CLIError } from "@utils/errors";
-import { copyFiles, getUnsafeOutDirReason, resetFolder } from "@utils/files";
+import { copyFiles, getUnsafeOutDirReason, isWithin, resetFolder } from "@utils/files";
 import { getCwd } from "@utils/path";
 import { runSafe } from "@utils/run-safe";
 
@@ -40,6 +40,42 @@ interface BuildTarget {
 
 /** Subfolder of the client output that holds the browser server build in p2p mode. */
 const P2P_SERVER_DIR = "server";
+
+/** Quiet time after the last file event before a rebuild: a multi-file save builds once. */
+const REBUILD_DEBOUNCE_MS = 100;
+
+/**
+ * Debounced, serial rebuilds of one target: one build at a time, and the events seen during a
+ * build queue at most one more.
+ */
+export const createRebuildQueue = (
+  build: () => Promise<unknown>,
+  delay = REBUILD_DEBOUNCE_MS,
+): (() => void) => {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  let running = false;
+  let pending = false;
+
+  const run = async (): Promise<void> => {
+    running = true;
+    try {
+      do {
+        pending = false;
+        await build();
+      } while (pending);
+    } finally {
+      running = false;
+    }
+  };
+
+  return () => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      if (running) pending = true;
+      else void run();
+    }, delay);
+  };
+};
 
 export class BuildAction extends AbstractAction {
   protected startMessage = Messages.BUILD_START;
@@ -179,17 +215,25 @@ export class BuildAction extends AbstractAction {
         );
       }, false);
 
-    if (isWatch) {
-      this.watchDirectory(target.directory, target.entry, () => executeBuild(true));
-    }
-
     const result = await executeBuild();
+    // Watching starts after the first build, so the two never overlap.
+    if (isWatch)
+      this.watchTarget(
+        target,
+        createRebuildQueue(() => executeBuild(true)),
+      );
     return result !== false;
   }
 
-  private watchDirectory(directory: string, entry: string, onChange: () => void): void {
-    const watchPath = dirname(join(getCwd(directory), entry));
-    watch(watchPath).on("change", onChange);
+  /** Rebuilds on any file added, changed or deleted in the entry folder or the assets folder. */
+  private watchTarget(target: BuildTarget, onChange: () => void): void {
+    const directory = getCwd(target.directory);
+    const output = resolve(directory, target.output);
+    const paths = [dirname(resolve(directory, target.entry))];
+    if (target.static) paths.push(resolve(directory, target.static));
+    watch(paths, { ignoreInitial: true, ignored: (path) => isWithin(output, path) }).on("all", () =>
+      onChange(),
+    );
   }
 
   private enterWatchMode(): HandleResult {

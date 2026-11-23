@@ -1,13 +1,16 @@
 import { defaultClientConfig, defaultServerConfig } from "@nanoforge-dev/config";
-import { join, relative } from "node:path";
-import { describe, expect, it } from "vitest";
+import { watch } from "chokidar";
+import { join, relative, resolve } from "node:path";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { type WorkspaceConfig } from "@lib/config";
 import { type Input } from "@lib/input";
 
 import { CLIError } from "@utils/errors";
 
-import { BuildAction } from "./build.action";
+import { BuildAction, createRebuildQueue } from "./build.action";
+
+vi.mock("chokidar", () => ({ watch: vi.fn() }));
 
 interface BuildTargetShape {
   name: string;
@@ -184,5 +187,92 @@ describe("BuildAction.resolveTargets output guard", () => {
 
   it("should accept the p2p browser server output inside the client output", () => {
     expect(() => resolveTargets(p2pWorkspace(), "/ws")).not.toThrow();
+  });
+});
+
+describe("createRebuildQueue", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  const deferredBuild = () => {
+    const finish: (() => void)[] = [];
+    const build = vi.fn(() => new Promise<void>((resolve) => finish.push(resolve)));
+    return { build, finish: () => finish.shift()?.() };
+  };
+
+  it("should debounce a burst of events into one build", async () => {
+    const build = vi.fn(async () => undefined);
+    const trigger = createRebuildQueue(build, 100);
+
+    trigger();
+    trigger();
+    await vi.advanceTimersByTimeAsync(50);
+    trigger();
+    await vi.advanceTimersByTimeAsync(100);
+
+    expect(build).toHaveBeenCalledTimes(1);
+  });
+
+  it("should never run two builds at once and queue at most one more", async () => {
+    const { build, finish } = deferredBuild();
+    const trigger = createRebuildQueue(build, 100);
+
+    trigger();
+    await vi.advanceTimersByTimeAsync(100);
+    expect(build).toHaveBeenCalledTimes(1);
+
+    for (let i = 0; i < 3; i++) {
+      trigger();
+      await vi.advanceTimersByTimeAsync(100);
+    }
+    expect(build).toHaveBeenCalledTimes(1);
+
+    finish();
+    await vi.advanceTimersByTimeAsync(0);
+    expect(build).toHaveBeenCalledTimes(2);
+
+    finish();
+    await vi.advanceTimersByTimeAsync(0);
+    expect(build).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe("BuildAction.watchTarget", () => {
+  it("should watch the entry and assets folders for added, changed and deleted files", () => {
+    const on = vi.fn();
+    vi.mocked(watch).mockReturnValue({ on } as unknown as ReturnType<typeof watch>);
+    const onChange = vi.fn();
+    const target: BuildTargetShape = {
+      name: "Client",
+      directory: "/ws",
+      entry: "src/main.ts",
+      static: "assets",
+      output: "dist",
+      platform: "browser",
+      sourcemap: false,
+    };
+
+    const action = new BuildAction() as unknown as {
+      watchTarget: (target: BuildTargetShape, onChange: () => void) => void;
+    };
+    action.watchTarget(target, onChange);
+
+    const [paths, options] = vi.mocked(watch).mock.calls[0] ?? [];
+    expect(paths).toEqual([resolve("/ws", "src"), resolve("/ws", "assets")]);
+    expect(options).toMatchObject({ ignoreInitial: true });
+    const ignored = (options as { ignored: (path: string) => boolean }).ignored;
+    expect(ignored(resolve("/ws", "dist", "main.js"))).toBe(true);
+    expect(ignored(resolve("/ws", "src", "main.ts"))).toBe(false);
+
+    expect(on).toHaveBeenCalledWith("all", expect.any(Function));
+    const handler = on.mock.calls[0]?.[1] as (event: string) => void;
+    handler("add");
+    handler("unlink");
+    expect(onChange).toHaveBeenCalledTimes(2);
   });
 });

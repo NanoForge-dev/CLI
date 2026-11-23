@@ -29,7 +29,8 @@ export const resetFolder = (folder: string, keep: string[] = []) => {
   fs.mkdirSync(folder, { recursive: true });
 };
 
-const isWithin = (parent: string, child: string): boolean => {
+/** Whether `child` is `parent` or inside it. */
+export const isWithin = (parent: string, child: string): boolean => {
   const path = relative(parent, child);
   return path === "" || (path !== ".." && !path.startsWith(`..${sep}`) && !isAbsolute(path));
 };

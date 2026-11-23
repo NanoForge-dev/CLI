@@ -40,17 +40,17 @@ The defaults come from each app's [configuration file](../configuration/configur
 Paths are relative to the app's folder. In a workspace, a `--client-*` option applies to every
 client app and a `--server-*` option to every server app.
 
-| Option                                  | Type    | Default                    | Description                                                                                 |
-| --------------------------------------- | ------- | -------------------------- | ------------------------------------------------------------------------------------------- |
-| `-d, --directory <directory>`           | path    | `.`                        | Project or workspace folder.                                                                |
-| `--client-entry <clientEntry>`          | path    | `entryFile`, `src/main.ts` | Entry file of the client.                                                                   |
-| `--server-entry <serverEntry>`          | path    | `entryFile`, `src/main.ts` | Entry file of the server.                                                                   |
-| `--client-static-dir <clientStaticDir>` | path    | `dir.assets`, `assets`     | Folder copied into the client output.                                                       |
-| `--server-static-dir <serverStaticDir>` | path    | `dir.assets`, `assets`     | Folder copied into the server output.                                                       |
-| `--client-out-dir <clientOutDir>`       | path    | `out.dir`, `dist`          | Output folder of the client. It is emptied first.                                           |
-| `--server-out-dir <serverOutDir>`       | path    | `out.dir`, `dist`          | Output folder of the server. It is emptied first.                                           |
-| `--editor`                              | boolean | `false`                    | Use `editor.entryFile` as the entry (unless `--*-entry` is set) and add linked source maps. |
-| `--watch`                               | boolean | `false`                    | Keep running, and rebuild an app when a file changes in the folder of its entry file.       |
+| Option                                  | Type    | Default                    | Description                                                                                                                                                           |
+| --------------------------------------- | ------- | -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `-d, --directory <directory>`           | path    | `.`                        | Project or workspace folder.                                                                                                                                          |
+| `--client-entry <clientEntry>`          | path    | `entryFile`, `src/main.ts` | Entry file of the client.                                                                                                                                             |
+| `--server-entry <serverEntry>`          | path    | `entryFile`, `src/main.ts` | Entry file of the server.                                                                                                                                             |
+| `--client-static-dir <clientStaticDir>` | path    | `dir.assets`, `assets`     | Folder copied into the client output.                                                                                                                                 |
+| `--server-static-dir <serverStaticDir>` | path    | `dir.assets`, `assets`     | Folder copied into the server output.                                                                                                                                 |
+| `--client-out-dir <clientOutDir>`       | path    | `out.dir`, `dist`          | Output folder of the client. It is emptied first.                                                                                                                     |
+| `--server-out-dir <serverOutDir>`       | path    | `out.dir`, `dist`          | Output folder of the server. It is emptied first.                                                                                                                     |
+| `--editor`                              | boolean | `false`                    | Use `editor.entryFile` as the entry (unless `--*-entry` is set) and add linked source maps.                                                                           |
+| `--watch`                               | boolean | `false`                    | Keep running, and rebuild an app when a file is added, changed or deleted in the folder of its entry file or in its assets folder. Rebuilds of one app never overlap. |
 
 ## Examples
 
