@@ -127,10 +127,10 @@ export default defineConfig({ type: "lib" });
 
 A `client` also has:
 
-| Field  | Type                                                                  | Default             | Description                                                                                               |
-| ------ | --------------------------------------------------------------------- | ------------------- | --------------------------------------------------------------------------------------------------------- |
-| `port` | `string`                                                              | `"3000"`            | Port of the web page that `nf start` serves. `nf start --port` overrides it.                              |
-| `tls`  | `{ enable?: false }` or `{ enable: true, cert: string, key: string }` | `{ enable: false }` | Serve over HTTPS with this certificate and key. Use absolute paths. See [HTTPS](../commands/start#https). |
+| Field  | Type                                                                  | Default             | Description                                                                                                                                   |
+| ------ | --------------------------------------------------------------------- | ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `port` | `string`                                                              | `"3000"`            | Port of the web page that `nf start` serves. `nf start --port` overrides it.                                                                  |
+| `tls`  | `{ enable?: false }` or `{ enable: true, cert: string, key: string }` | `{ enable: false }` | Serve over HTTPS with this certificate and key. A relative path is relative to the client app's folder. See [HTTPS](../commands/start#https). |
 
 ### Example
 
