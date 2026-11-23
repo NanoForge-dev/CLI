@@ -17,12 +17,12 @@ schematics @nanoforge-dev/schematics:system --part=client --name=movement
 
 ## Options
 
-| Option      | Type                   | Default   | Description                                                                          |
-| ----------- | ---------------------- | --------- | ------------------------------------------------------------------------------------ |
-| `name`      | `string`               | `example` | System name. `movement` gives the function `movementSystem` in `movement.system.ts`. |
-| `part`      | `"client" \| "server"` | required  | Required. Only the JS file uses it, in a JSDoc comment.                              |
-| `directory` | `string`               | `.`       | Folder to write to.                                                                  |
-| `language`  | `"ts" \| "js"`         | `ts`      | `.ts` or `.js` file.                                                                 |
+| Option      | Type                   | Default   | Description                                                                                                                      |
+| ----------- | ---------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `name`      | `string`               | `example` | System name: a letter, then letters, digits, `-` or `_`. `movement` gives the function `movementSystem` in `movement.system.ts`. |
+| `part`      | `"client" \| "server"` | required  | Required. Only the JS file uses it, in a JSDoc comment.                                                                          |
+| `directory` | `string`               | `.`       | Folder to write to.                                                                                                              |
+| `language`  | `"ts" \| "js"`         | `ts`      | `.ts` or `.js` file.                                                                                                             |
 
 ## Generated file
 
@@ -32,21 +32,14 @@ schematics @nanoforge-dev/schematics:system --part=client --name=movement
 import { type Context } from "@nanoforge-dev/common";
 import { type EditorSystemManifest, type Registry } from "@nanoforge-dev/ecs";
 
-import { ExampleComponent } from "../components/example.component";
+// Position2D comes with every new project: replace it with the components this system works on.
+import { Position2D } from "../components/position-2d.component";
 
 export const movementSystem = (registry: Registry, ctx: Context) => {
-  const entities = registry.getZipper([ExampleComponent]);
+  const entities = registry.getZipper([Position2D]);
 
-  entities.forEach((entity) => {
-    if (entity.ExampleComponent.paramA === "end") {
-      ctx.app.setIsRunning(false);
-      return;
-    }
-
-    if (entity.ExampleComponent.paramB === 0) entity.ExampleComponent.paramA = "end";
-
-    if (entity.ExampleComponent.paramB >= 0)
-      entity.ExampleComponent.paramB = entity.ExampleComponent.paramB - 1;
+  entities.forEach(({ Position2D }) => {
+    if (Position2D.x > 1000) ctx.app.requestStop();
   });
 };
 
@@ -56,15 +49,14 @@ export default movementSystem.name;
 // * Required for the editor to display the system and generate code
 export const EDITOR_SYSTEM_MANIFEST: EditorSystemManifest = {
   name: "movement",
-  description:
-    "This system end the game when paramB reaches 0 for any entity with ExampleComponent",
-  dependencies: ["ExampleComponent"],
+  description: "This system ends the game once an entity with Position2D goes past x = 1000",
+  dependencies: ["Position2D"],
 };
 ```
 
-The example system works on `ExampleComponent`, imported from `../components/example.component`.
-That file exists only if you created a component named `example`. Replace it with your own
-components.
+The example system works on `Position2D`, imported from `../components/position-2d.component`,
+which `nf new` creates in every app. The import assumes the default `src/systems` and
+`src/components` folders. Replace it with your own components.
 
 ## System signature
 
