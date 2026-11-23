@@ -111,19 +111,19 @@ export default defineConfig({ type: "lib" });
 
 `client` and `server` share these fields and defaults:
 
-| Field              | Type           | Default          | Description                                                                                                |
-| ------------------ | -------------- | ---------------- | ---------------------------------------------------------------------------------------------------------- |
-| `entryFile`        | `string`       | `src/main.ts`    | Entry file that `nf build` bundles. Name it `main.ts`: the loaders run `main.js`.                          |
-| `out.dir`          | `string`       | `dist`           | Build output folder. `nf build` empties it first; `nf start` serves it.                                    |
-| `out.mainFile`     | `string`       | `main.js`        | Not used by `nf build` or `nf start` yet: the bundle is named after the entry file.                        |
-| `dir.assets`       | `string`       | `assets`         | Its files are copied to the root of the build output. Subfolders are not supported yet.                    |
-| `dir.packages`     | `string`       | `nf_modules`     | Folder for downloaded packages. No `nf` command reads it yet.                                              |
-| `dir.components`   | `string`       | `src/components` | Where `nf create component` writes, and where the editor looks.                                            |
-| `dir.systems`      | `string`       | `src/systems`    | Where `nf create system` writes, and where the editor looks.                                               |
-| `dir.scenes`       | `string`       | `src/scenes`     | Used by the editor only.                                                                                   |
-| `editor.entryFile` | `string`       | `src/main.ts`    | Entry file used with `nf build --editor` and `nf dev --editor`.                                            |
-| `language`         | `"ts" \| "js"` | `ts`             | Language of the files that `nf create` generates.                                                          |
-| `libs`             | `string[]`     | `[]`             | Relative paths to shared libs this app uses. `nf build` doesn't read it: it bundles what the code imports. |
+| Field              | Type           | Default          | Description                                                                                                                                                                                  |
+| ------------------ | -------------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `entryFile`        | `string`       | `src/main.ts`    | Entry file that `nf build` bundles. Name it `main.ts`: the loaders run `main.js`.                                                                                                            |
+| `out.dir`          | `string`       | `dist`           | Build output folder, inside the project (not `.`, a parent or an absolute path). `nf build` empties it first, and refuses one that holds the entry file or the assets; `nf start` serves it. |
+| `out.mainFile`     | `string`       | `main.js`        | Not used by `nf build` or `nf start` yet: the bundle is named after the entry file.                                                                                                          |
+| `dir.assets`       | `string`       | `assets`         | Its files are copied to the root of the build output. Subfolders are not supported yet.                                                                                                      |
+| `dir.packages`     | `string`       | `nf_modules`     | Folder for downloaded packages. No `nf` command reads it yet.                                                                                                                                |
+| `dir.components`   | `string`       | `src/components` | Where `nf create component` writes, and where the editor looks.                                                                                                                              |
+| `dir.systems`      | `string`       | `src/systems`    | Where `nf create system` writes, and where the editor looks.                                                                                                                                 |
+| `dir.scenes`       | `string`       | `src/scenes`     | Used by the editor only.                                                                                                                                                                     |
+| `editor.entryFile` | `string`       | `src/main.ts`    | Entry file used with `nf build --editor` and `nf dev --editor`.                                                                                                                              |
+| `language`         | `"ts" \| "js"` | `ts`             | Language of the files that `nf create` generates.                                                                                                                                            |
+| `libs`             | `string[]`     | `[]`             | Relative paths to shared libs this app uses. `nf build` doesn't read it: it bundles what the code imports.                                                                                   |
 
 A `client` also has:
 

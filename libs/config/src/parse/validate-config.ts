@@ -1,13 +1,26 @@
+import { isAbsolute, normalize } from "node:path";
 import { z } from "zod";
 
 import type { NanoforgeConfig } from "../types";
 import { ConfigParseError } from "./config-error";
 
+/** `nf build` empties `out.dir`: it must stay strictly inside the project folder. */
+const isInsideProject = (dir: string): boolean => {
+  const first = normalize(dir).split(/[\\/]/)[0];
+  return !isAbsolute(dir) && first !== "." && first !== "..";
+};
+
 const buildableConfigShape = {
   entryFile: z.string().optional(),
   out: z
     .object({
-      dir: z.string().optional(),
+      dir: z
+        .string()
+        .refine(
+          isInsideProject,
+          "must be a folder inside the project, not '.', a parent or an absolute path",
+        )
+        .optional(),
       mainFile: z.string().optional(),
     })
     .optional(),
