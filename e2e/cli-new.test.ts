@@ -23,7 +23,7 @@ describe("nf new (TypeScript, no server)", () => {
   });
 
   it("should create a project successfully", async () => {
-    const { stdout, exitCode } = await runCli([
+    const { stdout, exitCode, output } = await runCli([
       "new",
       "--name",
       "ts-app",
@@ -40,7 +40,7 @@ describe("nf new (TypeScript, no server)", () => {
       projectDir,
     ]);
 
-    expect(exitCode).toBe(0);
+    expect(exitCode, output).toBe(0);
     expect(stdout).toContain("NanoForge Project Creation");
     expect(stdout).toContain("Project successfully created");
   });
@@ -89,7 +89,7 @@ describe("nf new (with dependencies installation)", () => {
     const projectDir = resolve(tmpDir, "with-install");
     mkdirSync(projectDir, { recursive: true });
 
-    const { exitCode } = await runCli([
+    const { exitCode, output } = await runCli([
       "new",
       "--name",
       "install-app",
@@ -106,7 +106,7 @@ describe("nf new (with dependencies installation)", () => {
       projectDir,
     ]);
 
-    expect(exitCode).toBe(0);
+    expect(exitCode, output).toBe(0);
     expect(existsSync(resolve(projectDir, "install-app/node_modules"))).toBe(true);
   });
 });
@@ -120,7 +120,7 @@ describe("nf new (JavaScript, with server)", () => {
   });
 
   it("should create a project with server successfully", async () => {
-    const { stdout, exitCode } = await runCli([
+    const { stdout, exitCode, output } = await runCli([
       "new",
       "--name",
       "js-game",
@@ -137,7 +137,7 @@ describe("nf new (JavaScript, with server)", () => {
       projectDir,
     ]);
 
-    expect(exitCode).toBe(0);
+    expect(exitCode, output).toBe(0);
     expect(stdout).toContain("Project successfully created");
   });
 
@@ -179,7 +179,7 @@ describe("nf new (with --path option)", () => {
   });
 
   it("should create a project in a custom path", async () => {
-    const { stdout, exitCode } = await runCli([
+    const { stdout, exitCode, output } = await runCli([
       "new",
       "--name",
       "path-app",
@@ -198,7 +198,7 @@ describe("nf new (with --path option)", () => {
       projectDir,
     ]);
 
-    expect(exitCode).toBe(0);
+    expect(exitCode, output).toBe(0);
     expect(stdout).toContain("Project successfully created");
   });
 
@@ -217,7 +217,7 @@ describe("nf new (with typescript with docker option)", () => {
   });
 
   it("should create a project successfully", async () => {
-    const { stdout, exitCode } = await runCli([
+    const { stdout, exitCode, output } = await runCli([
       "new",
       "--name",
       "ts-app",
@@ -234,7 +234,7 @@ describe("nf new (with typescript with docker option)", () => {
       projectDir,
     ]);
 
-    expect(exitCode).toBe(0);
+    expect(exitCode, output).toBe(0);
     expect(stdout).toContain("NanoForge Project Creation");
     expect(stdout).toContain("Project successfully created");
   });
@@ -255,9 +255,12 @@ describe("nf new (with typescript with docker option)", () => {
 
 describe("nf new without a terminal", () => {
   it("should name the missing option instead of exiting silently", async () => {
-    const { exitCode, stdout, stderr } = await runCli(["new"], { cwd: tmpDir, stdinData: "" });
+    const { exitCode, output, stdout, stderr } = await runCli(["new"], {
+      cwd: tmpDir,
+      stdinData: "",
+    });
 
-    expect(exitCode).toBe(1);
+    expect(exitCode, output).toBe(1);
     expect(stderr).toContain("--name is required when not running in a terminal.");
     expect(stdout).not.toContain("What is the name");
   });

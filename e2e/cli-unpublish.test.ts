@@ -39,9 +39,9 @@ afterAll(() => {
 
 describe("nf unpublish --help", () => {
   it("should display unpublish command help", async () => {
-    const { stdout, exitCode } = await runCli(["unpublish", "--help"]);
+    const { stdout, exitCode, output } = await runCli(["unpublish", "--help"]);
 
-    expect(exitCode).toBe(0);
+    expect(exitCode, output).toBe(0);
     expect(stdout).toContain("unpublish a package from the NanoForge registry");
     expect(stdout).toContain("--directory");
   });
@@ -66,11 +66,11 @@ describe("nf unpublish", () => {
     writeManifest(dir);
     rmSync(LOG_PATH, { force: true });
 
-    const { stdout, exitCode } = await runCli(["unpublish", "-d", dir], {
+    const { stdout, exitCode, output } = await runCli(["unpublish", "-d", dir], {
       env: withMockedFetch(),
     });
 
-    expect(exitCode).toBe(0);
+    expect(exitCode, output).toBe(0);
     expect(stdout).toContain("NanoForge Unpublish");
     expect(stdout).toContain("Unpublish completed!");
     expect(JSON.parse(readFileSync(LOG_PATH, "utf-8").trim())).toMatchObject({
@@ -81,20 +81,20 @@ describe("nf unpublish", () => {
   });
 
   it("should fail when the manifest file is missing", async () => {
-    const { exitCode } = await runCli(["unpublish", "-d", dir], {
+    const { exitCode, output } = await runCli(["unpublish", "-d", dir], {
       env: withMockedFetch(),
     });
 
-    expect(exitCode).not.toBe(0);
+    expect(exitCode, output).not.toBe(0);
   });
 
   it("should fail when the registry rejects the request", async () => {
     writeManifest(dir);
 
-    const { exitCode } = await runCli(["unpublish", "-d", dir], {
+    const { exitCode, output } = await runCli(["unpublish", "-d", dir], {
       env: withMockedFetch(401),
     });
 
-    expect(exitCode).not.toBe(0);
+    expect(exitCode, output).not.toBe(0);
   });
 });

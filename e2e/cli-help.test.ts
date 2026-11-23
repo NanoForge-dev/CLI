@@ -4,9 +4,9 @@ import { runCli } from "./helpers/run-cli";
 
 describe("nf --help", () => {
   it("should display help with all commands", async () => {
-    const { stdout, exitCode } = await runCli(["--help"]);
+    const { stdout, exitCode, output } = await runCli(["--help"]);
 
-    expect(exitCode).toBe(0);
+    expect(exitCode, output).toBe(0);
     expect(stdout).toContain("Usage: nf <command> [options]");
     expect(stdout).toContain("build");
     expect(stdout).toContain("dev");
@@ -17,25 +17,25 @@ describe("nf --help", () => {
   });
 
   it("should display version", async () => {
-    const { stdout, exitCode } = await runCli(["--version"]);
+    const { stdout, exitCode, output } = await runCli(["--version"]);
 
-    expect(exitCode).toBe(0);
+    expect(exitCode, output).toBe(0);
     expect(stdout.trim()).toMatch(/^\d+\.\d+\.\d+/);
   });
 
   it("should exit with 1 on invalid command", async () => {
-    const { exitCode, stderr } = await runCli(["invalid-command"]);
+    const { exitCode, output, stderr } = await runCli(["invalid-command"]);
 
-    expect(exitCode).toBe(1);
+    expect(exitCode, output).toBe(1);
     expect(stderr).toContain("Invalid command");
   });
 });
 
 describe("nf new --help", () => {
   it("should display new command options", async () => {
-    const { stdout, exitCode } = await runCli(["new", "--help"]);
+    const { stdout, exitCode, output } = await runCli(["new", "--help"]);
 
-    expect(exitCode).toBe(0);
+    expect(exitCode, output).toBe(0);
     expect(stdout).toContain("create a new NanoForge project");
     expect(stdout).toContain("--name");
     expect(stdout).toContain("--language");
@@ -59,9 +59,9 @@ describe("nf new --help", () => {
 
 describe("nf build --help", () => {
   it("should display build command options", async () => {
-    const { stdout, exitCode } = await runCli(["build", "--help"]);
+    const { stdout, exitCode, output } = await runCli(["build", "--help"]);
 
-    expect(exitCode).toBe(0);
+    expect(exitCode, output).toBe(0);
     expect(stdout).toContain("build your game");
     expect(stdout).toContain("--directory");
     expect(stdout).toContain("--client-entry");
@@ -77,9 +77,9 @@ describe("nf build --help", () => {
 
 describe("nf install --help", () => {
   it("should display install command options", async () => {
-    const { stdout, exitCode } = await runCli(["install", "--help"]);
+    const { stdout, exitCode, output } = await runCli(["install", "--help"]);
 
-    expect(exitCode).toBe(0);
+    expect(exitCode, output).toBe(0);
     expect(stdout).toContain("add NanoForge registry packages to your project");
     expect(stdout).toContain("--directory");
     expect(stdout).toContain("--lib");
@@ -89,9 +89,9 @@ describe("nf install --help", () => {
 
 describe("nf start --help", () => {
   it("should display start command options", async () => {
-    const { stdout, exitCode } = await runCli(["start", "--help"]);
+    const { stdout, exitCode, output } = await runCli(["start", "--help"]);
 
-    expect(exitCode).toBe(0);
+    expect(exitCode, output).toBe(0);
     expect(stdout).toContain("start your game");
     expect(stdout).toContain("--directory");
     expect(stdout).toContain("--port");
@@ -101,9 +101,9 @@ describe("nf start --help", () => {
 
 describe("nf dev --help", () => {
   it("should display dev command options", async () => {
-    const { stdout, exitCode } = await runCli(["dev", "--help"]);
+    const { stdout, exitCode, output } = await runCli(["dev", "--help"]);
 
-    expect(exitCode).toBe(0);
+    expect(exitCode, output).toBe(0);
     expect(stdout).toContain("run your game in dev mode");
     expect(stdout).toContain("--directory");
     expect(stdout).toContain("--editor");
@@ -112,9 +112,9 @@ describe("nf dev --help", () => {
 
 describe("nf editor --help", () => {
   it("should display editor command options", async () => {
-    const { stdout, exitCode } = await runCli(["editor", "--help"]);
+    const { stdout, exitCode, output } = await runCli(["editor", "--help"]);
 
-    expect(exitCode).toBe(0);
+    expect(exitCode, output).toBe(0);
     expect(stdout).toContain("start the editor");
     expect(stdout).toContain("--directory");
     expect(stdout).toContain("--open");
