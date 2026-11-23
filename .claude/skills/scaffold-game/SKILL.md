@@ -36,7 +36,7 @@ Run the chosen command from a test directory **outside this repo** (for example 
 
 ```bash
 cd /path/to/a/test/folder
-node <path-to-this-repo>/dist/nf.js new --name demo --package-manager pnpm --language ts --strict --no-server --no-init-functions --skip-install --no-docker --no-git --no-git-remote
+node <path-to-this-repo>/dist/nf.js new --name demo --package-manager pnpm --language ts --strict --no-server --skip-install --no-docker --no-git --no-git-remote
 ```
 
 For a component/system inside an already-generated project, move into that project and install its dependencies first (`pnpm install`, which needs network access to npm): with `--skip-install`, `nf create` fails with `Cannot find package '@nanoforge-dev/config'`. Then use the `create` command (check its exact usage via `--help`, see step 2), for example:

@@ -42,18 +42,16 @@ describe("nf new --help", () => {
     expect(stdout).toContain("--package-manager");
     expect(stdout).toContain("--strict");
     expect(stdout).toContain("--server");
-    expect(stdout).toContain("--init-functions");
     expect(stdout).toContain("--skip-install");
     expect(stdout).toContain("--directory");
     expect(stdout).toContain("--docker");
   });
 
-  it("should not claim that --init-functions or --no-lint do something", async () => {
+  it("should not list the removed --init-functions and --no-lint options", async () => {
     const { stdout } = await runCli(["new", "--help"]);
 
-    expect(stdout).not.toContain("initialize functions");
-    expect(stdout).not.toContain("do not generate lint files");
-    expect(stdout).toContain("has no effect yet");
+    expect(stdout).not.toContain("--init-functions");
+    expect(stdout).not.toContain("--no-lint");
   });
 });
 
