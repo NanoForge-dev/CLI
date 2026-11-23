@@ -16,8 +16,16 @@ export const copyFiles = (from: string, to: string) => {
   });
 };
 
-export const resetFolder = (folder: string) => {
-  if (fs.existsSync(folder)) fs.rmSync(folder, { recursive: true, force: true });
+/**
+ * Deletes `folder` and creates it again empty. Its direct children named in `keep` survive
+ * (another target's output nested inside this one).
+ */
+export const resetFolder = (folder: string, keep: string[] = []) => {
+  if (keep.length > 0 && fs.existsSync(folder) && fs.lstatSync(folder).isDirectory())
+    fs.readdirSync(folder)
+      .filter((name) => !keep.includes(name))
+      .forEach((name) => fs.rmSync(join(folder, name), { recursive: true, force: true }));
+  else if (fs.existsSync(folder)) fs.rmSync(folder, { recursive: true, force: true });
   fs.mkdirSync(folder, { recursive: true });
 };
 

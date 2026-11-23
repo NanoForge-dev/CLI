@@ -80,6 +80,20 @@ describe("files", () => {
     });
   });
 
+  describe("resetFolder with kept children", () => {
+    it("should empty the folder but keep the named children and their content", () => {
+      const folder = join(root, "out");
+      fs.mkdirSync(join(folder, "server"), { recursive: true });
+      fs.writeFileSync(join(folder, "server", "main.js"), "server");
+      fs.writeFileSync(join(folder, "main.js"), "client");
+
+      resetFolder(folder, ["server"]);
+
+      expect(fs.readdirSync(folder)).toEqual(["server"]);
+      expect(fs.readFileSync(join(folder, "server", "main.js"), "utf8")).toBe("server");
+    });
+  });
+
   describe("getUnsafeOutDirReason", () => {
     const project = join(tmpdir(), "project");
     const reason = (outDir: string, sources = ["src/main.ts", "assets"]) =>

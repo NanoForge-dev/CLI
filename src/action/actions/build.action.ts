@@ -34,7 +34,12 @@ interface BuildTarget {
   output: string;
   platform: "browser" | "node";
   sourcemap: boolean;
+  /** Children of the output folder that a reset keeps: the browser server build in p2p. */
+  keep?: string[];
 }
+
+/** Subfolder of the client output that holds the browser server build in p2p mode. */
+const P2P_SERVER_DIR = "server";
 
 export class BuildAction extends AbstractAction {
   protected startMessage = Messages.BUILD_START;
@@ -78,10 +83,11 @@ export class BuildAction extends AbstractAction {
       .map((server) => ({
         ...server,
         name: `${server.name} (browser)`,
-        output: relative(server.directory, join(client.directory, client.output, "server")),
+        output: relative(server.directory, join(client.directory, client.output, P2P_SERVER_DIR)),
         platform: "browser" as const,
       }));
     browserServers.forEach((target) => this.assertSafeOutput(target, client.directory));
+    if (browserServers.length > 0) client.keep = [P2P_SERVER_DIR];
     return [...targets, ...browserServers];
   }
 
@@ -155,7 +161,7 @@ export class BuildAction extends AbstractAction {
 
     const executeBuild = (rebuild = false) =>
       runSafe(() => {
-        this.resetOut(target.output, target.directory);
+        this.resetOut(target);
         this.copyFiles(target, target.directory);
         return packageManager.build(
           target.name,
@@ -193,8 +199,8 @@ export class BuildAction extends AbstractAction {
     return { keepAlive: true };
   }
 
-  private resetOut(outDir: string, directory: string): void {
-    resetFolder(getCwd(join(directory, outDir)));
+  private resetOut(target: BuildTarget): void {
+    resetFolder(getCwd(join(target.directory, target.output)), target.keep);
   }
 
   private copyFiles(target: BuildTarget, directory: string): void {

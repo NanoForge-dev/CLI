@@ -17,6 +17,7 @@ interface BuildTargetShape {
   output: string;
   platform: "browser" | "node";
   sourcemap: boolean;
+  keep?: string[];
 }
 
 type ResolveTargets = (
@@ -70,6 +71,15 @@ describe("BuildAction.resolveTargets", () => {
     );
     expect(browserServer?.directory).toBe(server?.directory);
     expect(browserServer?.entry).toBe(server?.entry);
+  });
+
+  it("should keep the browser server build when the client output is reset in p2p mode", () => {
+    const targets = resolveTargets(p2pWorkspace(), "/ws");
+    const client = targets.find((target) => target.platform === "browser");
+    const browserServer = targets.find((target) => target.name === "Server (server) (browser)");
+
+    expect(client?.keep).toEqual(["server"]);
+    expect(browserServer?.keep).toBeUndefined();
   });
 
   it("should not add browser copies outside p2p mode", () => {
