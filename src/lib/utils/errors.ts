@@ -92,8 +92,9 @@ export const assertTerminal = (): void => {
   if (!process.stdin.isTTY) throw new NoTerminalError();
 };
 
-/** Stack traces are for debugging the CLI itself: shown only with `NF_DEBUG` set. */
-const isDebug = (): boolean => Boolean(process.env.NF_DEBUG);
+/** Stack traces are for debugging the CLI itself: shown only with `NF_DEBUG` on (not empty, `0` or `false`). */
+const isDebug = (): boolean =>
+  !["", "0", "false"].includes((process.env.NF_DEBUG ?? "").toLowerCase());
 
 const getErrorString = (error: Error): string => {
   const stack = isDebug() && error.stack ? error.stack : error.message;
