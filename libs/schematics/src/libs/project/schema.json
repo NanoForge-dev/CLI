@@ -51,11 +51,6 @@
       "description": "Generate a Dockerfile for the project. Ignored when `workspace` is true - a project inside a workspace is built and run by the workspace's own Dockerfile instead.",
       "default": false
     },
-    "initFunctions": {
-      "type": "boolean",
-      "description": "Add init functions to the project",
-      "default": false
-    },
     "hasServer": {
       "type": "boolean",
       "description": "Only meaningful when part is \"client\": whether the client talks to a companion server. True adds the network library, the position packet and the position-sync system, so the entity position comes from the server; false leaves the network out. A server project always simulates and broadcasts its own position, regardless of this flag.",
