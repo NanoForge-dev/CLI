@@ -141,6 +141,17 @@ describe("component schematic", () => {
     });
   });
 
+  describe("name validation", () => {
+    it.each(["2d sprite", "my component", "-component", ""])(
+      "should reject %j, which gives no identifier",
+      async (name) => {
+        await expect(runner.runSchematic("component", { name, part: "client" })).rejects.toThrow(
+          /pattern/,
+        );
+      },
+    );
+  });
+
   describe("custom directory", () => {
     it("should generate file in the specified directory", async () => {
       const tree = await runner.runSchematic("component", {

@@ -141,6 +141,17 @@ describe("system schematic", () => {
     });
   });
 
+  describe("name validation", () => {
+    it.each(["2d sprite", "my system", "-system", ""])(
+      "should reject %j, which gives no identifier",
+      async (name) => {
+        await expect(runner.runSchematic("system", { name, part: "client" })).rejects.toThrow(
+          /pattern/,
+        );
+      },
+    );
+  });
+
   describe("custom directory", () => {
     it("should generate file in the specified directory", async () => {
       const tree = await runner.runSchematic("system", {
