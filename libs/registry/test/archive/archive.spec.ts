@@ -1,5 +1,6 @@
 import { strToU8, zipSync } from "fflate";
-import { mkdirSync, mkdtempSync, rmSync, truncateSync, writeFileSync } from "node:fs";
+import { randomBytes } from "node:crypto";
+import { chmodSync, mkdirSync, mkdtempSync, rmSync, truncateSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -93,7 +94,48 @@ describe("packFolder", () => {
       writeFileSync(join(folder, "big.bin"), "");
       truncateSync(join(folder, "big.bin"), 257 * 1024 * 1024);
 
-      await expect(zipFolder(folder)).rejects.toThrow(/too large \(256 MiB/);
+      await expect(zipFolder(folder)).rejects.toThrow(
+        /too large to pack: over 256 MiB or 20,000 files\. Name fewer files/,
+      );
+    } finally {
+      rmSync(folder, { recursive: true, force: true });
+    }
+  });
+
+  it("with maxBytes, zips the same files with stable bytes", async () => {
+    const folder = mkdtempSync(join(tmpdir(), "nf-zip-"));
+    try {
+      mkdirSync(join(folder, "src"));
+      writeFileSync(join(folder, "a.txt"), "hello");
+      writeFileSync(join(folder, "src/b.ts"), "b");
+
+      const first = await packFolder(folder, { maxBytes: 1024 * 1024 });
+      const second = await packFolder(folder, { maxBytes: 1024 * 1024 });
+      expect(first.archive).toEqual(second.archive);
+      expect(first.files).toEqual([
+        { path: "a.txt", size: 5 },
+        { path: "src/b.ts", size: 1 },
+      ]);
+      const files = readArchive(first.archive);
+      expect(new TextDecoder().decode(files.get("a.txt"))).toBe("hello");
+      expect([...files.keys()]).toEqual(["a.txt", "src/b.ts"]);
+    } finally {
+      rmSync(folder, { recursive: true, force: true });
+    }
+  });
+
+  it("with maxBytes, stops packing as soon as the archive passes it, naming the limit", async () => {
+    const folder = mkdtempSync(join(tmpdir(), "nf-zip-"));
+    try {
+      // Random bytes do not compress: a.bin alone passes the limit.
+      writeFileSync(join(folder, "a.bin"), randomBytes(1024 * 1024 + 1));
+      // Unreadable: reading it would fail with EACCES rather than "too large".
+      writeFileSync(join(folder, "b.bin"), "b");
+      chmodSync(join(folder, "b.bin"), 0);
+
+      await expect(packFolder(folder, { maxBytes: 1024 * 1024 })).rejects.toThrow(
+        /too large: over 1 MiB packed, the most the registry takes\. Name fewer files/,
+      );
     } finally {
       rmSync(folder, { recursive: true, force: true });
     }
