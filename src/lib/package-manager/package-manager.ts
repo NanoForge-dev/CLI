@@ -128,23 +128,6 @@ export class PackageManager {
     }
   }
 
-  public async runDev(
-    directory: string,
-    command: string,
-    env: Record<string, string> = {},
-    flags: string[] = [],
-    collect = true,
-  ): Promise<boolean> {
-    try {
-      const base = [this.commands.exec, command];
-      if (this.commands.runArgsFlag) base.push(this.commands.runArgsFlag);
-      await this.exec([...base, ...flags], directory, { collect, env });
-      return true;
-    } catch {
-      return false;
-    }
-  }
-
   private async addDependencies(
     saveFlag: string,
     directory: string,

@@ -153,23 +153,4 @@ describe("PackageManager", () => {
       expect(lastRunArgs(runner)).toEqual(["run", "server.ts", "--watch"]);
     });
   });
-
-  describe("runDev", () => {
-    it("should exec the command, with the run-args flag only for managers that define one", async () => {
-      const npm = makePackageManager(PackageManagerName.NPM, runner);
-      await npm.runDev("/project", "vite", {}, ["--port", "5173"]);
-      expect(lastRunArgs(runner)).toEqual(["exec", "vite", "--", "--port", "5173"]);
-
-      const bun = makePackageManager(PackageManagerName.BUN, runner);
-      await bun.runDev("/project", "vite", {}, ["--port", "5173"]);
-      expect(lastRunArgs(runner)).toEqual(["exec", "vite", "--port", "5173"]);
-    });
-
-    it("should return false when the runner fails", async () => {
-      runner.run.mockRejectedValue(new Error("boom"));
-      const pm = makePackageManager(PackageManagerName.BUN, runner);
-
-      await expect(pm.runDev("/project", "vite")).resolves.toBe(false);
-    });
-  });
 });

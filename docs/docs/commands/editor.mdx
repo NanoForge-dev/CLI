@@ -6,16 +6,22 @@ description: Start the NanoForge visual editor
 ## What it does
 
 `nf editor` starts the NanoForge editor, a visual tool to build scenes, entities, components and
-systems. It runs on your machine and you use it in the browser. It prints its URL:
+systems. It runs on your machine and you use it in the browser. It prints its URL once the editor
+answers:
 
 ```text
 🔗 Editor running! Open it in your browser: http://localhost:5173
 ```
 
 - **With a `[path]`**, it opens that project: the URL is `http://localhost:<port>/load?path=...`,
-  and the browser opens by default once the editor answers (it waits up to 30 seconds).
+  and the browser opens by default once the editor answers.
 - **Without a path**, the editor shows its project list, and no browser opens unless you pass
   `--open`.
+
+If the editor stops with an error, `nf editor` prints `Editor failed!` and exits with code 1. If it
+has not answered after 30 seconds, `nf editor` prints a warning with the URL and keeps running. If
+a NanoForge editor already answers on the port, `nf editor` stops: open that one, or pass another
+`--port`.
 
 The editor can open projects only inside its root folder. The root is the `-d` folder, or the
 parent folder of `[path]` when the project is outside of `-d`.
