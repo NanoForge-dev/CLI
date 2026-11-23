@@ -1,7 +1,7 @@
 import { SchematicTestRunner, type UnitTestTree } from "@angular-devkit/schematics/testing";
 import { EOL } from "node:os";
 import { resolve } from "node:path";
-import { beforeAll, describe, expect, it } from "vitest";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 const collectionPath = resolve(__dirname, "../dist/collection.json");
 
@@ -111,6 +111,11 @@ describe("workspace schematic", () => {
       expect(tree.files).not.toContain("/js-workspace/nanoforge.config.ts");
     });
 
+    it("should enable esModuleInterop in jsconfig.json, like the tsconfig.json", () => {
+      const jsconfig = JSON.parse(tree.readContent("/js-workspace/jsconfig.json"));
+      expect(jsconfig.compilerOptions.esModuleInterop).toBe(true);
+    });
+
     it("has the same package.json shape as the TypeScript workspace, minus typescript itself", () => {
       const packageJson = JSON.parse(tree.readContent("/js-workspace/package.json"));
       expect(packageJson.devDependencies["typescript"]).toBeUndefined();
@@ -129,6 +134,19 @@ describe("workspace schematic", () => {
       expect(tree.files).not.toContain("/js-workspace/eslint.config.js");
       expect(tree.files).not.toContain("/js-workspace/prettier.config.js");
       expect(tree.files).not.toContain("/js-workspace/.prettierignore");
+    });
+  });
+
+  describe("when the registry lookup fails", () => {
+    afterEach(() => {
+      vi.unstubAllGlobals();
+    });
+
+    it("falls back to the engine 3 range for @nanoforge-dev/config", async () => {
+      vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("network down")));
+      const tree = await runner.runSchematic("workspace", { name: "offline-workspace" });
+      const packageJson = JSON.parse(tree.readContent("/offline-workspace/package.json"));
+      expect(packageJson.devDependencies["@nanoforge-dev/config"]).toBe("^3");
     });
   });
 

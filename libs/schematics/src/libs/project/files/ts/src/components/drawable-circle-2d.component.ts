@@ -2,6 +2,12 @@ import type { NfFile } from "@nanoforge-dev/common";
 import type { EditorComponentManifest } from "@nanoforge-dev/ecs";
 import { Circle, type Layer } from "@nanoforge-dev/graphics-2d";
 
+// Drops the props left undefined, which `exactOptionalPropertyTypes` (strict projects) rejects.
+const definedProps = <T extends object>(props: T) =>
+  Object.fromEntries(Object.entries(props).filter(([, value]) => value !== undefined)) as {
+    [K in keyof T]: Exclude<T[K], undefined>;
+  };
+
 export class DrawableCircle2D {
   public readonly name: string = this.constructor.name;
   shape: Circle;
@@ -29,31 +35,33 @@ export class DrawableCircle2D {
     fillPatternRotation?: number,
     fillPatternRepeat?: string,
   ) {
-    this.shape = new Circle({
-      radius,
-      visible,
-      id,
-      opacity,
-      scaleX,
-      scaleY,
-      skewX,
-      skewY,
-      rotation,
-      offsetX,
-      offsetY,
-      fill: fillColor,
-      fillPatternImage: _fillPatternImage
-        ? Object.assign(new Image(), { src: _fillPatternImage.path })
-        : undefined,
-      fillPatternX,
-      fillPatternY,
-      fillPatternOffsetX,
-      fillPatternOffsetY,
-      fillPatternScaleX,
-      fillPatternScaleY,
-      fillPatternRotation,
-      fillPatternRepeat,
-    });
+    this.shape = new Circle(
+      definedProps({
+        radius,
+        visible,
+        id,
+        opacity,
+        scaleX,
+        scaleY,
+        skewX,
+        skewY,
+        rotation,
+        offsetX,
+        offsetY,
+        fill: fillColor,
+        fillPatternImage: _fillPatternImage
+          ? Object.assign(new Image(), { src: _fillPatternImage.path })
+          : undefined,
+        fillPatternX,
+        fillPatternY,
+        fillPatternOffsetX,
+        fillPatternOffsetY,
+        fillPatternScaleX,
+        fillPatternScaleY,
+        fillPatternRotation,
+        fillPatternRepeat,
+      }),
+    );
   }
 
   get radius() {

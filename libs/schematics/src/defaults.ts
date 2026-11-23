@@ -1,8 +1,9 @@
 export const DEFAULT_APP_NAME = "nanoforge-app";
 export const DEFAULT_LANGUAGE = "ts";
 export const DEFAULT_PACKAGE_MANAGER = "npm";
-export const DEFAULT_NANOFORGE_DEPENDENCY_VERSION = "^2";
-export const DEFAULT_ENGINE_VERSION = "^2";
+/** Fallbacks used when an engine package lookup fails: keep them on the engine major the templates are written for. */
+export const DEFAULT_NANOFORGE_DEPENDENCY_VERSION = "^3";
+export const DEFAULT_ENGINE_VERSION = "^3";
 
 /** Fallback used when the registry lookup for `@nanoforge-dev/cli` fails. */
 export const DEFAULT_CLI_DEPENDENCY_VERSION = "latest";

@@ -44,6 +44,15 @@ describe("system schematic", () => {
       expect(content).toContain("export const EDITOR_SYSTEM_MANIFEST");
       expect(content).toContain('name: "mySystem"');
     });
+
+    it("should only use a component and an AppContext method that exist in a new project", () => {
+      const content = tree.readContent("/my-app/my-system.system.ts");
+      expect(content).toContain('from "../components/position-2d.component"');
+      expect(content).toContain('dependencies: ["Position2D"]');
+      expect(content).toContain("ctx.app.requestStop()");
+      expect(content).not.toContain("ExampleComponent");
+      expect(content).not.toContain("setIsRunning");
+    });
   });
 
   describe("TypeScript system for server part", () => {
@@ -101,6 +110,15 @@ describe("system schematic", () => {
       expect(content).toContain("export const EDITOR_SYSTEM_MANIFEST");
       expect(content).toContain('name: "mySystem"');
     });
+
+    it("should only use a component and an AppContext method that exist in a new project", () => {
+      const content = tree.readContent("/my-app/my-system.system.js");
+      expect(content).toContain('from "../components/position-2d.component"');
+      expect(content).toContain('dependencies: ["Position2D"]');
+      expect(content).toContain("ctx.app.requestStop()");
+      expect(content).not.toContain("ExampleComponent");
+      expect(content).not.toContain("setIsRunning");
+    });
   });
 
   describe("name formatting", () => {
@@ -139,6 +157,17 @@ describe("system schematic", () => {
       const content = tree.readContent("/my-app/my-system.system.ts");
       expect(content).toContain("export const mySystemSystem");
     });
+  });
+
+  describe("name validation", () => {
+    it.each(["2d sprite", "my system", "-system", ""])(
+      "should reject %j, which gives no identifier",
+      async (name) => {
+        await expect(runner.runSchematic("system", { name, part: "client" })).rejects.toThrow(
+          /pattern/,
+        );
+      },
+    );
   });
 
   describe("custom directory", () => {
