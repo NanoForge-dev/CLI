@@ -16,6 +16,10 @@ export const Messages = {
   BUILD_PART_SUCCESS: (name: string) => success(`Build of ${name} succeeded!`),
   BUILD_PART_FAILED: (part: string, command: string) =>
     failure(`Build of ${part} failed!\nTry running manually: ${bold(command)}`),
+  BUILD_UNSAFE_OUT_DIR: (part: string, outDir: string, reason: string) =>
+    `Error: refusing to build ${part} into "${outDir}": ${reason}. Nothing was deleted.`,
+  BUILD_UNSAFE_OUT_DIR_SUGGESTION:
+    "Use an output folder inside the project that holds no sources, such as dist.",
 
   // --- Install ---
   INSTALL_START: "NanoForge Installation",

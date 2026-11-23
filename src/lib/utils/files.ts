@@ -1,5 +1,5 @@
 import fs from "fs";
-import { dirname, join } from "path";
+import { dirname, isAbsolute, join, relative, resolve, sep } from "path";
 
 import { FileSystemError } from "@utils/errors";
 
@@ -19,4 +19,30 @@ export const copyFiles = (from: string, to: string) => {
 export const resetFolder = (folder: string) => {
   if (fs.existsSync(folder)) fs.rmSync(folder, { recursive: true, force: true });
   fs.mkdirSync(folder, { recursive: true });
+};
+
+const isWithin = (parent: string, child: string): boolean => {
+  const path = relative(parent, child);
+  return path === "" || (path !== ".." && !path.startsWith(`..${sep}`) && !isAbsolute(path));
+};
+
+/**
+ * Why emptying `outDir` (relative to `directory`) would destroy sources, or `undefined` when
+ * it is safe: it must be relative, strictly inside `root`, and neither contain nor sit
+ * inside one of `sources` (paths relative to `directory`).
+ */
+export const getUnsafeOutDirReason = (
+  root: string,
+  directory: string,
+  outDir: string,
+  sources: string[],
+): string | undefined => {
+  if (isAbsolute(outDir)) return "it must be a path relative to the project folder";
+  const out = resolve(directory, outDir);
+  if (isWithin(out, root)) return `it is the project folder or one of its parents (${root})`;
+  if (!isWithin(root, out)) return `it is outside the project folder (${root})`;
+  const source = sources
+    .map((path) => resolve(directory, path))
+    .find((path) => isWithin(out, path) || isWithin(path, out));
+  return source ? `it overlaps the sources at ${source}` : undefined;
 };

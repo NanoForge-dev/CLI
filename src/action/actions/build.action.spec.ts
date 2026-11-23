@@ -5,6 +5,8 @@ import { describe, expect, it } from "vitest";
 import { type WorkspaceConfig } from "@lib/config";
 import { type Input } from "@lib/input";
 
+import { CLIError } from "@utils/errors";
+
 import { BuildAction } from "./build.action";
 
 interface BuildTargetShape {
@@ -140,5 +142,37 @@ describe("BuildAction.resolveTargets", () => {
       entry: defaultServerConfig.editor.entryFile,
       sourcemap: true,
     });
+  });
+});
+
+describe("BuildAction.resolveTargets output guard", () => {
+  const project = { type: "project", config: { type: "client" } } as unknown as WorkspaceConfig;
+  const withOutDir = (outDir: string): Input => new Map([["clientOutDir", { value: outDir }]]);
+
+  it.each([".", "", "..", "../other", "/tmp/out", "src", "assets", "assets/out"])(
+    "should refuse the output folder %j before anything is deleted",
+    (outDir) => {
+      expect(() => resolveTargets(project, "/ws", withOutDir(outDir))).toThrow(CLIError);
+    },
+  );
+
+  it.each(["dist", "build/client", "src/dist", "./out"])(
+    "should accept the output folder %j",
+    (outDir) => {
+      expect(() => resolveTargets(project, "/ws", withOutDir(outDir))).not.toThrow();
+    },
+  );
+
+  it("should refuse a config out.dir that holds the entry file", () => {
+    const workspace = {
+      type: "project",
+      config: { type: "server", entryFile: "main.ts", out: { dir: "." } },
+    } as unknown as WorkspaceConfig;
+
+    expect(() => resolveTargets(workspace, "/ws")).toThrow(/refusing to build Server/);
+  });
+
+  it("should accept the p2p browser server output inside the client output", () => {
+    expect(() => resolveTargets(p2pWorkspace(), "/ws")).not.toThrow();
   });
 });

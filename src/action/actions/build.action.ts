@@ -19,7 +19,8 @@ import {
 import { PackageManagerFactory, PackageManagerName } from "@lib/package-manager";
 import { Messages } from "@lib/ui";
 
-import { copyFiles, resetFolder } from "@utils/files";
+import { CLIError } from "@utils/errors";
+import { copyFiles, getUnsafeOutDirReason, resetFolder } from "@utils/files";
 import { getCwd } from "@utils/path";
 import { runSafe } from "@utils/run-safe";
 
@@ -66,6 +67,7 @@ export class BuildAction extends AbstractAction {
     const targets = projects.map((project) =>
       this.createTarget(project, baseDirectory, options, isEditor, projects.length > 1),
     );
+    targets.forEach((target) => this.assertSafeOutput(target, target.directory));
     if (!isPeerToPeer(workspaceConfig)) return targets;
 
     const client = targets.find((target) => target.platform === "browser");
@@ -79,7 +81,24 @@ export class BuildAction extends AbstractAction {
         output: relative(server.directory, join(client.directory, client.output, "server")),
         platform: "browser" as const,
       }));
+    browserServers.forEach((target) => this.assertSafeOutput(target, client.directory));
     return [...targets, ...browserServers];
+  }
+
+  /** Refuses, before anything is deleted, an output folder whose reset would destroy sources. */
+  private assertSafeOutput(target: BuildTarget, root: string): void {
+    const sources = target.static ? [target.entry, target.static] : [target.entry];
+    const reason = getUnsafeOutDirReason(
+      getCwd(root),
+      getCwd(target.directory),
+      target.output,
+      sources,
+    );
+    if (reason)
+      throw new CLIError(
+        Messages.BUILD_UNSAFE_OUT_DIR(target.name, target.output, reason),
+        Messages.BUILD_UNSAFE_OUT_DIR_SUGGESTION,
+      );
   }
 
   private createTarget(

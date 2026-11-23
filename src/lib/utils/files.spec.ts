@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { FileSystemError } from "@utils/errors";
 
-import { copyFiles, resetFolder } from "./files";
+import { copyFiles, getUnsafeOutDirReason, resetFolder } from "./files";
 
 describe("files", () => {
   let root: string;
@@ -77,6 +77,38 @@ describe("files", () => {
 
       expect(fs.existsSync(folder)).toBe(true);
       expect(fs.readdirSync(folder)).toEqual([]);
+    });
+  });
+
+  describe("getUnsafeOutDirReason", () => {
+    const project = join(tmpdir(), "project");
+    const reason = (outDir: string, sources = ["src/main.ts", "assets"]) =>
+      getUnsafeOutDirReason(project, project, outDir, sources);
+
+    it("should refuse the project folder, a parent, an absolute path or a folder outside", () => {
+      expect(reason(".")).toMatch(/project folder or one of its parents/);
+      expect(reason("..")).toMatch(/project folder or one of its parents/);
+      expect(reason("../sibling")).toMatch(/outside the project folder/);
+      expect(reason(join(project, "dist"))).toMatch(/relative/);
+    });
+
+    it("should refuse a folder that holds the sources or sits in the assets", () => {
+      expect(reason("src")).toMatch(/overlaps the sources/);
+      expect(reason("assets")).toMatch(/overlaps the sources/);
+      expect(reason("assets/out")).toMatch(/overlaps the sources/);
+    });
+
+    it("should accept a folder inside the project apart from the sources", () => {
+      expect(reason("dist")).toBeUndefined();
+      expect(reason("src/dist")).toBeUndefined();
+      expect(reason("..dist")).toBeUndefined();
+    });
+
+    it("should check a nested target against the root it is given", () => {
+      const server = join(project, "server");
+      expect(
+        getUnsafeOutDirReason(project, server, "../client/dist/server", ["src/main.ts"]),
+      ).toBeUndefined();
     });
   });
 });
