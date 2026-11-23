@@ -76,6 +76,14 @@ describe("project schematic", () => {
       expect(content).not.toContain("ctx.libs");
     });
 
+    it("should only pass the defined props to new Circle, for exactOptionalPropertyTypes", () => {
+      const content = tree.readContent(
+        "/apps/client/src/components/drawable-circle-2d.component.ts",
+      );
+      expect(content).toMatch(/new Circle\(\s*definedProps\(\{/);
+      expect(content).toContain("value !== undefined");
+    });
+
     it("should not generate Dockerfile or init functions by default", () => {
       expect(tree.files).not.toContain("/apps/client/Dockerfile");
       expect(tree.files).not.toContain("/apps/client/.dockerignore");
