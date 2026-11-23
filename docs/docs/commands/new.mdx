@@ -38,9 +38,9 @@ The "Default" column is the answer that is preselected when `nf new` asks the qu
 | `--git` / `--no-git`                           | boolean                        | `true`          | Run `git init` in the project.                                                                |
 | `--git-remote <gitRemote>` / `--no-git-remote` | URL                            | none            | Add this remote as `origin`. Only asked when git is on. `--no-git-remote` skips the question. |
 | `--editor`                                     | boolean                        | `false`         | Add the `nf editor .` instructions to the generated README.                                   |
-| `--init-functions` / `--no-init-functions`     | boolean                        | none            | Accepted, but has no effect yet.                                                              |
-| `--no-lint`                                    | boolean                        | none            | Accepted, but has no effect yet: `nf new` generates no lint files.                            |
 | `--no-agents`                                  | boolean                        | none            | Don't add the `AGENTS.md` and `CLAUDE.md` files, which are added unless this flag is passed.  |
+
+`--init-functions`, `--no-init-functions` and `--no-lint` are gone: they had no effect, and `nf new` now stops with an `unknown option` error when it gets one of them.
 
 ## What it generates
 

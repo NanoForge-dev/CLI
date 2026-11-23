@@ -10,10 +10,8 @@ interface NewOptions {
   language?: string;
   strict?: boolean;
   server?: boolean;
-  initFunctions?: boolean;
   skipInstall?: boolean;
   docker?: boolean;
-  lint?: boolean;
   agents?: boolean;
   editor?: boolean;
   git?: boolean;
@@ -47,13 +45,10 @@ export class NewCommand extends AbstractCommand {
       .option("--no-strict", "do not use strict mode")
       .option("--server", "create a server")
       .option("--no-server", "do not create a server")
-      .option("--init-functions", "accepted, but has no effect yet")
-      .option("--no-init-functions", "accepted, but has no effect yet")
       .option("--skip-install", "skip installing dependencies")
       .option("--no-skip-install", "do not skip installing dependencies")
       .option("--docker", "generate docker files")
       .option("--no-docker", "do not generate docker files")
-      .option("--no-lint", "accepted, but has no effect yet (nf new generates no lint files)")
       .option("--no-agents", "do not generate AGENTS.md and CLAUDE.md files for AI coding agents")
       .option("--editor", "add editor dependencies")
       .option("--git", "generate git repository")
@@ -72,10 +67,8 @@ export class NewCommand extends AbstractCommand {
           language: rawOptions.language,
           strict: rawOptions.strict,
           server: rawOptions.server,
-          initFunctions: rawOptions.initFunctions,
           skipInstall: rawOptions.skipInstall,
           docker: rawOptions.docker,
-          lint: rawOptions.lint,
           agents: rawOptions.agents,
           editor: rawOptions.editor,
           git: rawOptions.git,

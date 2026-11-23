@@ -8,7 +8,6 @@ import {
   getNewAgentsInput,
   getNewDockerOrAsk,
   getNewLanguageInputOrAsk,
-  getNewLintInput,
   getNewNameInputOrAsk,
   getNewPackageManagerInputOrAsk,
   getNewServerOrAsk,
@@ -34,7 +33,6 @@ interface NewValues {
   multiplayer: boolean;
   skipInstall: boolean;
   docker: boolean;
-  lint: boolean;
   agents: boolean;
   editor: boolean;
   git: boolean;
@@ -74,7 +72,6 @@ export class NewAction extends AbstractAction {
       multiplayer: await getNewServerOrAsk(inputs),
       skipInstall: await getNewSkipInstallOrAsk(inputs),
       docker: await getNewDockerOrAsk(inputs),
-      lint: getNewLintInput(inputs),
       agents: getNewAgentsInput(inputs),
       editor: getEditorInput(inputs),
       git: await getNewGitOrAsk(inputs),
