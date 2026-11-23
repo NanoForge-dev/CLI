@@ -56,7 +56,7 @@
     "lint": "prettier --check . && eslint --format=pretty src",
     "format": "prettier --write . && eslint --fix --format=pretty src",
     "prepack": "pnpm run build && pnpm run lint",
-    "changelog": "git cliff --prepend ./CHANGELOG.md -u -c ./cliff.toml -r ../../ --include-path 'libs/schematics/*'",
+    "changelog": "git cliff --prepend ./CHANGELOG.md -u -c ./cliff.toml -r ../../ --include-path \"libs/schematics/*\"",
     "release": "cliff-jumper",
     "test": "pnpm run test:unit && pnpm run test:e2e",
     "test:unit": "vitest run -c vitest.config.ts",

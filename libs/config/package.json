@@ -53,7 +53,7 @@
     "format": "prettier --write . && eslint --fix --format=pretty src",
     "test:unit": "vitest run --config vitest.config.ts",
     "prepack": "pnpm run build && pnpm run lint",
-    "changelog": "git cliff --prepend ./CHANGELOG.md -u -c ./cliff.toml -r ../../ --include-path 'libs/config/*'",
+    "changelog": "git cliff --prepend ./CHANGELOG.md -u -c ./cliff.toml -r ../../ --include-path \"libs/config/*\"",
     "release": "cliff-jumper",
     "docs": "mint-tsdocs generate"
   },
