@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+# [3.0.4](https://github.com/NanoForge-dev/CLI/compare/3.0.3...3.0.4) - (2026-11-26)
+
+## Bug Fixes
+
+- **cli:** Deprecate the no-op --init-functions and --no-lint options of nf new (#370) ([64417bc](https://github.com/NanoForge-dev/CLI/commit/64417bc8faab0d9057831d85f0a30c67d1769166)) by @Exeloo
+- **cli:** Stop nf publish at the registry limits before reading or uploading everything (#369) ([e8e13e7](https://github.com/NanoForge-dev/CLI/commit/e8e13e74f5e5a22fa7e69f16e3021e81e6e7eba3)) by @Exeloo
+- **cli:** Never delete the project in nf build and make watch rebuilds safe (#367) ([9dc77d9](https://github.com/NanoForge-dev/CLI/commit/9dc77d9edc46c11db199d97f4929a507a2f9d642)) by @Exeloo
+- **cli:** Run nf dev with the running cli and fail start, editor and dev when a child fails (#366) ([2122590](https://github.com/NanoForge-dev/CLI/commit/21225906bda8ae04d6f061e76284f58c15b4d2f9)) by @Exeloo
+- **cli:** Keep runner output, tree-kill, nf_debug and the start port error robust (#365) ([a79ee90](https://github.com/NanoForge-dev/CLI/commit/a79ee90ae921cb7180639fcd05b109cd58df23bc)) by @Exeloo
+- **schematics:** Make fresh projects and new systems type-check (#364) ([197a4f6](https://github.com/NanoForge-dev/CLI/commit/197a4f662b2c548969c0440f6d491b016b96e5f7)) by @Exeloo
+
 # [3.0.3](https://github.com/NanoForge-dev/CLI/compare/3.0.2...3.0.3) - (2026-11-22)
 
 ## Bug Fixes

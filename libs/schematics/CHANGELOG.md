@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+# [3.0.4](https://github.com/NanoForge-dev/CLI/compare/3.0.3...3.0.4) - (2026-11-26)
+
+## Bug Fixes
+
+- **cli:** Deprecate the no-op --init-functions and --no-lint options of nf new (#370) ([64417bc](https://github.com/NanoForge-dev/CLI/commit/64417bc8faab0d9057831d85f0a30c67d1769166)) by @Exeloo
+- **schematics:** Make fresh projects and new systems type-check (#364) ([197a4f6](https://github.com/NanoForge-dev/CLI/commit/197a4f662b2c548969c0440f6d491b016b96e5f7)) by @Exeloo
+
 # [3.0.3](https://github.com/NanoForge-dev/CLI/compare/3.0.2...3.0.3) - (2026-11-22)
 
 ## Bug Fixes

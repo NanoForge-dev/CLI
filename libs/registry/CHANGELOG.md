@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+# [3.0.4](https://github.com/NanoForge-dev/CLI/compare/3.0.3...3.0.4) - (2026-11-26)
+
+## Bug Fixes
+
+- **cli:** Stop nf publish at the registry limits before reading or uploading everything (#369) ([e8e13e7](https://github.com/NanoForge-dev/CLI/commit/e8e13e74f5e5a22fa7e69f16e3021e81e6e7eba3)) by @Exeloo
+
 # [3.0.3](https://github.com/NanoForge-dev/CLI/compare/3.0.2...3.0.3) - (2026-11-22)
 
 # [3.0.2](https://github.com/NanoForge-dev/CLI/compare/3.0.1...3.0.2) - (2026-11-20)
