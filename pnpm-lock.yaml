@@ -218,7 +218,7 @@ catalogs:
   schematics:
     '@angular-devkit/core':
       specifier: ^22.2.6
-      version: 22.2.6
+      version: 22.3.0
     '@angular-devkit/schematics':
       specifier: ^22.2.6
       version: 22.3.0
@@ -437,7 +437,7 @@ importers:
     dependencies:
       '@angular-devkit/core':
         specifier: catalog:schematics
-        version: 22.2.6(chokidar@5.0.0)
+        version: 22.3.0(chokidar@5.0.0)
       '@angular-devkit/schematics':
         specifier: catalog:schematics
         version: 22.3.0(chokidar@5.0.0)
