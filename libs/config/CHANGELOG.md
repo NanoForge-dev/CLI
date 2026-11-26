@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+# [3.0.4](https://github.com/NanoForge-dev/CLI/compare/3.0.3...3.0.4) - (2026-11-26)
+
+## Bug Fixes
+
+- **cli:** Never delete the project in nf build and make watch rebuilds safe (#367) ([9dc77d9](https://github.com/NanoForge-dev/CLI/commit/9dc77d9edc46c11db199d97f4929a507a2f9d642)) by @Exeloo
+
 # [3.0.3](https://github.com/NanoForge-dev/CLI/compare/3.0.2...3.0.3) - (2026-11-22)
 
 # [3.0.2](https://github.com/NanoForge-dev/CLI/compare/3.0.1...3.0.2) - (2026-11-20)
